@@ -1,0 +1,332 @@
+@import "tailwindcss";
+
+/* Ogg Font Family @font-face Registrations */
+@font-face {
+  font-family: 'Ogg';
+  src: url('/assets/fonts/Ogg-Font-Family/Ogg-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Ogg';
+  src: url('/assets/fonts/Ogg-Font-Family/Ogg-RegularItalic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Ogg';
+  src: url('/assets/fonts/Ogg-Font-Family/Ogg-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Ogg';
+  src: url('/assets/fonts/Ogg-Font-Family/Ogg-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Ogg';
+  src: url('/assets/fonts/Ogg-Font-Family/Ogg-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  /* Simplified Cohesive Palette from Flyers */
+  --color-cream: #faf8f2;
+  --color-sand: #ece7d8;
+  --color-forest: #0a3825;
+  
+  /* Primary Theme Blue Variants from Flyer */
+  --color-midnight-blue: #040032;
+  --color-cyan-glow: #00e5ff;
+  --color-electric-cyan: #3fffe8;
+
+  /* Focal Complementary Accent from Flyer */
+  --color-lime-accent: #c6f552;
+  
+  --font-serif: 'Ogg', Georgia, serif;
+  --font-sans: var(--font-sans-custom), system-ui, sans-serif;
+  --font-mono: var(--font-mono-custom), monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-cream);
+  color: #040032;
+  overflow-x: hidden;
+}
+
+/* Infinite Marquee Ticker Animation */
+@keyframes marquee-loop {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee-loop 30s linear infinite;
+}
+
+/* Slow Floating Animation Utilities for Hero Corner Icons */
+@keyframes float-slow-1 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-7px) rotate(1deg); }
+}
+
+@keyframes float-slow-2 {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-9px) rotate(-1.5deg); }
+}
+
+.animate-float-slow-1 {
+  animation: float-slow-1 6s ease-in-out infinite;
+}
+
+.animate-float-slow-2 {
+  animation: float-slow-2 7.5s ease-in-out 1s infinite;
+}
+
+.animate-float-slow-3 {
+  animation: float-slow-1 6.5s ease-in-out 2.5s infinite;
+}
+
+.animate-float-slow-4 {
+  animation: float-slow-2 8s ease-in-out 3.5s infinite;
+}
+
+/* Fullscreen Radial Edge Fade Mask for Technical Blueprint Grid */
+.mask-radial-fade {
+  mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 25%, rgba(0, 0, 0, 0) 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 25%, rgba(0, 0, 0, 0) 75%);
+}
+
+/* Technical Component Gallery Blueprint Grid Pattern */
+.bg-component-grid {
+  background-image: 
+    linear-gradient(to right, rgba(4, 0, 50, 0.09) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(4, 0, 50, 0.09) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.bg-component-grid-dark {
+  background-image: 
+    linear-gradient(to right, rgba(63, 255, 232, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(63, 255, 232, 0.1) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Hairline Grid Border Infrastructure */
+.grid-line-x {
+  border-bottom: 1px solid rgba(4, 0, 50, 0.16);
+}
+
+.grid-line-y {
+  border-right: 1px solid rgba(4, 0, 50, 0.16);
+}
+
+.grid-container-rails {
+  border-left: 1px solid rgba(4, 0, 50, 0.16);
+  border-right: 1px solid rgba(4, 0, 50, 0.16);
+}
+
+/* Technical Component Gallery Sub-Element Grid Frame */
+.cg-card {
+  background-color: #faf8f2;
+  border: 1px solid rgba(4, 0, 50, 0.2);
+  border-radius: 1.25rem;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.cg-card:hover {
+  border-color: #040032;
+  box-shadow: 0 12px 32px -8px rgba(4, 0, 50, 0.15);
+}
+
+.cg-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid rgba(4, 0, 50, 0.16);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background-color: rgba(4, 0, 50, 0.03);
+}
+
+/* Liquid Metal Shimmering Glowing Border System (HOVER ONLY) */
+@keyframes liquid-metal-glow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.liquid-metal-border-pill {
+  position: relative;
+  display: inline-block;
+  border-radius: 9999px;
+  background: rgba(4, 0, 50, 0.16);
+  padding: 2px;
+  transition: all 0.3s ease;
+}
+
+.liquid-metal-border-pill:hover {
+  background: linear-gradient(90deg, #040032 0%, #00e5ff 25%, #c6f552 50%, #3fffe8 75%, #040032 100%);
+  background-size: 300% 300%;
+  animation: liquid-metal-glow 6s ease infinite;
+  box-shadow: 0 0 18px rgba(0, 229, 255, 0.4), 0 4px 14px rgba(4, 0, 50, 0.2);
+}
+
+.liquid-metal-card {
+  position: relative;
+  border-radius: 1.5rem;
+  background: rgba(4, 0, 50, 0.16);
+  padding: 2px;
+  transition: all 0.3s ease;
+}
+
+.liquid-metal-card:hover {
+  background: linear-gradient(135deg, #040032 0%, #00e5ff 25%, #c6f552 50%, #3fffe8 75%, #040032 100%);
+  background-size: 300% 300%;
+  animation: liquid-metal-glow 8s ease infinite;
+  box-shadow: 0 10px 30px -5px rgba(0, 229, 255, 0.35), 0 0 22px rgba(198, 245, 82, 0.25);
+}
+
+/* Typography Utility Classes */
+.font-serif-display {
+  font-family: 'Ogg', Georgia, serif;
+  letter-spacing: -0.01em;
+}
+
+.font-serif-italic {
+  font-family: 'Ogg', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.font-mono-meta {
+  font-family: var(--font-mono);
+}
+
+/* Custom Color Utilities */
+.bg-midnight-blue {
+  background-color: #040032;
+}
+
+.text-midnight-blue {
+  color: #040032;
+}
+
+.border-midnight-blue {
+  border-color: #040032;
+}
+
+.text-cyan-accent {
+  color: #00e5ff;
+}
+
+.bg-cyan-glow {
+  background-color: #00e5ff;
+}
+
+.border-cyan-accent {
+  border-color: #00e5ff;
+}
+
+.text-electric-cyan {
+  color: #3fffe8;
+}
+
+.bg-lime-accent {
+  background-color: #c6f552;
+}
+
+.text-lime-accent {
+  color: #c6f552;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #faf8f2;
+}
+::-webkit-scrollbar-thumb {
+  background: #040032;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #0a3825;
+}
+
+/* Fine line borders */
+.border-forest-thin {
+  border-color: rgba(4, 0, 50, 0.16);
+}
+
+/* Component Gallery Technical Header Bar */
+.glass-nav {
+  background: rgba(250, 248, 242, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(4, 0, 50, 0.16);
+}
+
+/* Angled Top Edge Clip-Path Utilities for Dynamic Curtain Stacking */
+.clip-top-slant-left {
+  clip-path: polygon(0 3.2vw, 100% 0, 100% 100%, 0 100%);
+}
+
+.clip-top-slant-right {
+  clip-path: polygon(0 0, 100% 3.2vw, 100% 100%, 0 100%);
+}
+
+/* Custom Mapbox Glassmorphic Terminal Controls & Popup */
+.custom-mapbox-popup .mapboxgl-popup-content {
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border-radius: 14px !important;
+}
+
+.custom-mapbox-popup .mapboxgl-popup-tip {
+  border-top-color: #040032 !important;
+  border-bottom-color: #040032 !important;
+}
+
+.mapboxgl-ctrl-group {
+  background: rgba(4, 0, 50, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+.mapboxgl-ctrl-group button {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.mapboxgl-ctrl-group button:hover {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.mapboxgl-ctrl-icon {
+  filter: invert(1) brightness(1.2);
+}
