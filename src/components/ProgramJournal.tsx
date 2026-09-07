@@ -1508,6 +1508,8 @@ function StandardLeftPageContent({ page }: { page: JournalItem }) {
 
 /** Standard Right Leaf: Polaroid Photo Scrapbook */
 function StandardRightPageContent({ page }: { page: JournalItem }) {
+  const isItel = page.imageUrl.includes("itel") || page.id === "session-09";
+
   return (
     <div className="relative w-full h-full bg-[#ece7d8] text-[#040032] p-4 sm:p-6 md:p-8 flex flex-col justify-between items-center overflow-hidden">
       <div className="absolute inset-0 bg-[#f5ede1]/40 pointer-events-none select-none" />
@@ -1537,7 +1539,9 @@ function StandardRightPageContent({ page }: { page: JournalItem }) {
               alt={page.title}
               fill
               draggable={false}
-              className="object-cover object-top filter contrast-[1.03] brightness-[1.02] group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 pointer-events-none select-none"
+              className={`filter contrast-[1.03] brightness-[1.02] group-hover:scale-105 group-hover:brightness-105 transition-all duration-500 pointer-events-none select-none ${
+                isItel ? "object-cover object-center" : "object-cover object-top"
+              }`}
             />
             {/* Dynamic liquid shimmer overlay on hover */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none select-none" />

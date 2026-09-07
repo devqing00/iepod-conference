@@ -27,40 +27,36 @@ export default function ParallaxWrapper({ children }: ParallaxWrapperProps) {
         if (nextSection) {
           const isHero = i === 0;
 
-          // Sections containing iframes or marked with data-no-pin must NOT be pinned.
-          // In Chromium/WebKit, pinning toggles position:fixed which forces iframe documents to reload on scroll!
-          const hasIframe =
-            section.querySelector("iframe") !== null ||
-            section.getAttribute("data-no-pin") === "true";
-
           const getStartTrigger = () => {
             if (isHero) return "top top";
             const overflow = section.offsetHeight - window.innerHeight;
             return overflow > 0 ? "bottom bottom" : "top top";
           };
 
-          if (!hasIframe) {
-            const tl = gsap.timeline({
-              scrollTrigger: {
-                trigger: section,
-                start: getStartTrigger,
-                endTrigger: nextSection,
-                end: "top top",
-                scrub: true,
-                pin: true,
-                pinSpacing: false,
-                anticipatePin: 1,
-                fastScrollEnd: true,
-                invalidateOnRefresh: true,
-              },
-            });
+          // Use pinType: "transform" so GSAP pins via translate3d instead of toggling position:fixed.
+          // This keeps the stacking curtain parallax active across all sections (including FAQ's slant top)
+          // while preventing browsers from reloading embedded iframes on scroll!
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: section,
+              start: getStartTrigger,
+              endTrigger: nextSection,
+              end: "top top",
+              scrub: true,
+              pin: true,
+              pinType: "transform",
+              pinSpacing: false,
+              anticipatePin: 1,
+              fastScrollEnd: true,
+              invalidateOnRefresh: true,
+            },
+          });
 
-            // Move up slightly based on viewport height, not section height, to prevent tall sections from outrunning the scroll
-            tl.to(section, {
-              y: () => -window.innerHeight * 0.25,
-              ease: "none",
-            });
-          }
+          // Move up slightly based on viewport height, not section height, to prevent tall sections from outrunning the scroll
+          tl.to(section, {
+            y: () => -window.innerHeight * 0.25,
+            ease: "none",
+          });
         }
       });
     }

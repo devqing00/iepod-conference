@@ -55,7 +55,7 @@ export default function Home() {
           </div>
 
           {/* Section 6: Confirmed Venue Pass (Angled Top Curtain - Slant Left) */}
-          <div data-stack-section data-no-pin="true" className="relative z-[60] bg-[#faf8f2] shadow-2xl clip-top-slant-left -mt-[1.8vw]">
+          <div data-stack-section className="relative z-[60] bg-[#faf8f2] shadow-2xl clip-top-slant-left -mt-[1.8vw]">
             <VenueCard />
           </div>
 
