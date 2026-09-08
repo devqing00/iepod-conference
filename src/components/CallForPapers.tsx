@@ -79,21 +79,19 @@ export default function CallForPapers() {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 border-b border-[#040032]/10 pb-8">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#0a3825] animate-pulse" />
-              <span className="font-mono-meta text-xs font-bold text-[#0a3825] uppercase tracking-widest block">
-                PRESENTED RESEARCH PAPERS // 2026 PROCEEDINGS
-              </span>
-            </div>
+            <span className="font-mono-meta text-[10px] sm:text-xs font-bold text-[#0a3825] uppercase tracking-widest block mb-2">
+              PRESENTED RESEARCH PAPERS // 2026 PROCEEDINGS
+            </span>
             <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#040032]">
               Research Papers <span className="font-serif-italic text-[#0a3825]">& Showcase</span>
             </h2>
           </div>
 
-          <div className="max-w-md">
+          <div className="max-w-md text-left">
             <ScrollRevealText
               text="Explore the selected undergraduate and postgraduate research papers being presented live today at the Academic Stage before our distinguished faculty judging panel."
-              className="text-sm sm:text-base text-[#040032]/80 leading-relaxed"
+              className="text-sm sm:text-base text-[#040032]/80 leading-relaxed text-left justify-start"
+              align="left"
               highlightWords={["research", "presented", "live", "faculty"]}
               highlightClass="text-[#0a3825] font-bold"
             />

@@ -237,14 +237,11 @@ export default function ScheduleTimeline() {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6 border-b border-[#040032]/10 pb-8">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#0a3825] animate-pulse" />
-              <span className="font-mono-meta text-xs font-bold text-[#0a3825] uppercase tracking-widest block">
-                TODAY'S SCHEDULE // 10:00 AM — 4:00 PM LIVE
-              </span>
-            </div>
+            <span className="font-mono-meta text-[10px] sm:text-xs font-bold text-[#0a3825] uppercase tracking-widest block mb-2">
+              TODAY&apos;S SCHEDULE // 10:00 AM — 4:00 PM LIVE
+            </span>
             <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#040032]">
-              Today's <span className="font-serif-italic text-[#0a3825]">Schedule</span>
+              Today&apos;s <span className="font-serif-italic text-[#0a3825]">Schedule</span>
             </h2>
           </div>
 

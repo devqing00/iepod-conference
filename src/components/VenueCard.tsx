@@ -37,7 +37,7 @@ export default function VenueCard() {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 border-b border-[#040032]/10 pb-8">
           <div>
-            <span className="font-mono-meta text-xs font-bold text-[#0a3825] uppercase tracking-widest block mb-2">
+            <span className="font-mono-meta text-[10px] sm:text-xs font-bold text-[#0a3825] uppercase tracking-widest block mb-2">
               CONFERENCE VENUE · UNIVERSITY OF IBADAN
             </span>
             <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#040032]">
@@ -45,10 +45,11 @@ export default function VenueCard() {
             </h2>
           </div>
 
-          <div className="max-w-md">
+          <div className="max-w-md text-left">
             <ScrollRevealText
               text="Located right inside the Department of Human Nutrition & Dietetics precinct, University of Ibadan. Fully air-conditioned, power-backed, and ready for you."
-              className="text-sm sm:text-base text-[#040032]/80 leading-relaxed"
+              className="text-sm sm:text-base text-[#040032]/80 leading-relaxed text-left justify-start"
+              align="left"
               highlightWords={["Human", "Nutrition", "Ibadan", "air-conditioned"]}
               highlightClass="text-[#0a3825] font-bold"
             />

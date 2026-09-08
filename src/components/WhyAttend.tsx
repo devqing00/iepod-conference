@@ -106,21 +106,19 @@ export default function WhyAttend() {
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 border-b border-[#040032]/10 pb-8">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#0a3825] animate-pulse" />
-              <span className="font-mono-meta text-xs font-bold text-[#0a3825] uppercase tracking-widest block">
-                WHAT'S HAPPENING TODAY // KAAF AUDITORIUM
-              </span>
-            </div>
+            <span className="font-mono-meta text-[10px] sm:text-xs font-bold text-[#0a3825] uppercase tracking-widest block mb-2">
+              WHAT&apos;S HAPPENING TODAY // KAAF AUDITORIUM
+            </span>
             <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#040032]">
-              What We're <span className="font-serif-italic text-[#0a3825]">Building Today</span>
+              What We&apos;re <span className="font-serif-italic text-[#0a3825]">Building Today</span>
             </h2>
           </div>
 
-          <div className="max-w-md">
+          <div className="max-w-md text-left">
             <ScrollRevealText
               text="Forget dry, boring seminars. Today is loaded with high-energy keynotes, hands-on masterclasses, live student debates, and industry mentors ready to share practical insights."
-              className="text-sm sm:text-base text-[#040032]/80 leading-relaxed"
+              className="text-sm sm:text-base text-[#040032]/80 leading-relaxed text-left justify-start"
+              align="left"
               highlightWords={["high-energy", "masterclasses", "debates", "mentors", "practical"]}
               highlightClass="text-[#0a3825] font-bold"
             />
@@ -247,7 +245,7 @@ export default function WhyAttend() {
                           <span>{card.tag}</span>
                         </span>
                         {isTop && (
-                          <span className="text-[10px] text-[#040032]/40 hidden sm:inline-block animate-pulse">
+                          <span className="text-[10px] text-[#040032]/40 hidden sm:inline-block">
                             SWIPE CARD ←→
                           </span>
                         )}

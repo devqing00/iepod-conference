@@ -33,9 +33,6 @@ export default function ParallaxWrapper({ children }: ParallaxWrapperProps) {
             return overflow > 0 ? "bottom bottom" : "top top";
           };
 
-          // Use pinType: "transform" so GSAP pins via translate3d instead of toggling position:fixed.
-          // This keeps the stacking curtain parallax active across all sections (including FAQ's slant top)
-          // while preventing browsers from reloading embedded iframes on scroll!
           const tl = gsap.timeline({
             scrollTrigger: {
               trigger: section,
@@ -44,7 +41,6 @@ export default function ParallaxWrapper({ children }: ParallaxWrapperProps) {
               end: "top top",
               scrub: true,
               pin: true,
-              pinType: "transform",
               pinSpacing: false,
               anticipatePin: 1,
               fastScrollEnd: true,
@@ -62,8 +58,9 @@ export default function ParallaxWrapper({ children }: ParallaxWrapperProps) {
     }
 
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.0,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      touchMultiplier: 1.2,
     });
     lenis.on("scroll", ScrollTrigger.update);
 

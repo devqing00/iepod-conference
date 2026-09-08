@@ -147,9 +147,17 @@ export default function Navbar() {
     }
   };
 
+  // Auto-center active tab in horizontal scroll on mobile
+  useEffect(() => {
+    const activeBtn = document.getElementById(`nav-tab-${activeSection}`);
+    if (activeBtn) {
+      activeBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+  }, [activeSection]);
+
   return (
     <header
-      className={`fixed top-3 sm:top-4 inset-x-0 z-[9990] flex justify-center pointer-events-none px-3 transition-all duration-300 transform-gpu will-change-transform isolate ${
+      className={`fixed top-3 sm:top-4 inset-x-0 z-[9990] flex justify-center pointer-events-none px-2 sm:px-3 transition-all duration-300 transform-gpu will-change-transform isolate max-w-full overflow-hidden ${
         isVisible
           ? "opacity-100 translate-y-0"
           : "opacity-0 -translate-y-4 pointer-events-none"
@@ -157,7 +165,7 @@ export default function Navbar() {
     >
       {/* Compact Minimalist Liquid Metal Glowing Rim Pill */}
       <div
-        className="pointer-events-auto relative p-[1px] sm:p-[1.5px] rounded-full transition-all duration-300 shadow-[0_4px_24px_rgba(0,0,0,0.35)] transform-gpu"
+        className="pointer-events-auto relative p-[1px] sm:p-[1.5px] rounded-full transition-all duration-300 shadow-[0_4px_24px_rgba(0,0,0,0.35)] transform-gpu max-w-[calc(100vw-1rem)] sm:max-w-none overflow-hidden"
         style={{
           background:
             "linear-gradient(90deg, rgba(4,0,50,0.3) 0%, rgba(0,229,255,0.7) 25%, rgba(198,245,82,0.85) 50%, rgba(63,255,232,0.7) 75%, rgba(4,0,50,0.3) 100%)",
@@ -167,15 +175,16 @@ export default function Navbar() {
             "0 0 16px rgba(0, 229, 255, 0.22), 0 0 10px rgba(198, 245, 82, 0.18), 0 4px 18px rgba(0, 0, 0, 0.4)",
         }}
       >
-        {/* Transparent Core with Frosted Blur Backdrop (GPU Optimized) */}
-        <nav className="bg-[#040032]/75 backdrop-blur-md rounded-full px-2 py-1.5 flex items-center gap-0.5 sm:gap-1 border border-white/10">
+        {/* Transparent Core with Frosted Blur Backdrop (GPU Optimized) with X-Axis Scrolling */}
+        <nav className="bg-[#040032]/85 backdrop-blur-md rounded-full px-2 py-1.5 flex items-center gap-0.5 sm:gap-1 border border-white/10 overflow-x-auto no-scrollbar scroll-smooth touch-pan-x max-w-full">
           {NAV_SECTIONS.map((sec) => {
             const isActive = activeSection === sec.id;
             return (
               <button
+                id={`nav-tab-${sec.id}`}
                 key={sec.id}
                 onClick={() => scrollToSection(sec.id)}
-                className={`relative px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-[11px] font-mono-meta font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
+                className={`relative flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-[11px] font-mono-meta font-extrabold uppercase tracking-wider transition-all cursor-pointer ${
                   isActive
                     ? "bg-[#c6f552] text-[#040032] shadow-[0_0_10px_rgba(198,245,82,0.4)]"
                     : "text-[#faf8f2]/75 hover:text-white hover:bg-white/10"

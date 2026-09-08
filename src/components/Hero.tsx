@@ -21,7 +21,7 @@ export default function Hero() {
       {/* Floating 3D Isometric Technological Artifacts (Pointer Events None) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
         {/* 01. Top Left: 3D Gear / AI Engine Component */}
-        <div className="absolute -top-16 -left-10 sm:-top-32 sm:-left-20 md:-top-64 md:-left-36 lg:-top-72 lg:-left-44 w-40 sm:w-64 md:w-[32rem] lg:w-[40rem] pointer-events-none animate-float-slow-1">
+        <div className="absolute -top-16 -left-10 sm:-top-32 sm:-left-20 md:-top-64 md:-left-36 lg:-top-72 lg:-left-44 w-40 sm:w-64 md:w-[32rem] lg:w-[40rem] pointer-events-none animate-float-slow-1 transform-gpu will-change-transform">
           <Image
             src="/assets/generated/iso_gear_ai.png"
             alt="AI Industrial Gear"
@@ -33,7 +33,7 @@ export default function Hero() {
         </div>
 
         {/* 02. Top Right: 3D Isometric Ticket Badge */}
-        <div className="absolute -top-16 -right-10 sm:-top-32 sm:-right-20 md:-top-64 md:-right-36 lg:-top-72 lg:-right-44 w-40 sm:w-64 md:w-[32rem] lg:w-[40rem] pointer-events-none animate-float-slow-2">
+        <div className="absolute -top-16 -right-10 sm:-top-32 sm:-right-20 md:-top-64 md:-right-36 lg:-top-72 lg:-right-44 w-40 sm:w-64 md:w-[32rem] lg:w-[40rem] pointer-events-none animate-float-slow-2 transform-gpu will-change-transform">
           <Image
             src="/assets/generated/iso_ticket_badge.png"
             alt="Delegate Conference Pass"
@@ -45,7 +45,7 @@ export default function Hero() {
         </div>
 
         {/* 03. Bottom Left: 3D Isometric Precision Robotic Arm Module */}
-        <div className="absolute -bottom-8 -left-10 sm:-bottom-16 sm:-left-16 md:-bottom-44 md:-left-30 lg:-bottom-50 lg:-left-36 w-36 sm:w-56 md:w-[30rem] lg:w-[38rem] pointer-events-none animate-float-slow-3">
+        <div className="absolute -bottom-8 -left-10 sm:-bottom-16 sm:-left-16 md:-bottom-44 md:-left-30 lg:-bottom-50 lg:-left-36 w-36 sm:w-56 md:w-[30rem] lg:w-[38rem] pointer-events-none animate-float-slow-3 transform-gpu will-change-transform">
           <Image
             src="/assets/generated/iso_robotic_arm.png"
             alt="Precision Industrial Robotic Arm"
@@ -56,7 +56,7 @@ export default function Hero() {
         </div>
 
         {/* 04. Bottom Right: 3D Isometric Analytics Card */}
-        <div className="absolute -bottom-8 -right-10 sm:-bottom-16 sm:-right-16 md:-bottom-44 md:-right-30 lg:-bottom-50 lg:-right-36 w-36 sm:w-56 md:w-[30rem] lg:w-[38rem] pointer-events-none animate-float-slow-4">
+        <div className="absolute -bottom-8 -right-10 sm:-bottom-16 sm:-right-16 md:-bottom-44 md:-right-30 lg:-bottom-50 lg:-right-36 w-36 sm:w-56 md:w-[30rem] lg:w-[38rem] pointer-events-none animate-float-slow-4 transform-gpu will-change-transform">
           <Image
             src="/assets/generated/iso_analytics_card.png"
             alt="Process Data Card"

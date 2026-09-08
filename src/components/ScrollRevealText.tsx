@@ -10,6 +10,7 @@ interface ScrollRevealTextProps {
   wordClassName?: string;
   highlightWords?: string[];
   highlightClass?: string;
+  align?: "left" | "center" | "right";
 }
 
 export default function ScrollRevealText({
@@ -18,6 +19,7 @@ export default function ScrollRevealText({
   wordClassName = "",
   highlightWords = [],
   highlightClass = "text-[#c6f552]",
+  align,
 }: ScrollRevealTextProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -26,31 +28,49 @@ export default function ScrollRevealText({
 
     if (containerRef.current) {
       const words = containerRef.current.querySelectorAll(".reveal-word");
+      const isDesktop = window.innerWidth >= 768;
 
-      gsap.fromTo(
+      const tween = gsap.fromTo(
         words,
-        { opacity: 0.15, filter: "blur(4px)", y: 4 },
+        {
+          opacity: 0.2,
+          y: 4,
+          ...(isDesktop ? { filter: "blur(3px)" } : {}),
+        },
         {
           opacity: 1,
-          filter: "blur(0px)",
           y: 0,
-          stagger: 0.08,
+          ...(isDesktop ? { filter: "blur(0px)" } : {}),
+          stagger: 0.06,
           ease: "power2.out",
           scrollTrigger: {
             trigger: containerRef.current,
-            start: "top 85%",
-            end: "bottom 55%",
+            start: "top 88%",
+            end: "bottom 60%",
             scrub: 0.5,
           },
         }
       );
+
+      return () => {
+        tween.scrollTrigger?.kill();
+        tween.kill();
+      };
     }
   }, [text]);
 
   const words = text.split(" ");
 
+  const isLeft = align === "left" || className.includes("text-left");
+  const isRight = align === "right" || className.includes("text-right");
+  const alignClass = isLeft
+    ? "justify-start text-left"
+    : isRight
+    ? "justify-end text-right"
+    : "justify-center text-center";
+
   return (
-    <div ref={containerRef} className={`flex flex-wrap justify-center text-center gap-x-[0.3em] gap-y-[0.1em] ${className}`}>
+    <div ref={containerRef} className={`flex flex-wrap ${alignClass} gap-x-[0.3em] gap-y-[0.1em] ${className}`}>
       {words.map((word, idx) => {
         const cleanWord = word.replace(/[^a-zA-Z0-9]/g, "");
         const isHighlighted = highlightWords.some(

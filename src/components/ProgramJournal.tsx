@@ -417,7 +417,7 @@ export default function ProgramJournal() {
     <div className="w-full flex flex-col items-center select-none py-2">
       {/* 3D Viewport Stage */}
       <div
-        className="relative w-full max-w-6xl h-[560px] sm:h-[580px] md:h-[530px] flex items-center justify-center overflow-visible"
+        className="relative w-full max-w-6xl h-[340px] xs:h-[360px] sm:h-[440px] md:h-[530px] flex items-center justify-center overflow-visible"
         style={{ perspective: "1600px" }}
       >
         {/* Interactive Gesture Surface */}
@@ -440,7 +440,7 @@ export default function ProgramJournal() {
       </div>
 
       {/* Tactile Navigation Bar */}
-      <div className="mt-8 flex flex-col items-center gap-4 z-30">
+      <div className="mt-4 sm:mt-8 flex flex-col items-center gap-3 sm:gap-4 z-30">
         <div className="flex items-center gap-3 bg-[#040032]/90 backdrop-blur-md px-5 py-2.5 rounded-full border-2 border-[#040032] shadow-2xl">
           <button
             onClick={() => triggerTurn("prev")}
@@ -564,7 +564,7 @@ function BookStage({
 function ClosedFrontCoverAtRest() {
   return (
     <div
-      className="relative w-[88vw] max-w-[340px] sm:max-w-[400px] md:max-w-[440px] h-[500px] sm:h-[515px] md:h-[480px] flex items-center justify-center select-none"
+      className="relative w-[68vw] max-w-[220px] sm:max-w-[320px] md:max-w-[420px] h-[300px] xs:h-[315px] sm:h-[390px] md:h-[470px] flex items-center justify-center select-none"
       style={{ transformStyle: "preserve-3d" }}
     >
       {/* 3D Ground Shadow */}
@@ -651,7 +651,7 @@ function ClosedFrontCoverAtRest() {
 function ClosedBackCoverAtRest() {
   return (
     <div
-      className="relative w-[88vw] max-w-[340px] sm:max-w-[400px] md:max-w-[440px] h-[500px] sm:h-[515px] md:h-[480px] flex items-center justify-center select-none"
+      className="relative w-[68vw] max-w-[220px] sm:max-w-[320px] md:max-w-[420px] h-[300px] xs:h-[315px] sm:h-[390px] md:h-[470px] flex items-center justify-center select-none"
       style={{ transformStyle: "preserve-3d" }}
     >
       {/* 3D Ground Shadow */}
@@ -758,7 +758,7 @@ function OpenBookSpreadStage({
 
   return (
     <div
-      className="relative w-[95vw] max-w-[375px] sm:max-w-[620px] md:max-w-[800px] lg:max-w-[880px] h-[520px] sm:h-[530px] md:h-[480px] flex items-center justify-center select-none"
+      className="relative w-[95vw] max-w-[380px] sm:max-w-[620px] md:max-w-[800px] lg:max-w-[880px] h-[300px] xs:h-[315px] sm:h-[390px] md:h-[470px] flex items-center justify-center select-none"
       style={{ transformStyle: "preserve-3d" }}
     >
       {/* 3D Ground Shadow */}
@@ -1093,7 +1093,7 @@ function OpeningFrontCoverTransition({
 
   return (
     <div
-      className="relative w-[95vw] max-w-[375px] sm:max-w-[620px] md:max-w-[800px] lg:max-w-[880px] h-[520px] sm:h-[530px] md:h-[480px] flex items-center justify-center select-none"
+      className="relative w-[95vw] max-w-[380px] sm:max-w-[620px] md:max-w-[800px] lg:max-w-[880px] h-[300px] xs:h-[315px] sm:h-[390px] md:h-[470px] flex items-center justify-center select-none"
       style={{ transformStyle: "preserve-3d" }}
     >
       <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 w-[88%] h-8 bg-black/35 rounded-full filter blur-xl pointer-events-none" />
@@ -1173,7 +1173,7 @@ function OpeningBackCoverTransition({
 
   return (
     <div
-      className="relative w-[95vw] max-w-[375px] sm:max-w-[620px] md:max-w-[800px] lg:max-w-[880px] h-[520px] sm:h-[530px] md:h-[480px] flex items-center justify-center select-none"
+      className="relative w-[95vw] max-w-[380px] sm:max-w-[620px] md:max-w-[800px] lg:max-w-[880px] h-[300px] xs:h-[315px] sm:h-[390px] md:h-[470px] flex items-center justify-center select-none"
       style={{ transformStyle: "preserve-3d" }}
     >
       <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 w-[88%] h-8 bg-black/35 rounded-full filter blur-xl pointer-events-none" />
@@ -1253,10 +1253,10 @@ function GlowingCoverBadge({ text }: { text: string }) {
         backgroundSize: "300% 300%",
         animation: "liquid-metal-glow 6s ease infinite",
         boxShadow:
-          "0 0 16px rgba(0, 229, 255, 0.45), 0 0 10px rgba(198, 245, 82, 0.35)",
+          "0 0 14px rgba(0, 229, 255, 0.4), 0 0 8px rgba(198, 245, 82, 0.3)",
       }}
     >
-      <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#040032] text-[#c6f552] text-[10px] sm:text-[11px] font-mono-meta font-extrabold uppercase tracking-wider">
+      <div className="flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[#040032] text-[#c6f552] text-[8px] sm:text-[10px] font-mono-meta font-extrabold uppercase tracking-wider">
         <span>{text}</span>
       </div>
     </div>
@@ -1268,7 +1268,7 @@ function GlowingCoverBadge({ text }: { text: string }) {
    ========================================================================= */
 function FrontCoverArtwork() {
   return (
-    <div className="relative w-full h-full p-6 sm:p-8 flex flex-col justify-between items-center overflow-hidden">
+    <div className="relative w-full h-full p-3.5 sm:p-6 md:p-8 flex flex-col justify-between items-center overflow-hidden">
       {/* Abstract Engineering Wireframe Geometry */}
       <div className="absolute inset-0 opacity-15 pointer-events-none select-none">
         <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -1280,20 +1280,20 @@ function FrontCoverArtwork() {
       </div>
 
       {/* Gold Debossed Outer Border Frame */}
-      <div className="absolute inset-3 rounded-r-2xl rounded-l-xs border border-[#c6f552]/30 pointer-events-none select-none" />
+      <div className="absolute inset-2 sm:inset-3 rounded-r-2xl rounded-l-xs border border-[#c6f552]/30 pointer-events-none select-none" />
 
       {/* Left Bound Spine Seam Bar */}
-      <div className="absolute left-0 inset-y-0 w-4 bg-gradient-to-r from-black/80 via-[#040032] to-transparent pointer-events-none select-none" />
-      <div className="absolute left-3 inset-y-3 w-[1px] bg-[#c6f552]/40 pointer-events-none select-none" />
+      <div className="absolute left-0 inset-y-0 w-3 sm:w-4 bg-gradient-to-r from-black/80 via-[#040032] to-transparent pointer-events-none select-none" />
+      <div className="absolute left-2.5 sm:left-3 inset-y-2.5 sm:inset-y-3 w-[1px] bg-[#c6f552]/40 pointer-events-none select-none" />
 
       {/* Top Edition Meta */}
-      <div className="relative z-10 text-center space-y-1 pt-1 pointer-events-none select-none">
-        <div className="flex items-center justify-center gap-1.5 text-[9px] font-mono-meta font-extrabold text-[#c6f552] uppercase tracking-widest">
+      <div className="relative z-10 text-center space-y-0.5 sm:space-y-1 pt-0.5 pointer-events-none select-none">
+        <div className="flex items-center justify-center gap-1.5 text-[8px] sm:text-[9px] font-mono-meta font-extrabold text-[#c6f552] uppercase tracking-widest">
           <span>VOL. VI</span>
           <span>·</span>
-          <span>OFFICIAL DISPATCH PROCEEDINGS</span>
+          <span>OFFICIAL PROCEEDINGS</span>
         </div>
-        <h2 className="font-serif-display text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-[#faf8f2] leading-tight drop-shadow-[0_2px_12px_rgba(0,229,255,0.3)]">
+        <h2 className="font-serif-display text-lg sm:text-2xl md:text-3xl font-bold tracking-tight text-[#faf8f2] leading-tight drop-shadow-[0_2px_12px_rgba(0,229,255,0.3)]">
           FORGE THE{" "}
           <span
             className="font-serif-italic inline-block"
@@ -1310,8 +1310,8 @@ function FrontCoverArtwork() {
             Future
           </span>
         </h2>
-        <p className="text-[10px] font-mono-meta text-[#3fffe8] tracking-wider uppercase font-bold text-center">
-          6TH ANNUAL INDUSTRIAL ENGINEERING CONFERENCE
+        <p className="text-[8px] sm:text-[10px] font-mono-meta text-[#3fffe8] tracking-wider uppercase font-bold text-center">
+          IESA PROCESS DAY // 2026
         </p>
       </div>
 
@@ -1319,7 +1319,7 @@ function FrontCoverArtwork() {
       <div className="relative my-auto flex items-center justify-center pointer-events-none select-none">
         {/* Ambient liquid metal glow pulse behind medallion */}
         <div
-          className="absolute -inset-2 rounded-full opacity-60 blur-md pointer-events-none select-none"
+          className="absolute -inset-1.5 rounded-full opacity-60 blur-md pointer-events-none select-none"
           style={{
             background:
               "linear-gradient(90deg, #040032 0%, #00e5ff 25%, #c6f552 50%, #3fffe8 75%, #040032 100%)",
@@ -1330,7 +1330,7 @@ function FrontCoverArtwork() {
 
         {/* Animated Liquid Metal Border Rim */}
         <div
-          className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full p-[3px] shadow-[0_0_35px_rgba(0,229,255,0.4),0_0_20px_rgba(198,245,82,0.35)] flex items-center justify-center"
+          className="relative w-16 h-16 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full p-[2.5px] shadow-[0_0_25px_rgba(0,229,255,0.4),0_0_15px_rgba(198,245,82,0.35)] flex items-center justify-center"
           style={{
             background:
               "linear-gradient(135deg, #040032 0%, #00e5ff 25%, #c6f552 50%, #3fffe8 75%, #040032 100%)",
@@ -1345,20 +1345,20 @@ function FrontCoverArtwork() {
               alt="IESA Official Crest"
               fill
               draggable={false}
-              className="object-contain p-3 filter drop-shadow-[0_0_16px_rgba(0,229,255,0.6)] drop-shadow-[0_0_8px_rgba(198,245,82,0.5)] pointer-events-none select-none"
+              className="object-contain p-2 sm:p-3 filter drop-shadow-[0_0_12px_rgba(0,229,255,0.6)] drop-shadow-[0_0_6px_rgba(198,245,82,0.5)] pointer-events-none select-none"
             />
           </div>
         </div>
       </div>
 
       {/* Bottom Technical Seal & Glowing Action Cue */}
-      <div className="relative z-10 text-center space-y-2 pb-1 pointer-events-none select-none">
-        <div className="flex items-center justify-center gap-2 text-[10px] font-mono-meta text-[#c6f552] font-extrabold tracking-wide">
+      <div className="relative z-10 text-center space-y-1 sm:space-y-1.5 pb-0.5 pointer-events-none select-none">
+        <div className="flex items-center justify-center gap-1.5 text-[8px] sm:text-[10px] font-mono-meta text-[#c6f552] font-extrabold tracking-wide">
           <span>KAAF AUDITORIUM</span>
           <span>·</span>
           <span>UNIV. OF IBADAN</span>
         </div>
-        <GlowingCoverBadge text="✦ DRAG TO OPEN JOURNAL ✦" />
+        <GlowingCoverBadge text="✦ DRAG TO OPEN ✦" />
       </div>
     </div>
   );
@@ -1366,7 +1366,7 @@ function FrontCoverArtwork() {
 
 function BackCoverArtwork() {
   return (
-    <div className="relative w-full h-full p-6 sm:p-8 flex flex-col justify-between items-center overflow-hidden">
+    <div className="relative w-full h-full p-3.5 sm:p-6 md:p-8 flex flex-col justify-between items-center overflow-hidden">
       {/* Abstract Archival Geometric Lines */}
       <div className="absolute inset-0 opacity-10 pointer-events-none select-none">
         <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -1376,20 +1376,20 @@ function BackCoverArtwork() {
       </div>
 
       {/* Gold Debossed Outer Border Frame */}
-      <div className="absolute inset-3 rounded-l-2xl rounded-r-xs border border-[#c6f552]/30 pointer-events-none select-none" />
+      <div className="absolute inset-2 sm:inset-3 rounded-l-2xl rounded-r-xs border border-[#c6f552]/30 pointer-events-none select-none" />
 
       {/* Right Bound Spine Seam Bar */}
-      <div className="absolute right-0 inset-y-0 w-4 bg-gradient-to-l from-black/80 via-[#040032] to-transparent pointer-events-none select-none" />
-      <div className="absolute right-3 inset-y-3 w-[1px] bg-[#c6f552]/40 pointer-events-none select-none" />
+      <div className="absolute right-0 inset-y-0 w-3 sm:w-4 bg-gradient-to-l from-black/80 via-[#040032] to-transparent pointer-events-none select-none" />
+      <div className="absolute right-2.5 sm:right-3 inset-y-2.5 sm:inset-y-3 w-[1px] bg-[#c6f552]/40 pointer-events-none select-none" />
 
       {/* Header Badge */}
-      <div className="relative z-10 text-center space-y-1 pt-1 pointer-events-none select-none">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c6f552] text-[#040032] text-[9px] font-mono-meta font-extrabold uppercase tracking-wider shadow-sm">
-          <CheckBadgeIcon className="w-3.5 h-3.5" />
-          <span>PROCEEDINGS CONCLUDED</span>
+      <div className="relative z-10 text-center space-y-0.5 sm:space-y-1 pt-0.5 pointer-events-none select-none">
+        <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#c6f552] text-[#040032] text-[8px] sm:text-[9px] font-mono-meta font-extrabold uppercase tracking-wider shadow-sm">
+          <CheckBadgeIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+          <span>CONCLUDED</span>
         </div>
-        <h3 className="font-serif-display text-2xl sm:text-3xl font-bold text-[#faf8f2]">
-          Conference Archive
+        <h3 className="font-serif-display text-lg sm:text-2xl md:text-3xl font-bold text-[#faf8f2]">
+          Archive
         </h3>
       </div>
 
@@ -1406,7 +1406,7 @@ function BackCoverArtwork() {
         />
 
         <div
-          className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-full p-[2.5px] shadow-[0_0_25px_rgba(0,229,255,0.3)] flex items-center justify-center"
+          className="relative w-16 h-16 sm:w-28 sm:h-28 rounded-full p-[2px] shadow-[0_0_20px_rgba(0,229,255,0.3)] flex items-center justify-center"
           style={{
             background:
               "linear-gradient(135deg, #040032 0%, #00e5ff 25%, #c6f552 50%, #3fffe8 75%, #040032 100%)",
@@ -1420,18 +1420,18 @@ function BackCoverArtwork() {
               alt="IESA Seal"
               fill
               draggable={false}
-              className="object-contain p-3 filter grayscale contrast-125 opacity-75 drop-shadow-[0_0_12px_rgba(0,229,255,0.4)] pointer-events-none select-none"
+              className="object-contain p-2 sm:p-3 filter grayscale contrast-125 opacity-75 drop-shadow-[0_0_12px_rgba(0,229,255,0.4)] pointer-events-none select-none"
             />
           </div>
         </div>
       </div>
 
       {/* Archival Note & Glowing Reopen Cue */}
-      <div className="relative z-10 text-center space-y-2 pb-1 pointer-events-none select-none">
-        <p className="text-[10px] sm:text-xs text-[#faf8f2]/75 font-sans max-w-xs leading-relaxed">
-          Slides, repositories & verified digital attendance credentials dispatched to delegates.
+      <div className="relative z-10 text-center space-y-1 sm:space-y-1.5 pb-0.5 pointer-events-none select-none">
+        <p className="text-[8px] sm:text-xs text-[#faf8f2]/75 font-sans max-w-xs leading-relaxed line-clamp-1 sm:line-clamp-none">
+          Verified digital credentials dispatched to delegates.
         </p>
-        <GlowingCoverBadge text="← DRAG RIGHT TO REOPEN" />
+        <GlowingCoverBadge text="← DRAG TO REOPEN" />
       </div>
     </div>
   );
@@ -1444,61 +1444,61 @@ function BackCoverArtwork() {
 /** Standard Left Leaf: Textual Program Details */
 function StandardLeftPageContent({ page }: { page: JournalItem }) {
   return (
-    <div className="relative w-full h-full bg-[#faf8f2] text-[#040032] p-4 sm:p-6 md:p-8 flex flex-col justify-between overflow-hidden">
+    <div className="relative w-full h-full bg-[#faf8f2] text-[#040032] p-2.5 sm:p-5 md:p-8 flex flex-col justify-between overflow-hidden">
       <div className="absolute inset-0 bg-[#f5ede1]/50 pointer-events-none select-none" />
 
       {/* Subtle Spine Fold Shadow along right edge */}
-      <div className="absolute right-0 inset-y-0 w-6 sm:w-8 bg-gradient-to-l from-black/8 via-black/2 to-transparent pointer-events-none select-none mix-blend-multiply z-20" />
+      <div className="absolute right-0 inset-y-0 w-4 sm:w-8 bg-gradient-to-l from-black/8 via-black/2 to-transparent pointer-events-none select-none mix-blend-multiply z-20" />
       <div className="absolute right-0 inset-y-0 w-px bg-[#040032]/10 pointer-events-none select-none z-20" />
 
       {/* Content */}
-      <div className="relative z-10 space-y-2 sm:space-y-2.5 pointer-events-none select-none">
-        <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
+      <div className="relative z-10 space-y-1 sm:space-y-2 pointer-events-none select-none">
+        <div className="flex flex-wrap items-center justify-between gap-1 sm:gap-2">
           <span
-            className={`px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-mono-meta font-extrabold uppercase border border-[#040032] ${
+            className={`px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-mono-meta font-extrabold uppercase border border-[#040032] ${
               page.badgeColor || "bg-[#c6f552] text-[#040032]"
             }`}
           >
             {page.category}
           </span>
 
-          <div className="flex items-center gap-1 text-[10px] sm:text-xs font-mono-meta font-extrabold text-[#0a3825]">
-            <ClockIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0a3825]" />
+          <div className="flex items-center gap-1 text-[9px] sm:text-xs font-mono-meta font-extrabold text-[#0a3825]">
+            <ClockIcon className="w-3 h-3 sm:w-4 sm:h-4 text-[#0a3825]" />
             <span>{page.time}</span>
-            <span className="text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded bg-[#040032]/10 hidden sm:inline">
+            <span className="text-[8px] sm:text-[10px] px-1 py-0.2 rounded bg-[#040032]/10 hidden sm:inline">
               {page.duration}
             </span>
           </div>
         </div>
 
-        <h3 className="font-serif-display text-base sm:text-2xl md:text-3xl font-bold text-[#040032] leading-tight line-clamp-2">
+        <h3 className="font-serif-display text-xs sm:text-lg md:text-2xl font-bold text-[#040032] leading-snug line-clamp-2">
           {page.title}
         </h3>
 
         {page.speaker && (
-          <div className="p-2 sm:p-2.5 rounded-xl bg-[#ece7d8] border border-[#040032]/15">
-            <span className="text-[8px] sm:text-[9px] font-mono-meta uppercase font-extrabold text-[#0a3825] tracking-wider block">
+          <div className="p-1 sm:p-2 rounded-lg bg-[#ece7d8] border border-[#040032]/15">
+            <span className="text-[7px] sm:text-[8px] font-mono-meta uppercase font-extrabold text-[#0a3825] tracking-wider block">
               FACILITATOR / LEAD
             </span>
-            <p className="text-[11px] sm:text-sm font-serif-display font-bold text-[#040032] line-clamp-1">
+            <p className="text-[9px] sm:text-xs md:text-sm font-serif-display font-bold text-[#040032] line-clamp-1">
               {page.speaker}
             </p>
           </div>
         )}
 
-        <p className="text-[11px] sm:text-xs md:text-sm text-[#040032]/85 font-sans leading-relaxed line-clamp-3 sm:line-clamp-4 md:line-clamp-none">
+        <p className="text-[9px] sm:text-xs md:text-sm text-[#040032]/85 font-sans leading-snug line-clamp-2 sm:line-clamp-4 md:line-clamp-none">
           {page.description}
         </p>
       </div>
 
       {/* Footer Stamp */}
-      <div className="relative z-10 pt-2 sm:pt-3 border-t border-[#040032]/10 flex items-center justify-between pointer-events-none select-none">
-        <div className="flex items-center gap-1 text-[10px] sm:text-xs font-mono-meta text-[#0a3825] font-bold">
-          <MapPinIcon className="w-3.5 h-3.5 text-[#0a3825]" />
-          <span className="truncate max-w-[130px] sm:max-w-none">{page.location}</span>
+      <div className="relative z-10 pt-1 sm:pt-2 border-t border-[#040032]/10 flex items-center justify-between pointer-events-none select-none">
+        <div className="flex items-center gap-1 text-[8px] sm:text-xs font-mono-meta text-[#0a3825] font-bold">
+          <MapPinIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0a3825]" />
+          <span className="truncate max-w-[100px] sm:max-w-none">{page.location}</span>
         </div>
 
-        <span className="text-[9px] sm:text-[10px] font-mono-meta text-[#040032]/50 font-extrabold hidden sm:inline">
+        <span className="text-[8px] sm:text-[10px] font-mono-meta text-[#040032]/50 font-extrabold hidden sm:inline">
           IESA // DISPATCH
         </span>
       </div>
@@ -1511,29 +1511,29 @@ function StandardRightPageContent({ page }: { page: JournalItem }) {
   const isItel = page.imageUrl.includes("itel") || page.id === "session-09";
 
   return (
-    <div className="relative w-full h-full bg-[#ece7d8] text-[#040032] p-4 sm:p-6 md:p-8 flex flex-col justify-between items-center overflow-hidden">
+    <div className="relative w-full h-full bg-[#ece7d8] text-[#040032] p-2.5 sm:p-5 md:p-8 flex flex-col justify-between items-center overflow-hidden">
       <div className="absolute inset-0 bg-[#f5ede1]/40 pointer-events-none select-none" />
 
       {/* Subtle Spine Fold Shadow along left edge */}
-      <div className="absolute left-0 inset-y-0 w-6 sm:w-8 bg-gradient-to-r from-black/8 via-black/2 to-transparent pointer-events-none select-none mix-blend-multiply z-20" />
+      <div className="absolute left-0 inset-y-0 w-4 sm:w-8 bg-gradient-to-r from-black/8 via-black/2 to-transparent pointer-events-none select-none mix-blend-multiply z-20" />
       <div className="absolute left-0 inset-y-0 w-px bg-[#040032]/10 pointer-events-none select-none z-20" />
 
       {/* Header */}
-      <div className="relative z-10 w-full flex items-center justify-between pb-1 pointer-events-none select-none">
-        <span className="text-[9px] sm:text-[10px] font-mono-meta font-extrabold text-[#0a3825] uppercase tracking-widest truncate max-w-[180px]">
+      <div className="relative z-10 w-full flex items-center justify-between pb-0.5 pointer-events-none select-none">
+        <span className="text-[8px] sm:text-[10px] font-mono-meta font-extrabold text-[#0a3825] uppercase tracking-widest truncate max-w-[140px] sm:max-w-[180px]">
           {page.stampText || "OFFICIAL DISPATCH PHOTO"}
         </span>
-        <BookmarkIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0a3825]/40" />
+        <BookmarkIcon className="w-3 h-3 sm:w-4 sm:h-4 text-[#0a3825]/40" />
       </div>
 
       {/* Polaroid Photo Frame - Interactive Hover & Height Increase */}
-      <div className="relative z-10 w-full max-w-[315px] aspect-[4/3.8] sm:aspect-[16/13] my-auto pointer-events-auto cursor-pointer group">
+      <div className="relative z-10 w-full max-w-[170px] sm:max-w-[240px] md:max-w-[315px] aspect-[4/3.2] sm:aspect-[16/13] my-auto pointer-events-auto cursor-pointer group">
         {/* Tactile masking tape with subtle hover wiggle */}
-        <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-20 sm:w-24 h-4 sm:h-5 bg-[#faf8f2]/90 border border-[#040032]/15 shadow-sm transform -rotate-2 group-hover:-rotate-1 group-hover:-translate-y-0.5 transition-all duration-300 z-30 backdrop-blur-[1px] pointer-events-none select-none" />
+        <div className="absolute -top-2 sm:-top-2.5 left-1/2 -translate-x-1/2 w-14 sm:w-24 h-3.5 sm:h-5 bg-[#faf8f2]/90 border border-[#040032]/15 shadow-sm transform -rotate-2 group-hover:-rotate-1 group-hover:-translate-y-0.5 transition-all duration-300 z-30 backdrop-blur-[1px] pointer-events-none select-none" />
 
         {/* Polaroid card with liquid-metal glowing halo and straightening on hover */}
-        <div className="relative w-full h-full rounded-2xl p-[2px] bg-[#040032]/20 group-hover:bg-gradient-to-r group-hover:from-[#00e5ff] group-hover:via-[#c6f552] group-hover:to-[#3fffe8] transform rotate-1 group-hover:rotate-0 group-hover:scale-[1.03] transition-all duration-300 shadow-xl group-hover:shadow-[0_0_28px_rgba(0,229,255,0.45),0_0_16px_rgba(198,245,82,0.35)] select-none">
-          <div className="relative w-full h-full rounded-[14px] overflow-hidden bg-[#040032] border border-[#040032]">
+        <div className="relative w-full h-full rounded-xl sm:rounded-2xl p-[2px] bg-[#040032]/20 group-hover:bg-gradient-to-r group-hover:from-[#00e5ff] group-hover:via-[#c6f552] group-hover:to-[#3fffe8] transform rotate-1 group-hover:rotate-0 group-hover:scale-[1.03] transition-all duration-300 shadow-xl group-hover:shadow-[0_0_28px_rgba(0,229,255,0.45),0_0_16px_rgba(198,245,82,0.35)] select-none">
+          <div className="relative w-full h-full rounded-[10px] sm:rounded-[14px] overflow-hidden bg-[#040032] border border-[#040032]">
             <Image
               src={page.imageUrl}
               alt={page.title}
@@ -1551,8 +1551,8 @@ function StandardRightPageContent({ page }: { page: JournalItem }) {
       </div>
 
       {/* Footnote Caption */}
-      <div className="relative z-10 w-full pt-1.5 sm:pt-2 text-center pointer-events-none select-none">
-        <p className="font-serif-italic text-[11px] sm:text-xs md:text-sm text-[#040032]/85 line-clamp-1">
+      <div className="relative z-10 w-full pt-1 sm:pt-2 text-center pointer-events-none select-none">
+        <p className="font-serif-italic text-[9px] sm:text-xs md:text-sm text-[#040032]/85 line-clamp-1">
           "{page.photoCaption || page.title}"
         </p>
       </div>

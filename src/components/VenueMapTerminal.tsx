@@ -327,35 +327,35 @@ export default function VenueMapTerminal() {
         </div>
 
         {/* VIEW 2: 360° GOOGLE STREET VIEW EMBED */}
-        <div
-          className={`absolute inset-0 transition-all duration-300 isolate transform-gpu ${
-            viewMode === "streetview"
-              ? "opacity-100 z-20 pointer-events-auto"
-              : viewMode === "split"
-              ? "opacity-100 z-20 left-auto right-0 w-full lg:w-1/2 pointer-events-auto"
-              : "opacity-0 z-0 pointer-events-none"
-          }`}
-        >
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!4v1788820488214!6m8!1m7!1sC2toPoVuBxlaAqasCPR6mA!2m2!1d7.447871554799016!2d3.894705500215708!3f308.8721432503974!4f-25.185923918800142!5f1.1924812503605782"
-            width="100%"
-            height="100%"
-            style={{ border: 0 }}
-            allowFullScreen={true}
-            loading="eager"
-            referrerPolicy="strict-origin-when-cross-origin"
-            className="w-full h-full block"
-            title="Front Entrance of KAAF Auditorium"
-          />
+        {(viewMode === "streetview" || viewMode === "split") && (
+          <div
+            className={`absolute inset-0 transition-all duration-300 isolate transform-gpu ${
+              viewMode === "streetview"
+                ? "opacity-100 z-20 pointer-events-auto"
+                : "opacity-100 z-20 left-auto right-0 w-full lg:w-1/2 pointer-events-auto"
+            }`}
+          >
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!4v1788820488214!6m8!1m7!1sC2toPoVuBxlaAqasCPR6mA!2m2!1d7.447871554799016!2d3.894705500215708!3f308.8721432503974!4f-25.185923918800142!5f1.1924812503605782"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen={true}
+              loading="eager"
+              referrerPolicy="strict-origin-when-cross-origin"
+              className="w-full h-full block"
+              title="Front Entrance of KAAF Auditorium"
+            />
 
-          {/* Clean Static Location Badge */}
-          <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-30 bg-[#040032]/90 backdrop-blur-md text-[#faf8f2] px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl border border-white/15 shadow-md flex items-center gap-2 pointer-events-none">
-            <span className="w-2 h-2 rounded-full bg-[#3fffe8]" />
-            <span className="text-[11px] sm:text-xs font-sans font-medium text-white">
-              Front Entrance & Approach · KAAF Auditorium
-            </span>
+            {/* Clean Static Location Badge */}
+            <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-30 bg-[#040032]/90 backdrop-blur-md text-[#faf8f2] px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl border border-white/15 shadow-md flex items-center gap-2 pointer-events-none">
+              <span className="w-2 h-2 rounded-full bg-[#3fffe8]" />
+              <span className="text-[11px] sm:text-xs font-sans font-medium text-white">
+                Front Entrance & Approach · KAAF Auditorium
+              </span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Transit Tip Footer Bar */}
