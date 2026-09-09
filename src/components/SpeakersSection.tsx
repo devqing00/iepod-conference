@@ -53,7 +53,13 @@ export default function SpeakersSection({ onSelectSpeaker }: SpeakersSectionProp
       title: "Vice-Chancellor",
       organization: "University of Ibadan",
       role: "Keynote Speaker",
-      bio: "Professor of Industrial Chemistry and 13th Vice-Chancellor of the University of Ibadan. Leading research excellence and institutional innovation in engineering education.",
+      bio: `Prof. Kayode Oyebode Adebowale is a distinguished Professor of Industrial Chemistry and the Vice-Chancellor of the University of Ibadan, a position he has held since November 2021. A proud alumnus of the University of Ibadan, he holds BSc, MSc and PhD degrees in Chemistry and Industrial Chemistry from the University.
+
+With over 150 peer-reviewed publications, two patents, and extensive experience in research, teaching and university administration, Prof. Adebowale has made significant contributions to Chemical Sciences, particularly in industrial chemistry, sustainable materials, biomass utilisation and environmental research. He has also supervised numerous postgraduate students, many of whom have become academics and researchers.
+
+He is a Fellow of several prestigious professional bodies, including the Nigerian Academy of Science, Royal Society of Chemistry (UK), African Academy of Science and Alexander von Humboldt Foundation. His contributions to science have earned him several notable honours, including the African Union Kwame Nkrumah Continental Scientific Award for Science, Technology and Innovation.
+
+As the Vice-Chancellor of the University of Ibadan, Prof. Adebowale continues to champion academic excellence, innovation, research and sustainable development, making him a fitting personality to inspire the next generation of students and young innovators at IESA Process Day 2026 – Forge the Future.`,
       image: "/assets/generated/vice_chancellor.png",
       topic: "Academic Excellence & Institutional Innovation in Engineering Education",
       badgeColor: "bg-[#c6f552] text-[#040032]",
@@ -64,7 +70,13 @@ export default function SpeakersSection({ onSelectSpeaker }: SpeakersSectionProp
       title: "Engineering Programme Manager",
       organization: "Calor Gas Ltd (United Kingdom)",
       role: "Keynote Facilitator",
-      bio: "Engineering transformation leader with over 13 years delivering capital projects across UK energy and manufacturing. First-Class UI Industrial Engineering alumnus and Imperial College MBA.",
+      bio: `Engr. Adebayo Otokiti is a business transformation leader with more than thirteen years of experience delivering capital projects, operational excellence and performance improvement across the energy, utilities and manufacturing sectors. He currently leads a significant capital investment portfolio as Engineering Programme Manager for Calor Gas Ltd in the United Kingdom, where he provides strategic leadership for engineering programmes spanning more than thirty operational sites.
+
+Before joining Calor Gas, Adebayo held senior engineering leadership positions at Nigeria LNG, where he led multidisciplinary teams responsible for asset performance, engineering assurance, reliability improvement and major operational initiatives supporting one of the world's leading liquefied natural gas facilities. Earlier in his career at Nestlé Nigeria, as Production Planning and Detailed Scheduling Manager, he successfully led supply chain optimisation, Lean Six Sigma transformation and continuous improvement programmes that delivered measurable business value.
+
+Adebayo holds a Master of Business Administration (MBA) degree from Imperial College Business School and a First-Class degree in Industrial and Production Engineering from the University of Ibadan. He is a Chartered Engineer with the Institution of Engineering and Technology UK, a COREN registered engineer and a member of the Nigerian Society of Engineers (NSE). He holds professional certifications in Project Management, Lean Six Sigma, Safety leadership and Programme Management.
+
+He is passionate about developing future engineering leaders and advancing the role of Industrial and Production Engineering in driving innovation, operational excellence and sustainable economic development. Through his work, Adebayo continues to demonstrate how engineering leadership, strategic thinking and continuous improvement can create lasting value for organisations and society.`,
       image: "/assets/generated/otokiti.png",
       topic: "The Professional You Are Becoming: Why Habits and Commitments Determine Capacity Long Before Opportunity Arrives",
       badgeColor: "bg-[#3fffe8] text-[#040032]",
@@ -75,7 +87,11 @@ export default function SpeakersSection({ onSelectSpeaker }: SpeakersSectionProp
       title: "Founder & Chief Executive Officer",
       organization: "Robotics and Artificial Intelligence Nigeria (RAIN)",
       role: "Robotics & AI Facilitator",
-      bio: "Founder & CEO of RAIN. University of Manchester PhD and pioneer in African robotics, autonomous systems, and applied physical AI.",
+      bio: `Dr. Olusola Sayeed Ayoola is the Founder & CEO of Robotics and Artificial Intelligence Nigeria (RAIN), is a leading voice in African robotics and AI. He holds a First Class degree in Electrical/Electronic Engineering from the University of Ibadan, and a Master's (Distinction) and PhD from the University of Manchester, UK, on government scholarships. From 2014–2019, he researched ground and underwater robotics for the UK's Nuclear Decommissioning programme.
+
+Since founding RAIN in Nigeria in 2019, he has built West Africa's foremost robotics and AI hub, launching YardCode (an indigenous digital addressing solution) and securing RAIN's appointment as Meta's pioneer West African partner for its AI Developer Academy.
+
+Internationally, Dr. Ayoola serves on UNDP's Nigeria AI for Development Reference Group, co-chaired the 2024 Nigeria AI Strategy Workshop, and represented Nigeria at the 2025 Global AI Action Summit in Paris, alongside recognition from the U.S. State Department's IVLP and ICAR Abu Dhabi.`,
       image: "/assets/generated/ayoola.png",
       topic: "Building What AI Can't Replace: How Process Discipline Creates Impact, Not Just Output",
       badgeColor: "bg-[#c6f552] text-[#040032]",
@@ -176,8 +192,9 @@ export default function SpeakersSection({ onSelectSpeaker }: SpeakersSectionProp
                 <div className="space-y-6">
                   {/* Speaker Card Header */}
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className={`px-3 py-1 rounded-full text-xs font-mono-meta font-extrabold uppercase border border-[#040032] ${speaker.badgeColor}`}>
-                      {speaker.role}
+                    <span className={`relative overflow-hidden px-3 py-1 rounded-full text-xs font-mono-meta font-extrabold uppercase border border-[#040032] ${speaker.badgeColor}`}>
+                      <div className="shimmer-sweep" />
+                      <span className="relative z-10">{speaker.role}</span>
                     </span>
                     <span className="text-xs font-mono-meta text-[#040032]/50 font-bold">
                       PROFILE // 0{speakers.indexOf(speaker) + 1}

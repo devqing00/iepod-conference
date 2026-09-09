@@ -44,7 +44,12 @@ export interface PaymentDoc {
   title?: string;
   description?: string;
   amount?: number;
-  paidBy?: ObjectId[];
+  /**
+   * CRITICAL: Stored as 24-char hex strings (`string[]`), NOT BSON ObjectId!
+   * The main Python/FastAPI backend validates this as `str` in Pydantic v2 (PaymentWithStatus).
+   * Pushing a BSON ObjectId here crashes the main site payments API with a 500 error.
+   */
+  paidBy?: string[];
   [key: string]: any;
 }
 
@@ -57,9 +62,11 @@ export interface ConferenceCheckinDoc {
   email: string;
   level?: string;
   department?: string;
+  institution?: string;
+  tagType?: "paid_vip" | "regular";
   checkedInAt: Date;
   checkedInBy: string;
-  method: "qr_scan" | "manual_lookup";
+  method: "qr_scan" | "manual_lookup" | "registration";
 }
 
 let client: MongoClient;

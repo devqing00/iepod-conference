@@ -5,6 +5,7 @@ import {
   getCheckinsCollection,
   CONFERENCE_EVENT_ID,
 } from "@/lib/mongodb";
+import { OFFICIAL_PAID_DIRECTORY } from "@/lib/paidParticipantsDirectory";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -18,10 +19,10 @@ export async function GET() {
       _id: new ObjectId(CONFERENCE_EVENT_ID),
     });
 
-    const totalPaid = payment?.paidBy?.length || 28;
+    const totalPaid = Math.max(payment?.paidBy?.length || 0, OFFICIAL_PAID_DIRECTORY.length);
 
-    const [checkedInCount, recentCheckins] = await Promise.all([
-      checkinsCollection.countDocuments({ eventId: CONFERENCE_EVENT_ID }),
+    const [allEventCheckins, recentCheckins] = await Promise.all([
+      checkinsCollection.find({ eventId: CONFERENCE_EVENT_ID }).toArray(),
       checkinsCollection
         .find({ eventId: CONFERENCE_EVENT_ID })
         .sort({ checkedInAt: -1 })
@@ -29,13 +30,36 @@ export async function GET() {
         .toArray(),
     ]);
 
-    const pendingCount = Math.max(0, totalPaid - checkedInCount);
-    const percent = totalPaid > 0 ? Math.round((checkedInCount / totalPaid) * 100) : 0;
+    const checkedInCount = allEventCheckins.length;
+
+    const paidMatricSet = new Set(
+      OFFICIAL_PAID_DIRECTORY.map((p) => p.matricNumber.trim().toLowerCase())
+    );
+    const paidEmailSet = new Set(
+      OFFICIAL_PAID_DIRECTORY.map((p) => p.email.trim().toLowerCase())
+    );
+    const paidDbIds = new Set(
+      (payment?.paidBy || []).map((id: any) => id.toString())
+    );
+
+    // Count checkins that are paid VIP
+    const paidCheckedInCount = allEventCheckins.filter((c) => {
+      if (c.tagType === "paid_vip") return true;
+      if (c.studentId && paidDbIds.has(c.studentId.toString())) return true;
+      if (c.matricNumber && paidMatricSet.has(c.matricNumber.trim().toLowerCase())) return true;
+      if (c.email && paidEmailSet.has(c.email.trim().toLowerCase())) return true;
+      return false;
+    }).length;
+
+
+    const pendingCount = Math.max(0, totalPaid - paidCheckedInCount);
+    const percent = totalPaid > 0 ? Math.round((paidCheckedInCount / totalPaid) * 100) : 0;
 
     return NextResponse.json(
       {
         totalPaid,
         checkedInCount,
+        paidCheckedInCount,
         pendingCount,
         percent,
         recentCheckins: recentCheckins.map((item) => ({

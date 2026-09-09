@@ -62,8 +62,9 @@ export default function VenueCard() {
             {/* Left Column: Technical Details */}
             <div className="space-y-6">
               <div className="flex items-center gap-3">
-                <span className="px-3 py-1 bg-[#c6f552] text-[#040032] rounded-full text-xs font-mono-meta font-extrabold uppercase border border-[#040032]">
-                  MAIN AUDITORIUM
+                <span className="relative overflow-hidden px-3 py-1 bg-[#c6f552] text-[#040032] rounded-full text-xs font-mono-meta font-extrabold uppercase border border-[#040032]">
+                  <div className="shimmer-sweep" />
+                  <span className="relative z-10">MAIN AUDITORIUM</span>
                 </span>
                 <span className="text-xs font-mono-meta text-[#0a3825] font-bold">
                   UNIVERSITY OF IBADAN

@@ -18,6 +18,7 @@ export interface CheckinResult {
     | "NOT_FOUND"
     | "UNAUTHORIZED"
     | "ERROR";
+  tagType?: "paid_vip" | "regular";
   code?: string;
   title?: string;
   message?: string;
@@ -39,6 +40,7 @@ export interface CheckinResult {
     email: string;
     level?: string;
     department?: string;
+    institution?: string;
   };
 }
 
@@ -88,6 +90,7 @@ export default function VerificationCard({
     result.status === "INVALID_FORMAT" || result.status === "ERROR";
 
   const student = result.student;
+  const isPaidVip = result.tagType === "paid_vip";
 
   const formatTimestamp = (dateVal?: string | Date) => {
     if (!dateVal) return "Just now";
@@ -108,14 +111,26 @@ export default function VerificationCard({
       {/* 1. SUCCESS / VERIFIED ATTENDEE */}
       {isSuccess && (
         <div className="flex flex-col items-center text-center space-y-4">
-          <div className="w-16 h-16 rounded-full bg-[#c6f552]/15 border-2 border-[#c6f552] flex items-center justify-center">
-            <CheckCircleIcon className="w-10 h-10 text-[#c6f552]" />
+          <div className={`w-16 h-16 rounded-full border-2 flex items-center justify-center ${
+            isPaidVip
+              ? "bg-[#c6f552]/15 border-[#c6f552]"
+              : "bg-[#3fffe8]/15 border-[#3fffe8]"
+          }`}>
+            <CheckCircleIcon className={`w-10 h-10 ${isPaidVip ? "text-[#c6f552]" : "text-[#3fffe8]"}`} />
           </div>
 
           <div>
-            <span className="text-xs font-mono font-medium text-[#c6f552] tracking-wide block mb-1">
-              Checked In Successfully
-            </span>
+            {isPaidVip ? (
+              <span className="relative overflow-hidden inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#c6f552]/20 border border-[#c6f552] text-[#c6f552] text-[11px] font-mono font-bold mb-2 shadow-sm">
+                <div className="shimmer-sweep" />
+                <span className="relative z-10">⭐ SPECIAL PAID DELEGATE TAG (VIP)</span>
+              </span>
+            ) : (
+              <span className="relative overflow-hidden inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#3fffe8]/20 border border-[#3fffe8] text-[#3fffe8] text-[11px] font-mono font-bold mb-2 shadow-sm">
+                <div className="shimmer-sweep" />
+                <span className="relative z-10">🏷️ REGULAR DELEGATE TAG (STANDARD)</span>
+              </span>
+            )}
             <h2 className="text-2xl font-bold font-serif-display text-white">
               {student?.name || "Attendee"}
             </h2>
@@ -130,14 +145,19 @@ export default function VerificationCard({
             </div>
             <div className="flex items-center justify-between">
               <span className="text-white/60 text-xs">Department</span>
-              <span className="text-white/90 text-xs">
-                {student?.department || "Industrial Engineering"}
-                {student?.level ? ` (${student.level})` : ""}
+              <span className="text-white/90 text-xs truncate max-w-[200px]">
+                {student?.department || "Industrial & Production Engineering"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-white/60 text-xs">Credential</span>
+              <span className="text-xs text-[#c6f552] font-mono font-medium">
+                ✓ Ready for Certificate
               </span>
             </div>
             <div className="flex items-center justify-between pt-1 border-t border-white/10">
               <span className="text-white/60 text-xs">Time</span>
-              <span className="font-mono text-xs text-[#c6f552]">
+              <span className="font-mono text-xs text-white/80">
                 {formatTimestamp(result.checkIn?.checkedInAt)}
               </span>
             </div>
@@ -146,9 +166,14 @@ export default function VerificationCard({
           <button
             type="button"
             onClick={onReset}
-            className="w-full py-3 px-4 rounded-xl bg-[#c6f552] hover:bg-[#b5e83a] text-[#040032] font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-98 cursor-pointer"
+            className={`relative overflow-hidden w-full py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-98 cursor-pointer shadow-sm ${
+              isPaidVip
+                ? "bg-[#c6f552] hover:bg-[#b5e83a] text-[#040032]"
+                : "bg-[#3fffe8] hover:bg-[#32ebd5] text-[#040032]"
+            }`}
           >
-            <span>Next Scan in {secondsRemaining}s</span>
+            <div className="shimmer-sweep" />
+            <span className="relative z-10">Next Attendee in {secondsRemaining}s ❯</span>
           </button>
         </div>
       )}

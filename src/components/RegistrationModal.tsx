@@ -45,7 +45,7 @@ export default function RegistrationModal({ isOpen, onClose }: RegistrationModal
             Secure Your Seat
           </h3>
           <p className="text-xs sm:text-sm text-[#040032]/75 font-sans leading-relaxed">
-            The 6th Annual IESA Process Day: <i>"The future is not simply what we wait for, it is what we choose to build."</i>
+            The 6th Annual IESA Conference: <i>"The future is not simply what we wait for, it is what we choose to build."</i>
           </p>
         </div>
 

@@ -9,18 +9,26 @@ import {
   ArrowLeftIcon,
   SparklesIcon,
   ShieldCheckIcon,
+  AdjustmentsHorizontalIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
 } from "@heroicons/react/24/solid";
-import { CERT_CONFIG } from "@/lib/certificateConfig";
+import {
+  getActiveCertificateConfig,
+  CertificateConfigType,
+} from "@/lib/certificateConfig";
+import VisualCoordinateMapper from "@/components/certificate/VisualCoordinateMapper";
 
 interface AttendeeVerification {
   name: string;
   matricNumber: string;
   department: string;
-  level: string;
-  conferenceTitle: string;
-  date: string;
+  level?: string;
+  institution?: string;
+  conferenceTitle?: string;
+  date?: string;
   certificateId: string;
-  verificationUrl: string;
+  verificationUrl?: string;
 }
 
 export default function CertificateLookupPage() {
@@ -28,225 +36,164 @@ export default function CertificateLookupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [attendee, setAttendee] = useState<AttendeeVerification | null>(null);
+  const [isMapperOpen, setIsMapperOpen] = useState(false);
+  const [certConfig, setCertConfig] = useState<CertificateConfigType>(() =>
+    getActiveCertificateConfig()
+  );
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Render certificate onto high-resolution Canvas
-  const renderCertificate = useCallback((data: AttendeeVerification) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  // Fetch global config from Database on mount, plus sync active changes
+  useEffect(() => {
+    let isMounted = true;
+    fetch("/api/certificate/config")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!isMounted) return;
+        if (data?.config?.coords?.name) {
+          setCertConfig(data.config);
+        }
+      })
+      .catch((err) => console.warn("Using local/default cert config:", err));
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const width = CERT_CONFIG.canvasWidth;
-    const height = CERT_CONFIG.canvasHeight;
-    canvas.width = width;
-    canvas.height = height;
-
-    const templateImg = new Image();
-    templateImg.src = CERT_CONFIG.templateImageUrl;
-
-    const stampText = () => {
-      const { coords } = CERT_CONFIG;
-
-      // 1. Participant Name
-      ctx.textAlign = coords.name.align;
-      ctx.fillStyle = coords.name.color;
-      ctx.font = coords.name.font;
-      ctx.fillText(data.name.toUpperCase(), coords.name.x, coords.name.y);
-
-      // Underline accent for participant name
-      const textWidth = ctx.measureText(data.name.toUpperCase()).width;
-      ctx.fillStyle = "#c6f552";
-      ctx.fillRect(coords.name.x - textWidth / 2, coords.name.y + 16, textWidth, 5);
-
-      // 2. Matric & Affiliation
-      ctx.textAlign = coords.matric.align;
-      ctx.fillStyle = coords.matric.color;
-      ctx.font = coords.matric.font;
-      ctx.fillText(
-        `MATRIC NO: ${data.matricNumber}  ·  ${data.department}`,
-        coords.matric.x,
-        coords.matric.y
-      );
-
-      // 3. Citation
-      ctx.textAlign = coords.citation.align;
-      ctx.fillStyle = coords.citation.color;
-      ctx.font = coords.citation.font;
-      ctx.fillText(
-        "has actively participated and contributed to the technical symposium, masterclasses,",
-        coords.citation.x,
-        coords.citation.y
-      );
-      ctx.fillText(
-        "and engineering exhibitions at IESA Process Day 2026, held at KAAF Auditorium, University of Ibadan.",
-        coords.citation.x,
-        coords.citation.y + 40
-      );
-
-      // 4. Date
-      ctx.textAlign = coords.date.align;
-      ctx.fillStyle = coords.date.color;
-      ctx.font = coords.date.font;
-      ctx.fillText(data.date, coords.date.x, coords.date.y);
-
-      // 5. Certificate Unique ID
-      ctx.textAlign = coords.certId.align;
-      ctx.fillStyle = coords.certId.color;
-      ctx.font = coords.certId.font;
-      ctx.fillText(data.certificateId, coords.certId.x, coords.certId.y);
+    const handleConfigUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<CertificateConfigType>;
+      if (customEvent.detail) {
+        setCertConfig(customEvent.detail);
+      } else {
+        setCertConfig(getActiveCertificateConfig());
+      }
     };
 
-    templateImg.onload = () => {
-      // Draw uploaded custom template graphic as base
-      ctx.drawImage(templateImg, 0, 0, width, height);
-      stampText();
-    };
-
-    templateImg.onerror = () => {
-      // Stand-in royal certificate design if custom template is not uploaded yet
-      // 1. Parchment Base
-      ctx.fillStyle = "#faf7f0";
-      ctx.fillRect(0, 0, width, height);
-
-      // Subtle textured vignette
-      const grad = ctx.createRadialGradient(
-        width / 2,
-        height / 2,
-        300,
-        width / 2,
-        height / 2,
-        1100
-      );
-      grad.addColorStop(0, "rgba(255, 255, 255, 0.9)");
-      grad.addColorStop(1, "rgba(236, 231, 216, 0.8)");
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, width, height);
-
-      // 2. Navy & Gold Royal Borders
-      ctx.lineWidth = 14;
-      ctx.strokeStyle = "#040032";
-      ctx.strokeRect(50, 50, width - 100, height - 100);
-
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = "#c6f552";
-      ctx.strokeRect(74, 74, width - 148, height - 148);
-
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "#0a3825";
-      ctx.strokeRect(86, 86, width - 172, height - 172);
-
-      // Corner Brackets
-      const drawCorner = (x: number, y: number, angle: number) => {
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(angle);
-        ctx.fillStyle = "#040032";
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(40, 0);
-        ctx.lineTo(40, 8);
-        ctx.lineTo(8, 8);
-        ctx.lineTo(8, 40);
-        ctx.lineTo(0, 40);
-        ctx.closePath();
-        ctx.fill();
-        ctx.restore();
-      };
-      drawCorner(96, 96, 0);
-      drawCorner(width - 96, 96, Math.PI / 2);
-      drawCorner(width - 96, height - 96, Math.PI);
-      drawCorner(96, height - 96, -Math.PI / 2);
-
-      // 3. Institution Header
-      ctx.textAlign = "center";
-      ctx.fillStyle = "#0a3825";
-      ctx.font = "bold 26px 'Courier New', monospace";
-      ctx.fillText(
-        "UNIVERSITY OF IBADAN · FACULTY OF TECHNOLOGY",
-        width / 2,
-        180
-      );
-
-      ctx.fillStyle = "#040032";
-      ctx.font = "bold 34px 'Playfair Display', Georgia, serif";
-      ctx.fillText(
-        "DEPARTMENT OF INDUSTRIAL & PRODUCTION ENGINEERING",
-        width / 2,
-        230
-      );
-
-      ctx.fillStyle = "#4a5568";
-      ctx.font = "bold 20px 'Courier New', monospace";
-      ctx.fillText(
-        "INDUSTRIAL ENGINEERING STUDENTS ASSOCIATION (IESA)",
-        width / 2,
-        270
-      );
-
-      // Decorative divider
-      ctx.fillStyle = "#0a3825";
-      ctx.fillRect(width / 2 - 180, 295, 360, 3);
-      ctx.fillStyle = "#c6f552";
-      ctx.beginPath();
-      ctx.arc(width / 2, 296, 7, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Title
-      ctx.fillStyle = "#040032";
-      ctx.font = "bold 68px 'Playfair Display', Georgia, serif";
-      ctx.fillText("CERTIFICATE OF PARTICIPATION", width / 2, 420);
-
-      ctx.fillStyle = "#4a5568";
-      ctx.font = "italic 28px 'Playfair Display', Georgia, serif";
-      ctx.fillText("This is officially presented to acknowledge that", width / 2, 510);
-
-      // Signature lines
-      const drawSig = (x: number, y: number, title: string, subtitle: string) => {
-        ctx.strokeStyle = "#040032";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(x - 180, y);
-        ctx.lineTo(x + 180, y);
-        ctx.stroke();
-
-        ctx.fillStyle = "#040032";
-        ctx.font = "bold 20px 'Playfair Display', Georgia, serif";
-        ctx.textAlign = "center";
-        ctx.fillText(title, x, y + 30);
-
-        ctx.fillStyle = "#4a5568";
-        ctx.font = "16px 'Courier New', monospace";
-        ctx.fillText(subtitle, x, y + 54);
-      };
-
-      drawSig(520, 1200, "Prof. A. A. Adebiyi", "Staff Adviser / HOD");
-      drawSig(1480, 1200, "IESA President", "Conference Convener");
-
-      // Official Seal Medallion in center bottom
-      ctx.save();
-      ctx.translate(width / 2, 1180);
-      ctx.beginPath();
-      ctx.arc(0, 0, 65, 0, Math.PI * 2);
-      ctx.fillStyle = "#040032";
-      ctx.fill();
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = "#c6f552";
-      ctx.stroke();
-
-      ctx.fillStyle = "#c6f552";
-      ctx.font = "bold 13px 'Courier New', monospace";
-      ctx.textAlign = "center";
-      ctx.fillText("OFFICIAL SEAL", 0, -10);
-      ctx.fillText("IESA · 2026", 0, 10);
-      ctx.fillText("VERIFIED", 0, 30);
-      ctx.restore();
-
-      // Stamp attendee details
-      stampText();
+    window.addEventListener("cert-coords-updated", handleConfigUpdate);
+    return () => {
+      isMounted = false;
+      window.removeEventListener("cert-coords-updated", handleConfigUpdate);
     };
   }, []);
+
+  // Format helper for dynamic text transforms
+  const formatText = (text: string, transform?: "uppercase" | "capitalize" | "none") => {
+    if (transform === "uppercase") return text.toUpperCase();
+    if (transform === "capitalize") {
+      return text.replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+    return text;
+  };
+
+  // Render certificate onto high-resolution Canvas (2x scale of native 1024x577 = 2048x1154)
+  const renderCertificate = useCallback(
+    (data: AttendeeVerification, config: CertificateConfigType) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      const scale = 2; // 2x high-resolution export
+      const width = config.nativeWidth * scale;
+      const height = config.nativeHeight * scale;
+      canvas.width = width;
+      canvas.height = height;
+
+      const templateImg = new Image();
+      templateImg.src = config.templateImageUrl;
+
+      const stampFields = () => {
+        const { coords } = config;
+
+        // 1. Participant Name: Centered over the long underline
+        const nameCfg = coords.name;
+        ctx.save();
+        ctx.textAlign = nameCfg.align;
+        ctx.fillStyle = nameCfg.color;
+        ctx.font = `${nameCfg.fontWeight} ${nameCfg.fontSize * scale}px ${nameCfg.fontFamily}`;
+        ctx.fillText(
+          formatText(data.name, nameCfg.textTransform),
+          nameCfg.x * scale,
+          nameCfg.y * scale
+        );
+        ctx.restore();
+
+        // 2. Matric Number
+        const matricCfg = coords.matric;
+        ctx.save();
+        ctx.textAlign = matricCfg.align;
+        ctx.fillStyle = matricCfg.color;
+        ctx.font = `${matricCfg.fontWeight} ${matricCfg.fontSize * scale}px ${matricCfg.fontFamily}`;
+        ctx.fillText(
+          formatText(data.matricNumber, matricCfg.textTransform),
+          matricCfg.x * scale,
+          matricCfg.y * scale
+        );
+        ctx.restore();
+
+        // 3. Department
+        const deptCfg = coords.department;
+        ctx.save();
+        ctx.textAlign = deptCfg.align;
+        ctx.fillStyle = deptCfg.color;
+        ctx.font = `${deptCfg.fontWeight} ${deptCfg.fontSize * scale}px ${deptCfg.fontFamily}`;
+        ctx.fillText(
+          formatText(data.department, deptCfg.textTransform),
+          deptCfg.x * scale,
+          deptCfg.y * scale
+        );
+        ctx.restore();
+
+        // 4. Certificate ID
+        const idCfg = coords.certId;
+        ctx.save();
+        ctx.textAlign = idCfg.align;
+        ctx.fillStyle = idCfg.color;
+        ctx.font = `${idCfg.fontWeight} ${idCfg.fontSize * scale}px ${idCfg.fontFamily}`;
+        ctx.fillText(
+          formatText(data.certificateId, idCfg.textTransform),
+          idCfg.x * scale,
+          idCfg.y * scale
+        );
+        ctx.restore();
+
+        // 5. Institution
+        const instCfg = coords.institution;
+        ctx.save();
+        ctx.textAlign = instCfg.align;
+        ctx.fillStyle = instCfg.color;
+        ctx.font = `${instCfg.fontWeight} ${instCfg.fontSize * scale}px ${instCfg.fontFamily}`;
+        ctx.fillText(
+          formatText(data.institution || "University of Ibadan", instCfg.textTransform),
+          instCfg.x * scale,
+          instCfg.y * scale
+        );
+        ctx.restore();
+      };
+
+      templateImg.onload = () => {
+        // Draw official background template graphic
+        ctx.drawImage(templateImg, 0, 0, width, height);
+        stampFields();
+      };
+
+      templateImg.onerror = () => {
+        // Fallback drawing if template fails to load
+        ctx.fillStyle = "#faf7f0";
+        ctx.fillRect(0, 0, width, height);
+
+        // Header & border
+        ctx.lineWidth = 10 * scale;
+        ctx.strokeStyle = "#040032";
+        ctx.strokeRect(30 * scale, 30 * scale, width - 60 * scale, height - 60 * scale);
+
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#040032";
+        ctx.font = `bold ${32 * scale}px Georgia, serif`;
+        ctx.fillText("CERTIFICATE OF PARTICIPATION", width / 2, 100 * scale);
+
+        stampFields();
+      };
+    },
+    []
+  );
 
   // Trigger verify on form submission
   const handleVerify = async (e?: React.FormEvent) => {
@@ -280,12 +227,12 @@ export default function CertificateLookupPage() {
     }
   };
 
-  // Re-draw canvas whenever attendee record changes
+  // Re-draw canvas whenever attendee record or config changes
   useEffect(() => {
     if (attendee) {
-      renderCertificate(attendee);
+      renderCertificate(attendee, certConfig);
     }
-  }, [attendee, renderCertificate]);
+  }, [attendee, certConfig, renderCertificate]);
 
   // Download high-resolution PNG
   const handleDownload = () => {
@@ -318,28 +265,70 @@ export default function CertificateLookupPage() {
           </h1>
         </div>
 
-        <div className="flex items-center gap-2 text-[11px] font-mono text-white/70">
-          <ShieldCheckIcon className="w-4 h-4 text-[#c6f552]" />
-          <span className="hidden sm:inline">Cryptographically Verified</span>
+        <div className="flex items-center gap-2.5">
+          {/* Visual Mapper Studio Trigger */}
+          <button
+            type="button"
+            onClick={() => setIsMapperOpen(!isMapperOpen)}
+            className={`px-3 py-1.5 rounded-full text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+              isMapperOpen
+                ? "bg-[#c6f552] text-[#040032] shadow-[0_0_15px_rgba(198,245,82,0.4)]"
+                : "bg-white/10 hover:bg-white/20 text-white"
+            }`}
+          >
+            <AdjustmentsHorizontalIcon className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Visual Mapper Studio</span>
+            <span className="sm:hidden">Mapper</span>
+            {isMapperOpen ? (
+              <ChevronUpIcon className="w-3.5 h-3.5" />
+            ) : (
+              <ChevronDownIcon className="w-3.5 h-3.5" />
+            )}
+          </button>
+
+          <div className="hidden md:flex items-center gap-2 text-[11px] font-mono text-white/70">
+            <ShieldCheckIcon className="w-4 h-4 text-[#c6f552]" />
+            <span>Cryptographically Verified</span>
+          </div>
         </div>
       </header>
+
+      {/* Visual Coordinate Mapper Studio Collapsible Drawer */}
+      {isMapperOpen && (
+        <section className="bg-[#02001e] border-b-2 border-[#c6f552]/30 px-4 sm:px-8 py-6 shadow-2xl animate-fade-in">
+          <div className="max-w-6xl mx-auto space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-mono text-[#c6f552]">
+                <SparklesIcon className="w-4 h-4" />
+                <span>Coordinate Studio · Real-time text calibration</span>
+              </div>
+              <Link
+                href="/certificate/mapper"
+                className="text-xs font-mono text-white/60 hover:text-white underline"
+              >
+                Open Fullscreen Studio ↗
+              </Link>
+            </div>
+            <VisualCoordinateMapper onClose={() => setIsMapperOpen(false)} />
+          </div>
+        </section>
+      )}
 
       {/* Main Container */}
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
         {/* Hero Card */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0a3825] text-[#c6f552] border border-[#c6f552]/30 text-xs font-mono font-bold uppercase">
-            <SparklesIcon className="w-3.5 h-3.5" />
-            <span>Official Attendance Verification</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#040032]/5 border border-[#040032]/10 text-[11px] font-mono font-bold text-[#040032]">
+            <SparklesIcon className="w-3.5 h-3.5 text-[#0a3825]" />
+            <span>Official Conference Credential</span>
           </div>
 
           <h2 className="text-2xl sm:text-4xl font-serif-display font-extrabold text-[#040032]">
-            Claim Your Digital Certificate
+            Claim Your Certificate
           </h2>
 
           <p className="text-xs sm:text-sm text-[#040032]/75 leading-relaxed">
-            Enter your University of Ibadan matriculation number, conference ticket code,
-            or registered name to verify your attendance and download your certified credential.
+            Enter your matriculation number or name to get and download your official certificate.
           </p>
         </div>
 
@@ -347,7 +336,7 @@ export default function CertificateLookupPage() {
         <div className="max-w-xl mx-auto p-5 sm:p-6 rounded-3xl bg-[#02001e] border border-white/20 shadow-xl text-white">
           <form onSubmit={handleVerify} className="space-y-3">
             <label className="block text-xs font-mono text-[#c6f552] uppercase tracking-wider">
-              Enter Matric Number or Ticket Code
+              Matriculation Number or Name
             </label>
 
             <div className="relative flex items-center">
@@ -355,8 +344,8 @@ export default function CertificateLookupPage() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="e.g. 218492 or IESA-CONF-2026 or Your Name"
-                className="w-full pl-4 pr-28 py-3 rounded-2xl bg-white/5 border border-white/20 text-white placeholder-white/30 text-sm focus:outline-none focus:border-[#c6f552]"
+                placeholder="e.g. 218492 or Oluwaseun Adeleke"
+                className="w-full pl-4 pr-32 py-3 rounded-2xl bg-white/5 border border-white/20 text-white placeholder-white/30 text-sm focus:outline-none focus:border-[#c6f552]"
                 autoFocus
               />
               <button
@@ -369,7 +358,7 @@ export default function CertificateLookupPage() {
                 ) : (
                   <>
                     <MagnifyingGlassIcon className="w-3.5 h-3.5" />
-                    <span>Verify</span>
+                    <span>Search</span>
                   </>
                 )}
               </button>
@@ -379,8 +368,8 @@ export default function CertificateLookupPage() {
               <p className="text-xs text-rose-400 font-mono mt-1">{error}</p>
             )}
 
-            {/* Quick Demo Test Pills */}
-            <div className="pt-2 flex items-center gap-2 flex-wrap text-[11px] font-mono text-white/50">
+            {/* Quick Demo Test Pill */}
+            <div className="pt-1 flex items-center gap-2 flex-wrap text-[11px] font-mono text-white/50">
               <span>Quick Test:</span>
               <button
                 type="button"
@@ -391,16 +380,6 @@ export default function CertificateLookupPage() {
                 className="px-2 py-0.5 rounded-md bg-white/10 hover:bg-white/20 text-[#c6f552] transition-colors cursor-pointer"
               >
                 Matric: 218492
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setQuery("IESA-CONF-2026");
-                  setTimeout(() => handleVerify(), 50);
-                }}
-                className="px-2 py-0.5 rounded-md bg-white/10 hover:bg-white/20 text-[#c6f552] transition-colors cursor-pointer"
-              >
-                Ticket: IESA-CONF-2026
               </button>
             </div>
           </form>
@@ -417,7 +396,7 @@ export default function CertificateLookupPage() {
                 </div>
                 <div>
                   <h3 className="font-serif-display font-bold text-base sm:text-lg text-white">
-                    Verified Delegate: {attendee.name}
+                    {attendee.name}
                   </h3>
                   <p className="text-xs text-[#c6f552] font-mono">
                     Matric No: {attendee.matricNumber} · ID: {attendee.certificateId}
@@ -425,14 +404,24 @@ export default function CertificateLookupPage() {
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={handleDownload}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#c6f552] text-[#040032] font-mono font-bold text-xs uppercase tracking-wider hover:bg-[#b5e640] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(198,245,82,0.4)] cursor-pointer"
-              >
-                <ArrowDownTrayIcon className="w-4 h-4" />
-                <span>Download Official PNG (High-Res)</span>
-              </button>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => setIsMapperOpen(true)}
+                  className="px-4 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-mono font-bold text-xs uppercase transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <AdjustmentsHorizontalIcon className="w-3.5 h-3.5 text-[#c6f552]" />
+                  <span>Adjust Coordinates</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDownload}
+                  className="flex-1 sm:flex-initial px-6 py-2.5 rounded-full bg-[#c6f552] text-[#040032] font-mono font-bold text-xs uppercase tracking-wider hover:bg-[#b5e640] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(198,245,82,0.4)] cursor-pointer"
+                >
+                  <ArrowDownTrayIcon className="w-4 h-4" />
+                  <span>Download Certificate</span>
+                </button>
+              </div>
             </div>
 
             {/* Live Certificate Canvas Preview */}
@@ -440,26 +429,30 @@ export default function CertificateLookupPage() {
               <canvas
                 ref={canvasRef}
                 className="w-full h-auto rounded-2xl shadow-inner border border-black/5"
-                style={{ aspectRatio: "2000 / 1414" }}
+                style={{ aspectRatio: "1024 / 577" }}
               />
             </div>
 
-            {/* Template Coordinates Note for Coordinator */}
-            <div className="p-4 rounded-2xl bg-[#ece7d8] border border-[#040032]/15 text-xs text-[#040032]/80 font-mono">
-              <p className="font-bold text-[#040032] mb-1">
-                ⚙️ Certificate Template Coordinates:
-              </p>
-              <p>
-                When your final graphical template is ready, simply drop it in{" "}
-                <code className="bg-[#040032]/10 px-1.5 py-0.5 rounded text-[#040032]">
-                  public/assets/certificate_template.png
-                </code>
-                . You can adjust the text X/Y coordinate constants at the top of{" "}
-                <code className="bg-[#040032]/10 px-1.5 py-0.5 rounded text-[#040032]">
-                  src/app/certificate/page.tsx
-                </code>{" "}
-                to match your design seamlessly.
-              </p>
+            {/* Coordinate Mapper Callout */}
+            <div className="p-4 rounded-2xl bg-[#ece7d8] border border-[#040032]/15 text-xs text-[#040032]/80 font-mono flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div>
+                <p className="font-bold text-[#040032] mb-0.5">
+                  ⚙️ Coordinate Studio:
+                </p>
+                <p>
+                  Need to nudge text positions or adjust font sizes? Use the Visual Coordinate Mapper.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMapperOpen(true);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+                className="px-4 py-2 rounded-xl bg-[#040032] text-[#c6f552] font-mono font-bold text-xs uppercase hover:bg-[#02001e] transition-colors cursor-pointer shrink-0"
+              >
+                Open Studio
+              </button>
             </div>
           </div>
         )}

@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDatabase } from "@/lib/mongodb";
+import { findPaidParticipant } from "@/lib/paidParticipantsDirectory";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const query = body.query ? String(body.query).trim() : "";
 
-    if (!query || query.length < 3) {
+    if (!query || query.length < 2) {
       return NextResponse.json(
-        { error: "Please enter a valid matric number, ticket code, or email." },
+        { error: "Please enter your matric number or name." },
         { status: 400 }
       );
     }
@@ -22,9 +23,9 @@ export async function POST(req: NextRequest) {
       const checkinsCol = db.collection("conference_checkins");
       const checkin = await checkinsCol.findOne({
         $or: [
-          { matricNumber: { $regex: new RegExp(`^${query}$`, "i") } },
-          { email: { $regex: new RegExp(`^${query}$`, "i") } },
-          { studentName: { $regex: new RegExp(query, "i") } },
+          { matricNumber: { $regex: new RegExp(`^${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") } },
+          { email: { $regex: new RegExp(`^${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") } },
+          { studentName: { $regex: new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i") } },
         ],
       });
 
@@ -33,19 +34,37 @@ export async function POST(req: NextRequest) {
           name: checkin.studentName,
           matricNumber: checkin.matricNumber || query,
           department: checkin.department || "Industrial & Production Engineering",
-          level: checkin.level || "400L",
+          institution: checkin.institution || "University of Ibadan",
+          level: checkin.level || "Delegate",
           checkedInAt: checkin.checkedInAt || new Date("2026-09-10T10:00:00Z"),
           source: "checkin_verified",
         };
       }
 
-      // 2. If not found in checkins, search in users
+      // 2. If not found in checkins, check official paid directory
+      if (!attendeeRecord) {
+        const paidParticipant = findPaidParticipant(query);
+        if (paidParticipant) {
+          attendeeRecord = {
+            name: paidParticipant.fullName,
+            matricNumber: paidParticipant.matricNumber,
+            department: paidParticipant.department || "Industrial & Production Engineering",
+            institution: "University of Ibadan",
+            level: "Delegate",
+            checkedInAt: new Date("2026-09-10T09:30:00Z"),
+            source: "official_paid_directory",
+          };
+        }
+      }
+
+      // 3. If not found, search in users collection
       if (!attendeeRecord) {
         const usersCol = db.collection("users");
         const user = await usersCol.findOne({
           $or: [
-            { matricNumber: { $regex: new RegExp(`^${query}$`, "i") } },
-            { email: { $regex: new RegExp(`^${query}$`, "i") } },
+            { matricNumber: { $regex: new RegExp(`^${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") } },
+            { email: { $regex: new RegExp(`^${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") } },
+            { name: { $regex: new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i") } },
           ],
         });
 
@@ -54,7 +73,8 @@ export async function POST(req: NextRequest) {
             name: `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.name || "Conference Delegate",
             matricNumber: user.matricNumber || query,
             department: user.department || "Industrial & Production Engineering",
-            level: user.level || "300L",
+            institution: "University of Ibadan",
+            level: user.currentLevel || user.level || "Delegate",
             checkedInAt: new Date("2026-09-10T09:30:00Z"),
             source: "user_registry",
           };
@@ -64,22 +84,17 @@ export async function POST(req: NextRequest) {
       console.warn("MongoDB query warning for certificate lookup:", dbErr);
     }
 
-    // 3. Graceful fallback for demo or ticket codes
+
+    // 3. Fallback for matric numbers or names
     if (!attendeeRecord) {
-      // Check if it's formatted like a matric number (numeric digits) or ticket code
       const isMatric = /^\d{5,7}$/.test(query);
-      const isTicket = query.toUpperCase().startsWith("IESA-");
 
-      if (isMatric || isTicket || query.length >= 4) {
-        // Generate a verified certificate record for attendee
-        const cleanName = isMatric
-          ? `Delegate ${query}`
-          : query.replace(/^IESA-?/i, "").replace(/-/g, " ").trim();
-
+      if (isMatric || query.length >= 3) {
         attendeeRecord = {
-          name: cleanName.length > 2 && isNaN(Number(cleanName)) ? cleanName : `Attendee ${query}`,
+          name: isMatric ? `Delegate ${query}` : query.trim(),
           matricNumber: query.toUpperCase(),
-          department: "Industrial & Production Engineering, University of Ibadan",
+          department: "Industrial & Production Engineering",
+          institution: "University of Ibadan",
           level: "Delegate",
           checkedInAt: new Date("2026-09-10T10:00:00Z"),
           source: "direct_verification",
@@ -91,7 +106,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "No conference attendance record found for this matric number or ticket code. Please check your credentials and try again.",
+            "No certificate record found for this matric number or name. Please check your details.",
         },
         { status: 404 }
       );

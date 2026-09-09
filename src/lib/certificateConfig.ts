@@ -1,57 +1,115 @@
 // =========================================================================
 // 🎯 CERTIFICATE TEMPLATE & COORDINATES CONFIGURATION
-// When you provide your official certificate template image, place it in:
-// public/assets/certificate_template.png
-// The canvas below will automatically draw it as the background and position
-// the participant's details at the exact coordinates below.
-// Canvas coordinate space: 2000px width × 1414px height (Standard A4 Landscape)
+// Coordinate space based on template native dimensions: 1024 x 577
+// (Automatically scaled 2x to 2048 x 1154 during export for razor-sharp printing)
 // =========================================================================
-export const CERT_CONFIG = {
-  templateImageUrl: "/assets/certificate_template.png",
-  canvasWidth: 2000,
-  canvasHeight: 1414,
+
+export interface FieldCoordConfig {
+  x: number;
+  y: number;
+  fontSize: number;
+  fontFamily: string;
+  fontWeight: "normal" | "600" | "bold" | "800";
+  color: string;
+  align: CanvasTextAlign;
+  textTransform?: "uppercase" | "capitalize" | "none";
+  letterSpacing?: number;
+}
+
+export interface CertificateConfigType {
+  templateImageUrl: string;
+  nativeWidth: number;
+  nativeHeight: number;
   coords: {
-    // Participant Name (e.g. Center, Y: 680)
+    name: FieldCoordConfig;
+    matric: FieldCoordConfig;
+    department: FieldCoordConfig;
+    certId: FieldCoordConfig;
+    institution: FieldCoordConfig;
+  };
+}
+
+export const DEFAULT_CERT_CONFIG: CertificateConfigType = {
+  templateImageUrl: "/assets/certificate_template.png",
+  nativeWidth: 1024,
+  nativeHeight: 577,
+  coords: {
     name: {
-      x: 1000,
-      y: 690,
-      font: "bold 64px 'Playfair Display', Georgia, serif",
+      x: 523,
+      y: 233,
+      fontSize: 37,
+      fontFamily: "'Space Mono', monospace",
+      fontWeight: "bold",
       color: "#040032",
-      align: "center" as CanvasTextAlign,
+      align: "center",
       textTransform: "uppercase",
+      letterSpacing: 1,
     },
-    // Matric Number / Affiliation (e.g. Center, Y: 765)
     matric: {
-      x: 1000,
-      y: 770,
-      font: "bold 26px 'Courier New', monospace",
+      x: 316,
+      y: 350,
+      fontSize: 19,
+      fontFamily: "'Space Mono', monospace",
+      fontWeight: "600",
       color: "#0a3825",
-      align: "center" as CanvasTextAlign,
+      align: "left",
+      textTransform: "uppercase",
+      letterSpacing: 0.5,
     },
-    // Citation / Recognition Paragraph
-    citation: {
-      x: 1000,
-      y: 860,
-      font: "italic 26px 'Playfair Display', Georgia, serif",
-      color: "#2c3e50",
-      align: "center" as CanvasTextAlign,
-      maxWidth: 1400,
-    },
-    // Issue Date (Bottom Left, X: 520, Y: 1140)
-    date: {
-      x: 520,
-      y: 1140,
-      font: "bold 24px 'Courier New', monospace",
+    department: {
+      x: 288,
+      y: 384,
+      fontSize: 14,
+      fontFamily: "'Space Mono', monospace",
+      fontWeight: "600",
       color: "#040032",
-      align: "center" as CanvasTextAlign,
+      align: "left",
+      textTransform: "capitalize",
+      letterSpacing: 0.2,
     },
-    // Certificate Unique ID (Bottom Right, X: 1480, Y: 1140)
     certId: {
-      x: 1480,
-      y: 1140,
-      font: "bold 24px 'Courier New', monospace",
-      color: "#0a3825",
-      align: "center" as CanvasTextAlign,
+      x: 752,
+      y: 349,
+      fontSize: 18,
+      fontFamily: "'Space Mono', monospace",
+      fontWeight: "bold",
+      color: "#040032",
+      align: "left",
+      textTransform: "uppercase",
+      letterSpacing: 1,
+    },
+    institution: {
+      x: 735,
+      y: 384,
+      fontSize: 21,
+      fontFamily: "'Space Mono', monospace",
+      fontWeight: "600",
+      color: "#040032",
+      align: "left",
+      textTransform: "capitalize",
+      letterSpacing: 0.2,
     },
   },
 };
+
+// Local storage key for persistent custom user mappings from Visual Mapper
+export const CERT_STORAGE_KEY = "iesa_cert_custom_coords_v1";
+
+export function getActiveCertificateConfig(): CertificateConfigType {
+  if (typeof window !== "undefined") {
+    try {
+      const saved = localStorage.getItem(CERT_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed?.coords?.name) {
+          return { ...DEFAULT_CERT_CONFIG, ...parsed, coords: { ...DEFAULT_CERT_CONFIG.coords, ...parsed.coords } };
+        }
+      }
+    } catch {
+      // Fall back to default
+    }
+  }
+  return DEFAULT_CERT_CONFIG;
+}
+
+export const CERT_CONFIG = DEFAULT_CERT_CONFIG;

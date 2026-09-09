@@ -28,8 +28,14 @@ export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
   if (!speaker) return null;
 
   return (
-    <div className="fixed inset-0 h-[100dvh] w-screen z-[9999] flex items-center justify-center p-4 bg-[#040032]/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-[#faf8f2] text-[#040032] border-2 border-[#040032] rounded-3xl max-w-xl w-full overflow-hidden shadow-2xl p-6 sm:p-8 space-y-6 relative max-h-[90vh] overflow-y-auto">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 h-[100dvh] w-screen z-[9999] flex items-center justify-center p-4 bg-[#040032]/80 backdrop-blur-md animate-in fade-in duration-200"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-[#faf8f2] text-[#040032] border-2 border-[#040032] rounded-3xl max-w-xl sm:max-w-2xl w-full overflow-hidden shadow-2xl p-6 sm:p-8 space-y-6 relative max-h-[90vh] overflow-y-auto"
+      >
         <button
           onClick={onClose}
           className="absolute top-6 right-6 p-2 rounded-full bg-[#ece7d8] border border-[#040032]/20 text-[#040032] hover:bg-[#040032] hover:text-[#faf8f2] transition-colors"
@@ -67,13 +73,15 @@ export default function SpeakerModal({ speaker, onClose }: SpeakerModalProps) {
           </p>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-3">
           <span className="text-xs font-mono-meta font-bold text-[#0a3825] uppercase tracking-wider block">
             BIOGRAPHY & CREDENTIALS
           </span>
-          <p className="text-xs sm:text-sm text-[#040032]/80 font-sans leading-relaxed">
-            {speaker.bio}
-          </p>
+          <div className="text-xs sm:text-sm text-[#040032]/85 font-sans leading-relaxed space-y-3.5">
+            {speaker.bio.split("\n\n").map((para, idx) => (
+              <p key={idx}>{para.trim()}</p>
+            ))}
+          </div>
         </div>
       </div>
     </div>

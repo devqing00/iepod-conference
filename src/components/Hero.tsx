@@ -79,7 +79,7 @@ export default function Hero() {
           {/* Subtitle - Text Centered */}
           <div className="w-full flex justify-center text-center">
             <ScrollRevealText
-              text="Welcome to the 6th Annual IESA Process Day — live today at KAAF Auditorium, University of Ibadan. Bringing together visionary engineering minds, innovators, and students."
+              text="Welcome to the 6th Annual IESA Conference — live today at KAAF Auditorium, University of Ibadan. Bringing together visionary engineering minds, innovators, and students."
               className="text-sm sm:text-base text-[#040032]/80 max-w-2xl text-center items-center justify-center leading-relaxed font-sans mx-auto"
               wordClassName="justify-center"
               highlightWords={[
@@ -97,12 +97,14 @@ export default function Hero() {
             <div className="liquid-metal-border-pill">
               <a
                 href="#schedule"
-                className="flex items-center gap-3 bg-[#c6f552] hover:bg-[#b5e83a] text-[#040032] font-extrabold text-xs sm:text-sm px-7 py-3 rounded-full border-2 border-[#040032] transition-all active:scale-[0.98] group cursor-pointer"
+                className="relative overflow-hidden flex items-center gap-3 bg-[#c6f552] hover:bg-[#b5e83a] text-[#040032] font-extrabold text-xs sm:text-sm px-7 py-3 rounded-full border-2 border-[#040032] transition-all active:scale-[0.98] group cursor-pointer shadow-sm"
               >
-                <span>EXPLORE PROGRAM</span>
-                <ArrowUpRightIcon className="w-4 h-4 text-[#040032] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform pointer-events-none" />
+                <div className="shimmer-sweep" />
+                <span className="relative z-10">EXPLORE PROGRAM</span>
+                <ArrowUpRightIcon className="w-4 h-4 text-[#040032] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform pointer-events-none relative z-10" />
               </a>
             </div>
+
 
             <a
               href="https://chat.whatsapp.com/G2p8sAbGUxWIas4caTZWdY?s=cl&p=a&ilr=1"

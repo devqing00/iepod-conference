@@ -233,10 +233,11 @@ export default function Navbar() {
                   type="button"
                   onClick={handleJumpToLiveSession}
                   title="Click to flip 3D journal to active program session"
-                  className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#0a3825] border border-[#c6f552]/40 text-[#c6f552] text-[10px] sm:text-[11px] font-mono-meta font-extrabold uppercase hover:bg-[#0a3825]/80 transition-all cursor-pointer"
+                  className="relative overflow-hidden flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#0a3825] border border-[#c6f552]/40 text-[#c6f552] text-[10px] sm:text-[11px] font-mono-meta font-extrabold uppercase hover:bg-[#0a3825]/80 transition-all cursor-pointer"
                 >
-                  <span className="w-2 h-2 rounded-full bg-[#c6f552] inline-block flex-shrink-0 shadow-[0_0_6px_#c6f552]" />
-                  <span className="truncate max-w-[100px] sm:max-w-[140px]">
+                  <div className="shimmer-sweep-lime" />
+                  <span className="w-2 h-2 rounded-full bg-[#c6f552] inline-block flex-shrink-0 shadow-[0_0_6px_#c6f552] relative z-10" />
+                  <span className="truncate max-w-[100px] sm:max-w-[140px] relative z-10">
                     LIVE: {liveSession.shortTitle}
                   </span>
                 </button>

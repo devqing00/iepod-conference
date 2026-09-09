@@ -200,8 +200,9 @@ export default function HackathonFinalists() {
                     <span className="truncate">{team.members}</span>
                   </div>
 
-                  <span className="px-2.5 py-1 rounded-full bg-[#040032] text-[#c6f552] text-[10px] font-mono-meta font-extrabold whitespace-nowrap">
-                    {team.status}
+                  <span className="relative overflow-hidden px-2.5 py-1 rounded-full bg-[#040032] text-[#c6f552] text-[10px] font-mono-meta font-extrabold whitespace-nowrap">
+                    <div className="shimmer-sweep-lime" />
+                    <span className="relative z-10">{team.status}</span>
                   </span>
                 </div>
               </div>
