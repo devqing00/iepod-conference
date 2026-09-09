@@ -54,212 +54,212 @@ export const JOURNAL_PAGES: JournalItem[] = [
   },
   {
     id: "session-01",
-    time: "10:00 AM - 10:35 AM",
+    time: "SESSION 01",
     duration: "35 MINS",
     title: "Arrival, Anthems & Presidential Address",
     speaker: "IESA President & Executive Council",
     category: "Protocols & Ceremonies",
     description:
-      "Official guest reception and attendee registration checks, host introduction, opening prayers, rendition of the National and University of Ibadan School Anthems, interactive attendee welcome, and the President's opening address.",
+      "Guest reception, attendee registration check-in, rendition of the National & UI Anthems, interactive welcome, and the President's opening address.",
     location: "KAAF Main Auditorium",
     imageUrl: "/assets/generated/kaaf_keynote.png",
     photoCaption: "KAAF Main Auditorium · Grand Assembly Hall",
-    stampText: "SESSION // 01 · 10:00 AM",
+    stampText: "SESSION // 01",
     badgeColor: "bg-[#ece7d8] text-[#040032]",
   },
   {
     id: "session-02",
-    time: "10:35 AM - 11:05 AM",
+    time: "SESSION 02",
     duration: "30 MINS",
     title: "1st Keynote Session: VC Opening Address & Q&A",
     speaker: "Prof. Kayode Oyebode Adebowale (VC, UI)",
     category: "Keynotes & Talks",
     description:
-      "25-minute flagship opening keynote on 'Academic Excellence & Institutional Innovation in Engineering Education', exploring how universities can anchor technical capacity, followed by a 5-minute interactive attendee Q&A.",
+      "Opening address on 'Academic Excellence & Institutional Innovation in Engineering Education', exploring university research capacity, followed by interactive attendee Q&A.",
     location: "KAAF Main Auditorium",
     imageUrl: "/assets/generated/vice_chancellor.png",
     photoCaption: "Prof. Kayode Oyebode Adebowale, 13th VC of University of Ibadan",
-    stampText: "KEYNOTE // 01 · FLAGSHIP",
+    stampText: "SESSION // 02 · VC KEYNOTE",
     badgeColor: "bg-[#c6f552] text-[#040032]",
   },
   {
     id: "session-03",
-    time: "11:05 AM - 11:15 AM",
+    time: "SESSION 03",
     duration: "10 MINS",
     title: "Headline Sponsor Address & Strategic Spotlight",
     speaker: "Headline Sponsor Leadership Team",
     category: "Keynotes & Talks",
     description:
-      "10-minute partner address highlighting industrial engineering partnerships, graduate internships, and corporate technology sponsorships for student innovators.",
+      "Partner address highlighting industrial engineering opportunities, graduate internships, and corporate technology sponsorships for student innovators.",
     location: "KAAF Main Stage",
     imageUrl: "/assets/generated/iso_ticket_badge.png",
     photoCaption: "Corporate Partner & Engineering Sponsorship Spotlight",
-    stampText: "PARTNER // DISPATCH",
+    stampText: "SESSION // 03 · SPONSOR",
     badgeColor: "bg-[#c6f552] text-[#040032]",
   },
   {
     id: "session-04",
-    time: "11:15 AM - 11:45 AM",
+    time: "SESSION 04",
     duration: "30 MINS",
     title: "2nd Speaker Session: AI, Robotics & Process Discipline",
     speaker: "Dr. Olusola Sayeed Ayoola (Founder & CEO, RAIN)",
     category: "Keynotes & Talks",
     description:
-      "25-minute technical keynote: 'Building What AI Can't Replace: How Process Discipline Creates Impact, Not Just Output', followed by 5 minutes of direct audience questions.",
+      "Technical keynote: 'Building What AI Can't Replace: How Process Discipline Creates Impact, Not Just Output', followed by direct audience questions.",
     location: "KAAF Main Auditorium",
     imageUrl: "/assets/generated/ayoola.png",
     photoCaption: "Dr. Olusola Sayeed Ayoola · RAIN Nigeria",
-    stampText: "TECH INNOVATION // AI & ROBOTICS",
+    stampText: "SESSION // 04 · RAIN AI",
     badgeColor: "bg-[#c6f552] text-[#040032]",
   },
   {
     id: "session-05",
-    time: "11:45 AM - 11:50 AM",
+    time: "SESSION 05",
     duration: "5 MINS",
     title: "Delegate Giveaway & Engagement Interlude",
     speaker: "Conference Welfare & Engagement Leads",
     category: "Protocols & Ceremonies",
     description:
-      "Fast-paced giveaway interlude featuring conference merchandise, sponsored gift packages, digital passes, and delegate quiz prizes.",
+      "Giveaway interlude featuring conference merchandise, sponsored gift packages, digital passes, and delegate quiz prizes.",
     location: "Auditorium Concourse",
     imageUrl: "/assets/generated/iso_ticket_badge.png",
     photoCaption: "Live Delegate Merchandise & Gift Distribution",
-    stampText: "GIVEAWAY // PRIZES",
+    stampText: "SESSION // 05 · PRIZES",
     badgeColor: "bg-[#ece7d8] text-[#040032]",
   },
   {
     id: "session-06",
-    time: "11:50 AM - 12:20 PM",
+    time: "SESSION 06",
     duration: "30 MINS",
     title: "Annual Debate, Scholarship Feature & Winner Awards",
     speaker: "Student Debate Teams & Academic Panel",
     category: "Competitions",
     description:
-      "20 minutes of competitive debate on emerging industrial paradigms, a 5-minute study path and scholarship feature, culminating in the debate winner trophy presentation.",
+      "Competitive debate on emerging industrial paradigms, study path and scholarship features, culminating in the debate trophy presentation.",
     location: "KAAF Main Stage",
     imageUrl: "/assets/generated/iso_gear_ai.png",
     photoCaption: "Undergraduate Debate Championship & Scholarship Grants",
-    stampText: "DEBATE // COMPETITION",
+    stampText: "SESSION // 06 · DEBATE",
     badgeColor: "bg-[#ffdb58] text-[#040032]",
   },
   {
     id: "session-07",
-    time: "12:20 PM - 12:50 PM",
+    time: "SESSION 07",
     duration: "30 MINS",
     title: "3rd Speaker Session: Professional Capacity & Habits",
     speaker: "Engr. Adebayo Otokiti (Calor Gas Ltd UK)",
     category: "Keynotes & Talks",
     description:
-      "25-minute address on 'The Professional You Are Becoming: Why Habits and Commitments Determine Capacity Long Before Opportunity Arrives' (accompanied by snack service) + 5-minute Q&A.",
+      "Executive address on 'The Professional You Are Becoming: Why Habits and Commitments Determine Capacity Long Before Opportunity Arrives' + audience Q&A.",
     location: "KAAF Main Auditorium",
     imageUrl: "/assets/generated/otokiti.png",
     photoCaption: "Engr. Adebayo Otokiti · Calor Gas Ltd UK",
-    stampText: "INDUSTRY LEADER // UK ENERGY",
+    stampText: "SESSION // 07 · CALOR GAS",
     badgeColor: "bg-[#c6f552] text-[#040032]",
   },
   {
     id: "session-08",
-    time: "12:50 PM - 01:00 PM",
+    time: "SESSION 08",
     duration: "10 MINS",
     title: "Speaker Award Ceremony & Networking Break",
     speaker: "IESA Executive Council & Honorees",
     category: "Protocols & Ceremonies",
     description:
-      "5-minute formal plaque presentation honoring our morning distinguished keynote speakers, followed by a 5-minute networking and leg-stretch interlude.",
+      "Formal plaque presentation honoring distinguished keynote speakers, followed by a refreshment and networking interlude.",
     location: "Auditorium Concourse",
     imageUrl: "/assets/generated/kaaf_keynote.png",
     photoCaption: "Honorary Plaque Presentations & Delegate Networking",
-    stampText: "HONORS // MIDDAY BREAK",
+    stampText: "SESSION // 08 · HONORS",
     badgeColor: "bg-[#ece7d8] text-[#040032]",
   },
   {
     id: "session-09",
-    time: "01:00 PM - 01:30 PM",
+    time: "SESSION 09",
     duration: "30 MINS",
     title: "Simultaneous Technical Workshops & Masterclasses",
     speaker: "Oluwatobi (Robotics) · Oyindamola Esq (Tech Law) · Emmanuel (Cyber) · Itel Energy (Energy)",
     category: "Workshops",
     description:
-      "Concurrent 30-minute breakout tracks: Hands-on Robotics & Physical AI (Aurora Robotics), Tech Law & Intellectual Property (Oyindamola Fasanmi Esq), Industrial Cybersecurity (Cyvant), and Smarter Energy Solutions & Innovation (Itel Energy ⚡).",
+      "Concurrent breakout tracks: Hands-on Robotics & Physical AI (Aurora Robotics), Tech Law & IP (Oyindamola Fasanmi Esq), Industrial Cybersecurity (Cyvant), and Energy Solutions & Innovation (Itel Energy ⚡).",
     location: "Robotics Lab & Tech Precincts",
     imageUrl: "/assets/generated/itel.png",
     photoCaption: "Concurrent Breakout Tracks: Robotics, Tech Law, SCADA & Itel Energy Solutions ⚡",
-    stampText: "WORKSHOPS // 30 MIN BREAKOUT",
+    stampText: "SESSION // 09 · WORKSHOPS",
     badgeColor: "bg-[#3fffe8] text-[#040032]",
   },
   {
     id: "session-10",
-    time: "01:30 PM - 01:45 PM",
+    time: "SESSION 10",
     duration: "15 MINS",
     title: "Chairman Keynote Address & Sponsor Talk",
     speaker: "Conference Chairman & Partner Delegates",
     category: "Keynotes & Talks",
     description:
-      "10-minute strategic keynote by the Conference Chairman, followed by a 5-minute corporate sponsor presentation celebrating Nigerian engineering talent.",
+      "Strategic keynote address by the Conference Chairman, followed by a corporate partner spotlight celebrating engineering talent.",
     location: "KAAF Main Stage",
     imageUrl: "/assets/generated/facilitator.png",
     photoCaption: "Conference Chairman Keynote Address",
-    stampText: "CHAIRMAN KEYNOTE // STAGE",
+    stampText: "SESSION // 10 · CHAIRMAN",
     badgeColor: "bg-[#c6f552] text-[#040032]",
   },
   {
     id: "session-11",
-    time: "01:45 PM - 02:30 PM",
+    time: "SESSION 11",
     duration: "45 MINS",
     title: "Process Day Hackathon Showcase & Winner Honors",
     speaker: "Hackathon Finalists, Mentors & Judging Panel",
     category: "Competitions",
     description:
-      "35 minutes of live student prototype presentations, award presentations to workshop facilitators (2:20 PM), and the coronation of hackathon winners (2:25 PM).",
+      "Live student prototype presentations, recognition of workshop facilitators, and the coronation of hackathon winners.",
     location: "Innovation Arena",
     imageUrl: "/assets/generated/iso_analytics_card.png",
     photoCaption: "Hackathon Engineering Prototypes & Award Ceremonies",
-    stampText: "HACKATHON // FINALS",
+    stampText: "SESSION // 11 · HACKATHON",
     badgeColor: "bg-[#ffdb58] text-[#040032]",
   },
   {
     id: "session-12",
-    time: "02:30 PM - 02:45 PM",
+    time: "SESSION 12",
     duration: "15 MINS",
     title: "Engineering Community Games & Audience Trivia",
     speaker: "Conference Social & Engagement Committee",
     category: "Protocols & Ceremonies",
     description:
-      "15 minutes of audience trivia, icebreakers, engineering puzzles, and social community prizes for all attendees.",
+      "Audience trivia, icebreakers, engineering puzzles, and community prizes for delegates.",
     location: "KAAF Main Hall",
     imageUrl: "/assets/generated/iso_gear_ai.png",
     photoCaption: "Engineering Trivia & Community Social Interaction",
-    stampText: "COMMUNITY // TRIVIA",
+    stampText: "SESSION // 12 · TRIVIA",
     badgeColor: "bg-[#ece7d8] text-[#040032]",
   },
   {
     id: "session-13",
-    time: "02:45 PM - 03:50 PM",
-    duration: "65 MINS",
+    time: "SESSION 13",
+    duration: "55 MINS",
     title: "Research Paper Presentation & Peace Club Awards",
     speaker: "Undergraduate Researchers, Peace Club & Faculty Judges",
     category: "Paper Presentations",
     description:
-      "55 minutes of competitive student research presentations across industrial engineering disciplines, followed by a 5-minute Peace Club session (3:40 PM) and paper presentation winner awards (3:45 PM).",
+      "Competitive student research presentations across industrial engineering tracks, followed by a Peace Club segment and presentation winner awards.",
     location: "Academic Stage",
     imageUrl: "/assets/generated/iso_robotic_arm.png",
     photoCaption: "Undergraduate Research Defense & Faculty Evaluation",
-    stampText: "RESEARCH PAPERS // ACADEMIC",
+    stampText: "SESSION // 13 · PAPERS",
     badgeColor: "bg-[#bbf2f6] text-[#040032]",
   },
   {
     id: "session-14",
-    time: "03:50 PM - 04:00 PM",
-    duration: "10 MINS",
+    time: "SESSION 14",
+    duration: "15 MINS",
     title: "Vote of Thanks, Closing Prayer & Departure",
     speaker: "Conference Lead & IESA Executive Committee",
     category: "Protocols & Ceremonies",
     description:
-      "Official vote of thanks by the Conference Lead, closing prayers, sponsor appreciation, and formal attendee departure to conclude IESA Process Day 2026.",
+      "Official vote of thanks by the Conference Lead, closing prayers, sponsor appreciation, and attendee departure.",
     location: "KAAF Main Auditorium",
     imageUrl: "/assets/generated/logo.png",
     photoCaption: "IESA Process Day 2026 Concluding Assembly",
-    stampText: "CLOSING // DEPARTURE",
+    stampText: "SESSION // 14 · CLOSING",
     badgeColor: "bg-[#ece7d8] text-[#040032]",
   },
   {
@@ -285,12 +285,89 @@ interface TurnState {
 export default function ProgramJournal() {
   const [displayIndex, setDisplayIndex] = useState(0);
   const [turnState, setTurnState] = useState<TurnState | null>(null);
+  const [liveSession, setLiveSession] = useState<{ id: string; shortTitle: string } | null>(null);
   const total = JOURNAL_PAGES.length;
 
   // Real-time normalized turn progress (0 = at rest, 1 = fully flipped to 180deg)
   const turnProgress = useMotionValue(0);
   const isAnimatingRef = useRef(false);
   const currentTurnStateRef = useRef<TurnState | null>(null);
+
+  // Poll for live session from MongoDB real-time state
+  useEffect(() => {
+    let isMounted = true;
+    const fetchActive = async () => {
+      try {
+        const res = await fetch("/api/program/active");
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data.activeSession) {
+            setLiveSession({
+              id: data.activeSession.id,
+              shortTitle: data.activeSession.shortTitle,
+            });
+          }
+        }
+      } catch {
+        // Silently retain
+      }
+    };
+    fetchActive();
+    const interval = setInterval(fetchActive, 12000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
+  // Jump to specific session spread with animated flip
+  const jumpToSession = (sessionId: string) => {
+    const targetIdx = JOURNAL_PAGES.findIndex((p) => p.id === sessionId);
+    if (targetIdx === -1 || targetIdx === displayIndex) return;
+
+    if (isAnimatingRef.current) {
+      setDisplayIndex(targetIdx);
+      setTurnState(null);
+      currentTurnStateRef.current = null;
+      turnProgress.set(0);
+      isAnimatingRef.current = false;
+      return;
+    }
+
+    isAnimatingRef.current = true;
+    const direction = targetIdx > displayIndex ? "next" : "prev";
+    const nextState: TurnState = { direction, targetIndex: targetIdx };
+    currentTurnStateRef.current = nextState;
+    setTurnState(nextState);
+    turnProgress.set(0);
+
+    animate(turnProgress, 1, {
+      duration: 0.45,
+      ease: [0.22, 1, 0.36, 1],
+      onComplete: () => {
+        flushSync(() => {
+          setDisplayIndex(targetIdx);
+          setTurnState(null);
+          currentTurnStateRef.current = null;
+        });
+        turnProgress.set(0);
+        isAnimatingRef.current = false;
+      },
+    });
+  };
+
+  // External event listener (e.g. from Navbar Live Stage badge click)
+  useEffect(() => {
+    const handleJumpEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<{ sessionId?: string }>;
+      if (customEvent.detail?.sessionId) {
+        jumpToSession(customEvent.detail.sessionId);
+      }
+    };
+
+    window.addEventListener("jump-to-session", handleJumpEvent);
+    return () => window.removeEventListener("jump-to-session", handleJumpEvent);
+  }, [displayIndex]);
 
   // Trigger an animated page turn to Next or Prev
   const triggerTurn = (direction: "next" | "prev") => {
@@ -460,7 +537,7 @@ export default function ProgramJournal() {
                 : `SPREAD ${displayIndex} OF ${total - 2}`}
             </span>
             <span className="text-[#3fffe8] hidden sm:inline">
-              · {activePage.time || "10:00 AM - 4:00 PM"}
+              · {activePage.duration || "SCHEDULE"}
             </span>
           </div>
 
@@ -472,6 +549,18 @@ export default function ProgramJournal() {
             <ChevronRightIcon className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Jump to Active Live Session Button if currently on different spread */}
+        {liveSession && activePage.id !== liveSession.id && (
+          <button
+            type="button"
+            onClick={() => jumpToSession(liveSession.id)}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#0a3825] border border-[#c6f552]/50 text-[#c6f552] text-[11px] font-mono-meta font-bold uppercase hover:bg-[#0a3825]/85 transition-all cursor-pointer shadow-md"
+          >
+            <span className="w-2 h-2 rounded-full bg-[#c6f552] shadow-[0_0_6px_#c6f552]" />
+            <span>Jump to Live Spread: {liveSession.shortTitle} ❯</span>
+          </button>
+        )}
 
         {/* Page Scrubber Dots */}
         <div className="flex items-center gap-1.5 flex-wrap justify-center max-w-lg px-4">
@@ -564,7 +653,7 @@ function BookStage({
 function ClosedFrontCoverAtRest() {
   return (
     <div
-      className="relative w-[68vw] max-w-[220px] sm:max-w-[320px] md:max-w-[420px] h-[300px] xs:h-[315px] sm:h-[390px] md:h-[470px] flex items-center justify-center select-none"
+      className="relative w-[60vw] max-w-[195px] sm:max-w-[320px] md:max-w-[420px] h-[300px] xs:h-[315px] sm:h-[390px] md:h-[470px] flex items-center justify-center select-none"
       style={{ transformStyle: "preserve-3d" }}
     >
       {/* 3D Ground Shadow */}
@@ -651,7 +740,7 @@ function ClosedFrontCoverAtRest() {
 function ClosedBackCoverAtRest() {
   return (
     <div
-      className="relative w-[68vw] max-w-[220px] sm:max-w-[320px] md:max-w-[420px] h-[300px] xs:h-[315px] sm:h-[390px] md:h-[470px] flex items-center justify-center select-none"
+      className="relative w-[60vw] max-w-[195px] sm:max-w-[320px] md:max-w-[420px] h-[300px] xs:h-[315px] sm:h-[390px] md:h-[470px] flex items-center justify-center select-none"
       style={{ transformStyle: "preserve-3d" }}
     >
       {/* 3D Ground Shadow */}
@@ -758,7 +847,7 @@ function OpenBookSpreadStage({
 
   return (
     <div
-      className="relative w-[95vw] max-w-[380px] sm:max-w-[620px] md:max-w-[800px] lg:max-w-[880px] h-[300px] xs:h-[315px] sm:h-[390px] md:h-[470px] flex items-center justify-center select-none"
+      className="relative w-[88vw] max-w-[340px] sm:max-w-[620px] md:max-w-[800px] lg:max-w-[880px] h-[300px] xs:h-[315px] sm:h-[390px] md:h-[470px] flex items-center justify-center select-none"
       style={{ transformStyle: "preserve-3d" }}
     >
       {/* 3D Ground Shadow */}
@@ -1093,7 +1182,7 @@ function OpeningFrontCoverTransition({
 
   return (
     <div
-      className="relative w-[95vw] max-w-[380px] sm:max-w-[620px] md:max-w-[800px] lg:max-w-[880px] h-[300px] xs:h-[315px] sm:h-[390px] md:h-[470px] flex items-center justify-center select-none"
+      className="relative w-[88vw] max-w-[340px] sm:max-w-[620px] md:max-w-[800px] lg:max-w-[880px] h-[300px] xs:h-[315px] sm:h-[390px] md:h-[470px] flex items-center justify-center select-none"
       style={{ transformStyle: "preserve-3d" }}
     >
       <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 w-[88%] h-8 bg-black/35 rounded-full filter blur-xl pointer-events-none" />
@@ -1173,7 +1262,7 @@ function OpeningBackCoverTransition({
 
   return (
     <div
-      className="relative w-[95vw] max-w-[380px] sm:max-w-[620px] md:max-w-[800px] lg:max-w-[880px] h-[300px] xs:h-[315px] sm:h-[390px] md:h-[470px] flex items-center justify-center select-none"
+      className="relative w-[88vw] max-w-[340px] sm:max-w-[620px] md:max-w-[800px] lg:max-w-[880px] h-[300px] xs:h-[315px] sm:h-[390px] md:h-[470px] flex items-center justify-center select-none"
       style={{ transformStyle: "preserve-3d" }}
     >
       <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 w-[88%] h-8 bg-black/35 rounded-full filter blur-xl pointer-events-none" />
@@ -1451,27 +1540,29 @@ function StandardLeftPageContent({ page }: { page: JournalItem }) {
       <div className="absolute right-0 inset-y-0 w-4 sm:w-8 bg-gradient-to-l from-black/8 via-black/2 to-transparent pointer-events-none select-none mix-blend-multiply z-20" />
       <div className="absolute right-0 inset-y-0 w-px bg-[#040032]/10 pointer-events-none select-none z-20" />
 
-      {/* Content */}
-      <div className="relative z-10 space-y-1 sm:space-y-2 pointer-events-none select-none">
-        <div className="flex flex-wrap items-center justify-between gap-1 sm:gap-2">
-          <span
-            className={`px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-mono-meta font-extrabold uppercase border border-[#040032] ${
-              page.badgeColor || "bg-[#c6f552] text-[#040032]"
-            }`}
-          >
-            {page.category}
-          </span>
+      {/* Top Header Tags Row */}
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-1 sm:gap-2 pointer-events-none select-none">
+        <span
+          className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-mono-meta font-extrabold uppercase border border-[#040032] ${
+            page.badgeColor || "bg-[#c6f552] text-[#040032]"
+          }`}
+        >
+          {page.category}
+        </span>
 
-          <div className="flex items-center gap-1 text-[9px] sm:text-xs font-mono-meta font-extrabold text-[#0a3825]">
-            <ClockIcon className="w-3 h-3 sm:w-4 sm:h-4 text-[#0a3825]" />
-            <span>{page.time}</span>
-            <span className="text-[8px] sm:text-[10px] px-1 py-0.2 rounded bg-[#040032]/10 hidden sm:inline">
+        <div className="flex items-center gap-1 text-[8px] sm:text-[11px] font-mono-meta font-extrabold text-[#0a3825]">
+          <span>{page.time}</span>
+          {page.duration && (
+            <span className="text-[7px] sm:text-[9px] px-1.5 py-0.5 rounded bg-[#040032]/10 font-bold">
               {page.duration}
             </span>
-          </div>
+          )}
         </div>
+      </div>
 
-        <h3 className="font-serif-display text-xs sm:text-lg md:text-2xl font-bold text-[#040032] leading-snug line-clamp-2">
+      {/* Center Textual Content Block - Placed vertically in the middle */}
+      <div className="relative z-10 my-auto space-y-1.5 sm:space-y-2 pointer-events-none select-none">
+        <h3 className="font-serif-display text-xs sm:text-base md:text-xl font-bold text-[#040032] leading-snug line-clamp-2">
           {page.title}
         </h3>
 
@@ -1495,7 +1586,7 @@ function StandardLeftPageContent({ page }: { page: JournalItem }) {
       <div className="relative z-10 pt-1 sm:pt-2 border-t border-[#040032]/10 flex items-center justify-between pointer-events-none select-none">
         <div className="flex items-center gap-1 text-[8px] sm:text-xs font-mono-meta text-[#0a3825] font-bold">
           <MapPinIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0a3825]" />
-          <span className="truncate max-w-[100px] sm:max-w-none">{page.location}</span>
+          <span className="truncate max-w-[95px] sm:max-w-none">{page.location}</span>
         </div>
 
         <span className="text-[8px] sm:text-[10px] font-mono-meta text-[#040032]/50 font-extrabold hidden sm:inline">

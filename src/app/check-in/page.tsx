@@ -20,7 +20,10 @@ import {
   playInvalidFormatFeedback,
 } from "@/lib/feedback";
 
-type Mode = "scan" | "lookup";
+import LiveStageControlTab from "@/components/checkin/LiveStageControlTab";
+import { RadioIcon } from "@heroicons/react/24/solid";
+
+type Mode = "scan" | "lookup" | "stage";
 
 export default function CheckinTerminalPage() {
   const [mode, setMode] = useState<Mode>("scan");
@@ -193,36 +196,49 @@ export default function CheckinTerminalPage() {
 
         {/* Mode Segmented Tab Switcher */}
         {!result && (
-          <div className="w-full max-w-md mx-auto grid grid-cols-2 p-1 rounded-2xl bg-[#02001e] border border-white/15 shadow-md">
+          <div className="w-full max-w-lg mx-auto grid grid-cols-3 p-1 rounded-2xl bg-[#02001e] border border-white/15 shadow-md">
             <button
               type="button"
               onClick={() => setMode("scan")}
-              className={`py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold font-sans flex items-center justify-center gap-2 transition-all cursor-pointer ${
+              className={`py-2 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold font-sans flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 mode === "scan"
                   ? "bg-[#c6f552] text-[#040032] shadow-sm"
                   : "text-white/70 hover:text-white"
               }`}
             >
               <QrCodeIcon className="w-4 h-4" />
-              <span>Camera Scan</span>
+              <span>Scan</span>
             </button>
 
             <button
               type="button"
               onClick={() => setMode("lookup")}
-              className={`py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold font-sans flex items-center justify-center gap-2 transition-all cursor-pointer ${
+              className={`py-2 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold font-sans flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 mode === "lookup"
                   ? "bg-[#3fffe8] text-[#040032] shadow-sm"
                   : "text-white/70 hover:text-white"
               }`}
             >
               <MagnifyingGlassIcon className="w-4 h-4" />
-              <span>Manual Search</span>
+              <span>Lookup</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setMode("stage")}
+              className={`py-2 px-2 sm:px-3 rounded-xl text-xs sm:text-sm font-bold font-sans flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                mode === "stage"
+                  ? "bg-white text-[#040032] shadow-sm"
+                  : "text-white/70 hover:text-white"
+              }`}
+            >
+              <RadioIcon className="w-4 h-4 text-emerald-500" />
+              <span>Live Stage</span>
             </button>
           </div>
         )}
 
-        {/* Viewport: Verification Result OR Scanner / Lookup Tab */}
+        {/* Viewport: Verification Result OR Scanner / Lookup / Stage Tab */}
         <div className="w-full flex items-center justify-center">
           {result ? (
             <VerificationCard
@@ -245,11 +261,13 @@ export default function CheckinTerminalPage() {
                 </div>
               )}
             </div>
-          ) : (
+          ) : mode === "lookup" ? (
             <ManualLookupTab
               onCheckinSubmit={handleManualCheckin}
               isLoading={isVerifying}
             />
+          ) : (
+            <LiveStageControlTab />
           )}
         </div>
       </div>

@@ -8,6 +8,8 @@ import { ArrowUpRightIcon, CheckCircleIcon } from "@heroicons/react/24/solid";
 export default function Footer() {
   const [emailInput, setEmailInput] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const marqueeItems = [
     { text: "IESA PROCESS DAY 2026" },
@@ -16,10 +18,31 @@ export default function Footer() {
     { text: "KAAF AUDITORIUM UI" },
   ];
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!emailInput) return;
-    setSubscribed(true);
+    if (!emailInput || isLoading) return;
+
+    setIsLoading(true);
+    setErrorMessage(null);
+
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailInput }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMessage(data.error || "Failed to subscribe. Please try again.");
+      } else {
+        setSubscribed(true);
+      }
+    } catch {
+      setErrorMessage("Network error. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -82,38 +105,54 @@ export default function Footer() {
             </span>
           </div>
 
-          {/* Navigation Links Grid Row (4 Columns with 1px borders) */}
-          <div className="grid grid-cols-2 md:grid-cols-4 border-b border-white/15">
+          {/* Navigation Links Grid Row (6 Columns with 1px borders) */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 border-b border-white/15">
             <a
-              href="#why-attend"
-              className="p-5 sm:p-6 border-r border-b md:border-b-0 border-white/15 hover:bg-white/5 transition-colors flex items-center justify-between font-mono-meta text-xs sm:text-sm font-bold text-[#faf8f2] group"
+              href="#speakers"
+              className="p-4 sm:p-5 border-r border-b lg:border-b-0 border-white/15 hover:bg-white/5 transition-colors flex items-center justify-between font-mono-meta text-xs font-bold text-[#faf8f2] group cursor-pointer"
             >
-              <span>Highlights</span>
-              <ArrowUpRightIcon className="w-4 h-4 text-[#c6f552] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <span>Speakers</span>
+              <ArrowUpRightIcon className="w-3.5 h-3.5 text-[#c6f552] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
 
             <a
-              href="#speakers"
-              className="p-5 sm:p-6 border-b md:border-b-0 md:border-r border-white/15 hover:bg-white/5 transition-colors flex items-center justify-between font-mono-meta text-xs sm:text-sm font-bold text-[#faf8f2] group"
+              href="#hackathon"
+              className="p-4 sm:p-5 border-r border-b lg:border-b-0 border-white/15 hover:bg-white/5 transition-colors flex items-center justify-between font-mono-meta text-xs font-bold text-[#faf8f2] group cursor-pointer"
             >
-              <span>Speakers</span>
-              <ArrowUpRightIcon className="w-4 h-4 text-[#c6f552] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <span>Hackathon</span>
+              <ArrowUpRightIcon className="w-3.5 h-3.5 text-[#c6f552] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </a>
+
+            <a
+              href="#call-for-papers"
+              className="p-4 sm:p-5 border-r border-b lg:border-b-0 border-white/15 hover:bg-white/5 transition-colors flex items-center justify-between font-mono-meta text-xs font-bold text-[#faf8f2] group cursor-pointer"
+            >
+              <span>Research</span>
+              <ArrowUpRightIcon className="w-3.5 h-3.5 text-[#c6f552] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
 
             <a
               href="#schedule"
-              className="p-5 sm:p-6 border-r border-white/15 hover:bg-white/5 transition-colors flex items-center justify-between font-mono-meta text-xs sm:text-sm font-bold text-[#faf8f2] group"
+              className="p-4 sm:p-5 border-r border-b lg:border-b-0 border-white/15 hover:bg-white/5 transition-colors flex items-center justify-between font-mono-meta text-xs font-bold text-[#faf8f2] group cursor-pointer"
             >
               <span>Schedule</span>
-              <ArrowUpRightIcon className="w-4 h-4 text-[#c6f552] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <ArrowUpRightIcon className="w-3.5 h-3.5 text-[#c6f552] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </a>
+
+            <a
+              href="/certificate"
+              className="p-4 sm:p-5 border-r border-b lg:border-b-0 border-white/15 hover:bg-white/5 transition-colors flex items-center justify-between font-mono-meta text-xs font-bold text-[#c6f552] group cursor-pointer"
+            >
+              <span>Certificate</span>
+              <ArrowUpRightIcon className="w-3.5 h-3.5 text-[#c6f552] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
 
             <a
               href="#venue"
-              className="p-5 sm:p-6 hover:bg-white/5 transition-colors flex items-center justify-between font-mono-meta text-xs sm:text-sm font-bold text-[#faf8f2] group"
+              className="p-4 sm:p-5 hover:bg-white/5 transition-colors flex items-center justify-between font-mono-meta text-xs font-bold text-[#faf8f2] group cursor-pointer"
             >
-              <span>Auditorium Venue</span>
-              <ArrowUpRightIcon className="w-4 h-4 text-[#c6f552] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <span>Venue & Map</span>
+              <ArrowUpRightIcon className="w-3.5 h-3.5 text-[#c6f552] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
           </div>
 
@@ -131,24 +170,41 @@ export default function Footer() {
 
               {subscribed ? (
                 <div className="p-4 rounded-xl bg-[#c6f552]/20 border border-[#c6f552] text-[#c6f552] text-xs font-mono-meta font-bold flex items-center gap-2">
-                  <CheckCircleIcon className="w-5 h-5 text-[#c6f552]" />
-                  <span>Subscribed! Thank you for joining our network.</span>
+                  <CheckCircleIcon className="w-5 h-5 text-[#c6f552] flex-shrink-0" />
+                  <span>Subscribed! Lecture slides and resources will be delivered to your inbox.</span>
                 </div>
               ) : (
-                <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-2 pt-2">
-                  <input
-                    type="email"
-                    value={emailInput}
-                    onChange={(e) => setEmailInput(e.target.value)}
-                    placeholder="name@email.com"
-                    className="flex-grow px-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-xs font-mono-meta text-[#faf8f2] placeholder-white/40 focus:outline-none focus:border-[#c6f552] transition-colors"
-                  />
-                  <button
-                    type="submit"
-                    className="px-5 py-2.5 rounded-xl bg-[#c6f552] hover:bg-[#b5e83a] text-[#040032] font-mono-meta text-xs font-extrabold transition-all active:scale-[0.98] whitespace-nowrap"
-                  >
-                    Subscribe
-                  </button>
+                <form onSubmit={handleNewsletterSubmit} className="space-y-2 pt-1">
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="email"
+                      required
+                      value={emailInput}
+                      onChange={(e) => setEmailInput(e.target.value)}
+                      placeholder="name@email.com"
+                      disabled={isLoading}
+                      className="flex-grow px-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-xs font-mono-meta text-[#faf8f2] placeholder-white/40 focus:outline-none focus:border-[#c6f552] transition-colors disabled:opacity-50"
+                    />
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="px-5 py-2.5 rounded-xl bg-[#c6f552] hover:bg-[#b5e83a] text-[#040032] font-mono-meta text-xs font-extrabold transition-all active:scale-[0.98] whitespace-nowrap cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
+                    >
+                      {isLoading ? (
+                        <>
+                          <div className="w-3.5 h-3.5 rounded-full border-2 border-[#040032] border-t-transparent animate-spin" />
+                          <span>Saving...</span>
+                        </>
+                      ) : (
+                        <span>Subscribe</span>
+                      )}
+                    </button>
+                  </div>
+                  {errorMessage && (
+                    <p className="text-[11px] font-mono text-red-400">
+                      {errorMessage}
+                    </p>
+                  )}
                 </form>
               )}
         </div>

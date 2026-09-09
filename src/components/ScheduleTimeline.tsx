@@ -21,7 +21,8 @@ export type ScheduleCategory =
   | "Protocols & Ceremonies";
 
 interface ScheduleItem {
-  time: string;
+  id: string;
+  order: string;
   duration: string;
   title: string;
   speaker?: string;
@@ -33,6 +34,31 @@ interface ScheduleItem {
 export default function ScheduleTimeline() {
   const [viewMode, setViewMode] = useState<"journal" | "list">("journal");
   const [filter, setFilter] = useState<string>("All");
+  const [activeSessionId, setActiveSessionId] = useState<string>("session-01");
+
+  // Poll for active stage session from MongoDB real-time state
+  useEffect(() => {
+    let isMounted = true;
+    const fetchActive = async () => {
+      try {
+        const res = await fetch("/api/program/active", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (isMounted && data.activeSessionId) {
+          setActiveSessionId(data.activeSessionId);
+        }
+      } catch {
+        // Silently retain current state
+      }
+    };
+
+    fetchActive();
+    const interval = setInterval(fetchActive, 12000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     // Dispatch resize/refresh event to inform ParallaxWrapper and GSAP of new height
@@ -54,7 +80,7 @@ export default function ScheduleTimeline() {
 
   const marqueeItems = [
     { text: "OFFICIAL ORDER OF PROGRAM" },
-    { text: "PROGRAM DURATION: 10:00 AM — 4:00 PM" },
+    { text: "CONFERENCE PROCEEDINGS · STARTS 10:00 AM" },
     { text: "FLAGSHIP VC KEYNOTE" },
     { text: "SIMULTANEOUS WORKSHOPS" },
     { text: "ANNUAL DEBATE & HACKATHON" },
@@ -64,129 +90,143 @@ export default function ScheduleTimeline() {
 
   const schedule: ScheduleItem[] = [
     {
-      time: "10:00 AM - 10:35 AM",
+      id: "session-01",
+      order: "Session 01",
       duration: "35 mins",
       title: "Arrival, Anthems, Interactive Welcome & Presidential Speech",
       speaker: "IESA President & Executive Council",
       category: "Protocols & Ceremonies",
-      description: "Guest & attendee arrival, host introduction, opening prayer, National and UI School Anthems, short attendee interactive session, followed by the President's opening speech.",
+      description: "Guest reception, attendee check-in, rendition of the National and UI Anthems, interactive welcome, and the President's opening speech.",
       location: "KAAF Main Auditorium",
     },
     {
-      time: "10:35 AM - 11:05 AM",
+      id: "session-02",
+      order: "Session 02",
       duration: "30 mins",
       title: "1st Speaker Session: VC Opening Keynote & Q&A",
       speaker: "Prof. Kayode Oyebode Adebowale (VC, University of Ibadan)",
       category: "Keynotes & Talks",
-      description: "25-minute keynote address on 'Academic Excellence & Institutional Innovation in Engineering Education', followed by an open 5-minute attendee Q&A session.",
+      description: "Flagship keynote address on 'Academic Excellence & Institutional Innovation in Engineering Education', followed by interactive attendee Q&A.",
       location: "KAAF Main Auditorium",
     },
     {
-      time: "11:05 AM - 11:15 AM",
+      id: "session-03",
+      order: "Session 03",
       duration: "10 mins",
       title: "Headline Sponsor Address & Strategic Spotlight",
       speaker: "Headline Sponsor Leadership",
       category: "Keynotes & Talks",
-      description: "10-minute presentation highlighting industrial engineering partnerships, graduate career pathways, and technology sponsorships.",
+      description: "Special address highlighting industrial engineering partnerships, graduate career pathways, and technology sponsorships.",
       location: "KAAF Main Stage",
     },
     {
-      time: "11:15 AM - 11:45 AM",
+      id: "session-04",
+      order: "Session 04",
       duration: "30 mins",
       title: "2nd Speaker Session: Robotics, AI & Process Discipline",
       speaker: "Dr. Olusola Sayeed Ayoola (Founder & CEO, RAIN)",
       category: "Keynotes & Talks",
-      description: "25-minute address on 'Building What AI Can't Replace: How Process Discipline Creates Impact, Not Just Output', concluding with a 5-minute interactive Q&A.",
+      description: "Technical address on 'Building What AI Can't Replace: How Process Discipline Creates Impact, Not Just Output', with interactive audience questions.",
       location: "KAAF Main Auditorium",
     },
     {
-      time: "11:45 AM - 11:50 AM",
+      id: "session-05",
+      order: "Session 05",
       duration: "5 mins",
       title: "Delegate Giveaway & Audience Engagement Interlude",
       speaker: "Conference Welfare & Engagement Leads",
       category: "Protocols & Ceremonies",
-      description: "Fast-paced giveaway session featuring conference merchandise, sponsored gift packages, and audience trivia prizes.",
+      description: "Interactive giveaway interlude featuring conference merchandise, sponsored gift packages, and audience trivia prizes.",
       location: "Auditorium Concourse",
     },
     {
-      time: "11:50 AM - 12:20 PM",
+      id: "session-06",
+      order: "Session 06",
       duration: "30 mins",
       title: "IESA Annual Debate, Scholarship Spotlight & Winner Presentation",
       speaker: "Student Debate Finalists & Academic Panel",
       category: "Competitions",
-      description: "20-minute intense debate on emerging industrial paradigms, a 5-minute study path and scholarship feature, and presentation of the debate winner awards.",
+      description: "Annual student debate on emerging industrial paradigms, scholarship feature, and presentation of the debate winner awards.",
       location: "KAAF Main Stage",
     },
     {
-      time: "12:20 PM - 12:50 PM",
+      id: "session-07",
+      order: "Session 07",
       duration: "30 mins",
       title: "3rd Speaker Session: Professional Capacity & Habit Building",
       speaker: "Engr. Adebayo Otokiti (Engineering Programme Manager, Calor Gas UK)",
       category: "Keynotes & Talks",
-      description: "25-minute keynote on 'The Professional You Are Becoming: Why Habits and Commitments Determine Capacity Long Before Opportunity Arrives' (accompanied by snack service) + 5-minute Q&A.",
+      description: "Executive keynote on 'The Professional You Are Becoming: Why Habits and Commitments Determine Capacity Long Before Opportunity Arrives' + audience Q&A.",
       location: "KAAF Main Auditorium",
     },
     {
-      time: "12:50 PM - 01:00 PM",
+      id: "session-08",
+      order: "Session 08",
       duration: "10 mins",
       title: "Award Presentation to Keynote Speakers & Networking Break",
       speaker: "IESA Executive Council & Guests",
       category: "Protocols & Ceremonies",
-      description: "5-minute honor award plaque presentation to morning keynote speakers, followed by a 5-minute refreshment and networking intermission.",
+      description: "Honorary plaque presentations recognizing our distinguished morning keynote speakers, followed by a networking intermission.",
       location: "Auditorium Concourse",
     },
     {
-      time: "01:00 PM - 01:30 PM",
+      id: "session-09",
+      order: "Session 09",
       duration: "30 mins",
       title: "Simultaneous Hands-On Workshop Sessions",
       speaker: "Oluwatobi (Robotics) · Oyindamola Esq (Tech Law) · Emmanuel (Cybersecurity) · Itel Energy (Energy)",
       category: "Workshops",
-      description: "Concurrent 30-minute breakout tracks: Hands-on Robotics & Physical AI (Aurora Robotics), Tech Law & Intellectual Property (Oyindamola Fasanmi Esq), Industrial Cybersecurity (Cyvant), and Energy Solutions & Innovation (Itel Energy ⚡).",
+      description: "Concurrent breakout tracks: Hands-on Robotics & Physical AI (Aurora Robotics), Tech Law & IP (Oyindamola Fasanmi Esq), Industrial Cybersecurity (Cyvant), and Energy Solutions & Innovation (Itel Energy ⚡).",
       location: "Robotics Lab & Main Precincts",
     },
     {
-      time: "01:30 PM - 01:45 PM",
+      id: "session-10",
+      order: "Session 10",
       duration: "15 mins",
       title: "Chairman Keynote Address & Sponsor Talk",
       speaker: "Conference Chairman & Partner Delegates",
       category: "Keynotes & Talks",
-      description: "10-minute strategic keynote by the Conference Chairman, followed by a 5-minute partner sponsor presentation supporting student engineering development.",
+      description: "Strategic keynote by the Conference Chairman, followed by a partner spotlight celebrating student engineering excellence.",
       location: "KAAF Main Stage",
     },
     {
-      time: "01:45 PM - 02:30 PM",
+      id: "session-11",
+      order: "Session 11",
       duration: "45 mins",
       title: "Process Day Hackathon Showcase, Facilitator Honors & Winner Awards",
       speaker: "Hackathon Teams, Mentors & Judging Panel",
       category: "Competitions",
-      description: "35-minute presentation of engineering prototypes built during the hackathon, award presentations to workshop facilitators (2:20 PM), and announcement of the winning teams (2:25 PM).",
+      description: "Presentation of engineering prototypes built during the hackathon, recognition of workshop facilitators, and coronation of winning teams.",
       location: "Innovation Arena",
     },
     {
-      time: "02:30 PM - 02:45 PM",
+      id: "session-12",
+      order: "Session 12",
       duration: "15 mins",
       title: "Engineering Community Games & Audience Trivia",
       speaker: "Conference Social Committee",
       category: "Protocols & Ceremonies",
-      description: "15 minutes of audience trivia, interactive games, and peer networking activities for all delegates.",
+      description: "Audience trivia, interactive games, and peer networking activities for all delegates.",
       location: "KAAF Main Auditorium",
     },
     {
-      time: "02:45 PM - 03:50 PM",
-      duration: "65 mins",
+      id: "session-13",
+      order: "Session 13",
+      duration: "55 mins",
       title: "Research Paper Presentation, Peace Club Session & Winner Awards",
       speaker: "Student Researchers, Peace Club Leads & Faculty Panel",
       category: "Paper Presentations",
-      description: "55 minutes of competitive undergraduate research presentations across industrial engineering disciplines, followed by a 5-minute Peace Club session (3:40 PM) and paper presentation winner awards (3:45 PM).",
+      description: "Competitive undergraduate research presentations across industrial engineering disciplines, Peace Club feature, and paper presentation awards.",
       location: "Academic Stage",
     },
     {
-      time: "03:50 PM - 04:00 PM",
-      duration: "10 mins",
+      id: "session-14",
+      order: "Session 14",
+      duration: "15 mins",
       title: "Conference Lead Vote of Thanks, Closing Prayer & Departure",
       speaker: "Conference Lead & IESA Executive Committee",
       category: "Protocols & Ceremonies",
-      description: "5-minute official vote of thanks by the Conference Lead, closing prayers, sponsor appreciation, and formal attendee departure.",
+      description: "Official vote of thanks by the Conference Lead, closing prayers, sponsor appreciation, and formal attendee departure.",
       location: "KAAF Main Auditorium",
     },
   ];
@@ -226,7 +266,7 @@ export default function ScheduleTimeline() {
       <div className="mt-0 mb-8 overflow-visible">
         <TailoredMarqueeStrip
           items={marqueeItems}
-          rotateClass="rotate-[1.85deg]"
+          rotateClass="-rotate-[1.85deg]"
           bgClass="bg-[#040032]"
           borderClass="border-[#c6f552]"
           textClass="text-[#c6f552]"
@@ -238,16 +278,16 @@ export default function ScheduleTimeline() {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6 border-b border-[#040032]/10 pb-8">
           <div>
             <span className="font-mono-meta text-[10px] sm:text-xs font-bold text-[#0a3825] uppercase tracking-widest block mb-2">
-              TODAY&apos;S SCHEDULE // 10:00 AM — 4:00 PM LIVE
+              ORDER OF PROGRAM // STARTS 10:00 AM LIVE
             </span>
             <h2 className="font-serif-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#040032]">
-              Today&apos;s <span className="font-serif-italic text-[#0a3825]">Schedule</span>
+              Today&apos;s <span className="font-serif-italic text-[#0a3825]">Program</span>
             </h2>
           </div>
 
           <div className="flex flex-col md:items-end gap-4 max-w-md">
             <ScrollRevealText
-              text="Everything going down today at KAAF Auditorium. Flip through our 3D Scrapbook Journal or tap the full timetable to check session times, speakers, and workshop halls."
+              text="Everything happening today at KAAF Auditorium. Flip through our 3D Scrapbook Journal or switch to the timetable list to check session details and workshop halls."
               className="text-sm sm:text-base text-[#040032]/80 leading-relaxed md:text-right"
               highlightWords={["today", "Scrapbook", "Journal", "timetable", "workshop"]}
               highlightClass="text-[#0a3825] font-bold"
@@ -312,62 +352,83 @@ export default function ScheduleTimeline() {
 
             {/* Schedule List Timeline Cards */}
             <div className="space-y-6">
-              {filteredSchedule.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="liquid-metal-card group"
-                >
-                  <div className="bg-[#faf8f2] rounded-3xl p-6 sm:p-8 border border-[#040032]/15 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all duration-300 group-hover:border-[#0a3825]">
-                    <div className="space-y-3 max-w-2xl">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-mono-meta font-extrabold uppercase border border-[#040032] ${getCategoryBadgeClass(item.category)}`}>
-                          {item.category}
-                        </span>
-                        <div className="flex items-center gap-1.5 text-xs font-mono-meta text-[#0a3825] font-bold">
-                          <ClockIcon className="w-4 h-4 text-[#0a3825]" />
-                          <span>{item.time}</span>
+              {filteredSchedule.map((item, idx) => {
+                const isLiveOnStage = activeSessionId === item.id;
+                return (
+                  <div
+                    key={item.id}
+                    className={`liquid-metal-card group ${
+                      isLiveOnStage ? "ring-2 ring-[#0a3825]" : ""
+                    }`}
+                  >
+                    <div
+                      className={`rounded-3xl p-6 sm:p-8 border flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all duration-300 ${
+                        isLiveOnStage
+                          ? "bg-[#f5ede1] border-[#0a3825] shadow-lg"
+                          : "bg-[#faf8f2] border-[#040032]/15 group-hover:border-[#0a3825]"
+                      }`}
+                    >
+                      <div className="space-y-3 max-w-2xl">
+                        <div className="flex flex-wrap items-center gap-3">
+                          {isLiveOnStage && (
+                            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono-meta font-extrabold uppercase bg-[#0a3825] text-[#c6f552] border border-[#c6f552]/40 shadow-sm">
+                              <span className="w-2 h-2 rounded-full bg-[#c6f552] inline-block shadow-[0_0_6px_#c6f552]" />
+                              ON STAGE NOW
+                            </span>
+                          )}
+                          <span
+                            className={`px-3 py-1 rounded-full text-[10px] font-mono-meta font-extrabold uppercase border border-[#040032] ${getCategoryBadgeClass(
+                              item.category
+                            )}`}
+                          >
+                            {item.category}
+                          </span>
+                          <div className="flex items-center gap-1.5 text-xs font-mono-meta text-[#0a3825] font-extrabold">
+                            <ClockIcon className="w-4 h-4 text-[#0a3825]" />
+                            <span>{item.order}</span>
+                          </div>
+                          <span className="text-[10px] font-mono-meta font-bold text-[#040032]/60 px-2 py-0.5 rounded-md bg-[#040032]/5">
+                            {item.duration}
+                          </span>
                         </div>
-                        <span className="text-[10px] font-mono-meta font-bold text-[#040032]/60 px-2 py-0.5 rounded-md bg-[#040032]/5">
-                          {item.duration}
+
+                        <h3 className="font-serif-display text-2xl font-bold text-[#040032] group-hover:text-[#0a3825] transition-colors">
+                          {item.title}
+                        </h3>
+
+                        {item.speaker && (
+                          <p className="text-xs font-mono-meta font-extrabold text-[#0a3825]">
+                            SPEAKER / LEAD: {item.speaker}
+                          </p>
+                        )}
+
+                        <p className="text-xs sm:text-sm text-[#040032]/75 font-sans leading-relaxed">
+                          {item.description}
+                        </p>
+                      </div>
+
+                      <div className="flex md:flex-col items-start md:items-end justify-between border-t md:border-t-0 md:border-l border-[#040032]/10 pt-4 md:pt-0 md:pl-8 gap-2 flex-shrink-0">
+                        <div className="flex items-center gap-1.5 text-xs font-mono-meta text-[#040032]/70 font-semibold">
+                          <MapPinIcon className="w-4 h-4 text-[#0a3825]" />
+                          <span>{item.location}</span>
+                        </div>
+                        <span className="text-[10px] font-mono-meta font-bold text-[#0a3825] uppercase tracking-wider">
+                          TIMETABLE // #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
                         </span>
                       </div>
-
-                      <h3 className="font-serif-display text-2xl font-bold text-[#040032] group-hover:text-[#0a3825] transition-colors">
-                        {item.title}
-                      </h3>
-
-                      {item.speaker && (
-                        <p className="text-xs font-mono-meta font-extrabold text-[#0a3825]">
-                          SPEAKER / LEAD: {item.speaker}
-                        </p>
-                      )}
-
-                      <p className="text-xs sm:text-sm text-[#040032]/75 font-sans leading-relaxed">
-                        {item.description}
-                      </p>
-                    </div>
-
-                    <div className="flex md:flex-col items-start md:items-end justify-between border-t md:border-t-0 md:border-l border-[#040032]/10 pt-4 md:pt-0 md:pl-8 gap-2 flex-shrink-0">
-                      <div className="flex items-center gap-1.5 text-xs font-mono-meta text-[#040032]/70 font-semibold">
-                        <MapPinIcon className="w-4 h-4 text-[#0a3825]" />
-                        <span>{item.location}</span>
-                      </div>
-                      <span className="text-[10px] font-mono-meta font-bold text-[#0a3825] uppercase tracking-wider">
-                        TIMETABLE // #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
-                      </span>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
 
-        {/* Event Day Sponsor Note */}
+        {/* Event Day Partner Note */}
         <div className="mt-12 p-5 rounded-2xl bg-[#ece7d8]/60 border border-[#040032]/15 flex items-center gap-3 text-xs font-sans text-[#040032]/80">
           <SparklesIcon className="w-5 h-5 text-[#0a3825] flex-shrink-0" />
           <span>
-            <strong>Official Partner Note:</strong> Corporate partners and supporting sponsors will be acknowledged and appreciated imminently throughout the conference day proceedings.
+            <strong>Official Partner Note:</strong> Corporate partners and supporting sponsors will be acknowledged and appreciated throughout the conference proceedings.
           </span>
         </div>
       </div>

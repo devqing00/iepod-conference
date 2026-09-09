@@ -79,15 +79,14 @@ export default function Hero() {
           {/* Subtitle - Text Centered */}
           <div className="w-full flex justify-center text-center">
             <ScrollRevealText
-              text="Welcome to the 6th Annual IESA Process Day — happening live right now at KAAF Auditorium, University of Ibadan. Bringing together visionary engineering minds, tech leaders, and students to build what's next."
+              text="Welcome to the 6th Annual IESA Process Day — live today at KAAF Auditorium, University of Ibadan. Bringing together visionary engineering minds, innovators, and students."
               className="text-sm sm:text-base text-[#040032]/80 max-w-2xl text-center items-center justify-center leading-relaxed font-sans mx-auto"
               wordClassName="justify-center"
               highlightWords={[
                 "live",
-                "right now",
                 "KAAF Auditorium",
                 "engineering",
-                "build",
+                "innovators",
               ]}
               highlightClass="text-[#0a3825] font-bold"
             />
@@ -100,7 +99,7 @@ export default function Hero() {
                 href="#schedule"
                 className="flex items-center gap-3 bg-[#c6f552] hover:bg-[#b5e83a] text-[#040032] font-extrabold text-xs sm:text-sm px-7 py-3 rounded-full border-2 border-[#040032] transition-all active:scale-[0.98] group cursor-pointer"
               >
-                <span>EXPLORE TODAY'S PROGRAM</span>
+                <span>EXPLORE PROGRAM</span>
                 <ArrowUpRightIcon className="w-4 h-4 text-[#040032] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform pointer-events-none" />
               </a>
             </div>
@@ -112,7 +111,7 @@ export default function Hero() {
               className="flex items-center gap-2 bg-[#0a3825] hover:bg-[#082e1e] text-[#faf8f2] font-bold text-xs sm:text-sm px-6 py-3 rounded-full border border-[#0a3825] transition-all active:scale-[0.98] group shadow-sm cursor-pointer"
             >
               <ChatBubbleLeftRightIcon className="w-4 h-4 text-[#c6f552] pointer-events-none" />
-              <span>JOIN LIVE WHATSAPP COMMUNITY</span>
+              <span>JOIN WHATSAPP COMMUNITY</span>
             </a>
           </div>
 
@@ -121,7 +120,7 @@ export default function Hero() {
             <div className="flex items-center justify-center flex-wrap gap-2 sm:gap-3 text-[9px] sm:text-[10px] font-mono-meta font-semibold text-[#040032]/70 whitespace-nowrap">
               <div className="flex items-center gap-1">
                 <CalendarDaysIcon className="w-3 h-3 text-[#0a3825] pointer-events-none" />
-                <span>Live Today · 10:00 AM — 4:00 PM</span>
+                <span>Live Today · Starts 10:00 AM</span>
               </div>
 
               <span className="text-[#040032]/30">·</span>

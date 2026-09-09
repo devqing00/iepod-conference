@@ -18,12 +18,12 @@ export interface Speaker {
   organization: string;
   role:
     | "Keynote Speaker"
-    | "Industry Leader"
-    | "Tech Innovator"
-    | "Cybersecurity Expert"
-    | "Tech Law Facilitator"
-    | "Robotics Workshop Facilitator"
-    | "Energy Workshop Facilitator";
+    | "Keynote Facilitator"
+    | "Robotics & AI Facilitator"
+    | "Energy Solutions Facilitator"
+    | "Cybersecurity Facilitator"
+    | "Tech & IP Law Facilitator"
+    | "Robotics Facilitator";
   bio: string;
   image: string;
   topic: string;
@@ -35,13 +35,12 @@ interface SpeakersSectionProps {
 }
 
 export default function SpeakersSection({ onSelectSpeaker }: SpeakersSectionProps) {
-
   const marqueeItems = [
     { text: "TODAY'S KEYNOTE MINDS & FACILITATORS" },
     { text: "PROF. KAYODE OYEBODE ADEBOWALE (VC UI)" },
     { text: "ENGR. ADEBAYO OTOKITI (CALOR GAS UK)" },
     { text: "DR. OLUSOLA SAYEED AYOOLA (RAIN)" },
-    { text: "ITEL ENERGY (ENERGY SOLUTIONS & INNOVATION ⚡)" },
+    { text: "ITEL ENERGY (ENERGY SOLUTIONS ⚡)" },
     { text: "EMMANUEL TAVERSHIMA (CYVANT)" },
     { text: "OYINDAMOLA FASANMI ESQ (TECH LAW)" },
     { text: "OLUWATOBI ADEMOSU (AURORA ROBOTICS)" },
@@ -54,7 +53,7 @@ export default function SpeakersSection({ onSelectSpeaker }: SpeakersSectionProp
       title: "Vice-Chancellor",
       organization: "University of Ibadan",
       role: "Keynote Speaker",
-      bio: "Professor of Industrial Chemistry and 13th Vice-Chancellor of the University of Ibadan. Distinguished Fellow of the Nigerian Academy of Science (FAS) and African Academy of Sciences, championing institutional innovation in engineering education.",
+      bio: "Professor of Industrial Chemistry and 13th Vice-Chancellor of the University of Ibadan. Leading research excellence and institutional innovation in engineering education.",
       image: "/assets/generated/vice_chancellor.png",
       topic: "Academic Excellence & Institutional Innovation in Engineering Education",
       badgeColor: "bg-[#c6f552] text-[#040032]",
@@ -64,8 +63,8 @@ export default function SpeakersSection({ onSelectSpeaker }: SpeakersSectionProp
       name: "Engr. Adebayo Otokiti, CEng, MBA, PMP, MNSE",
       title: "Engineering Programme Manager",
       organization: "Calor Gas Ltd (United Kingdom)",
-      role: "Industry Leader",
-      bio: "Business transformation leader with 13+ years delivering capital projects, operational excellence, and performance improvement across UK energy, utilities, and manufacturing sectors. Former senior leadership at Nigeria LNG and Nestlé Nigeria. Holds MBA from Imperial College Business School and First-Class degree in Industrial & Production Engineering from University of Ibadan.",
+      role: "Keynote Facilitator",
+      bio: "Engineering transformation leader with over 13 years delivering capital projects across UK energy and manufacturing. First-Class UI Industrial Engineering alumnus and Imperial College MBA.",
       image: "/assets/generated/otokiti.png",
       topic: "The Professional You Are Becoming: Why Habits and Commitments Determine Capacity Long Before Opportunity Arrives",
       badgeColor: "bg-[#3fffe8] text-[#040032]",
@@ -75,8 +74,8 @@ export default function SpeakersSection({ onSelectSpeaker }: SpeakersSectionProp
       name: "Dr. Olusola Sayeed Ayoola",
       title: "Founder & Chief Executive Officer",
       organization: "Robotics and Artificial Intelligence Nigeria (RAIN)",
-      role: "Tech Innovator",
-      bio: "Leading voice in African robotics and AI. First Class Electrical Engineering graduate from UI, with MSc (Distinction) and PhD from University of Manchester, UK. Pioneer West African partner for Meta's AI Developer Academy and UNDP Nigeria AI for Development Reference Group member.",
+      role: "Robotics & AI Facilitator",
+      bio: "Founder & CEO of RAIN. University of Manchester PhD and pioneer in African robotics, autonomous systems, and applied physical AI.",
       image: "/assets/generated/ayoola.png",
       topic: "Building What AI Can't Replace: How Process Discipline Creates Impact, Not Just Output",
       badgeColor: "bg-[#c6f552] text-[#040032]",
@@ -86,8 +85,8 @@ export default function SpeakersSection({ onSelectSpeaker }: SpeakersSectionProp
       name: "Itel Energy",
       title: "Energy Solutions & Innovation",
       organization: "Itel Energy",
-      role: "Energy Workshop Facilitator",
-      bio: "We’re excited to have Itel Energy facilitating today's Energy Masterclass! Come gain practical insights into the evolving energy landscape and how smarter power solutions help shape tomorrow. The future needs energy — let's build it smarter. ⚡🔥",
+      role: "Energy Solutions Facilitator",
+      bio: "Leading today's Energy Masterclass with practical insights into modern renewable technology and smarter power solutions for industrial growth. ⚡",
       image: "/assets/generated/itel.png",
       topic: "Energy Solutions & Innovation: Smarter Power for the Future ⚡",
       badgeColor: "bg-[#ffdb58] text-[#040032]",
@@ -97,8 +96,8 @@ export default function SpeakersSection({ onSelectSpeaker }: SpeakersSectionProp
       name: "Emmanuel Tavershima",
       title: "Founder & Chief Executive Officer",
       organization: "Cyvant",
-      role: "Cybersecurity Expert",
-      bio: "Cybersecurity strategist and technology entrepreneur leading Cyvant. Specializes in industrial control system protection, threat intelligence, and enterprise AI SCADA safety.",
+      role: "Cybersecurity Facilitator",
+      bio: "Cybersecurity strategist leading Cyvant, specializing in SCADA protection, critical industrial control defenses, and system security.",
       image: "/assets/generated/facilitator.png",
       topic: "Securing Modern Industrial Systems & SCADA AI Infrastructure",
       badgeColor: "bg-[#3fffe8] text-[#040032]",
@@ -108,8 +107,8 @@ export default function SpeakersSection({ onSelectSpeaker }: SpeakersSectionProp
       name: "Oyindamola Fasanmi Esq",
       title: "Lawyer & WIPO Scholar",
       organization: "Author, Intellectual Property Uncomplicated",
-      role: "Tech Law Facilitator",
-      bio: "Legal practitioner, World Intellectual Property Organization (WIPO) scholar, and author of 'Intellectual Property Uncomplicated'. Specialist in technology law, patent architecture, digital rights, and intellectual property governance for modern engineering innovators and technical founders.",
+      role: "Tech & IP Law Facilitator",
+      bio: "Legal practitioner, WIPO scholar, and author of 'Intellectual Property Uncomplicated', guiding innovators on tech patents, digital rights, and legal protection.",
       image: "/assets/generated/oyindamola.png",
       topic: "Intellectual Property Uncomplicated: Legal Frameworks, Patents & Rights for Tech Builders",
       badgeColor: "bg-[#c6f552] text-[#040032]",
@@ -119,8 +118,8 @@ export default function SpeakersSection({ onSelectSpeaker }: SpeakersSectionProp
       name: "Oluwatobi Ademosu",
       title: "Head of Operations & Embedded Systems Engineer",
       organization: "Aurora Robotics",
-      role: "Robotics Workshop Facilitator",
-      bio: "Embedded Systems Engineer and Head of Operations at Aurora Robotics. Experienced in autonomous systems, microcontroller architecture, physical AI, hardware prototyping, and deploying automated operational machines.",
+      role: "Robotics Facilitator",
+      bio: "Embedded systems engineer and operations lead at Aurora Robotics, developing autonomous hardware controllers and physical AI.",
       image: "/assets/generated/oluwatobi.png",
       topic: "Robotics Workshop: Embedded Systems Architecture & Physical AI in Industrial Operations",
       badgeColor: "bg-[#3fffe8] text-[#040032]",
@@ -154,23 +153,23 @@ export default function SpeakersSection({ onSelectSpeaker }: SpeakersSectionProp
 
           <div className="max-w-md text-left">
             <ScrollRevealText
-              text="Seven trailblazing leaders, corporate innovators, and workshop leads taking the mic today. Click on any card to check out their bio and talk topic."
+              text="Seven leaders, innovators, and workshop facilitators taking the stage today. Click any card to check out their bio and talk topic."
               className="text-sm sm:text-base text-[#040032]/80 leading-relaxed text-left justify-start"
               align="left"
-              highlightWords={["trailblazing", "innovators", "workshop", "today", "bio"]}
+              highlightWords={["leaders", "innovators", "facilitators", "today", "bio"]}
               highlightClass="text-[#0a3825] font-bold"
             />
           </div>
         </div>
 
-        {/* Speakers Grid - 5 Speakers & Facilitators */}
+        {/* Speakers Grid - 7 Speakers & Facilitators */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
           {speakers.map((speaker, index) => (
             <div
               key={speaker.id}
               onClick={() => onSelectSpeaker?.(speaker)}
               className={`liquid-metal-card cursor-pointer group ${
-                index === 4 ? "md:col-span-2 md:max-w-xl md:mx-auto w-full" : ""
+                index === 6 ? "md:col-span-2 md:max-w-xl md:mx-auto w-full" : ""
               }`}
             >
               <div className="h-full bg-[#faf8f2] rounded-[1.4rem] p-7 border border-[#040032]/15 flex flex-col justify-between transition-all duration-300">

@@ -26,7 +26,7 @@ export default function VenueCard() {
       <div className="mt-0 mb-8 overflow-visible">
         <TailoredMarqueeStrip
           items={marqueeItems}
-          rotateClass="-rotate-[1.85deg]"
+          rotateClass="rotate-[1.85deg]"
           bgClass="bg-[#040032]"
           borderClass="border-[#3fffe8]"
           textClass="text-[#3fffe8]"
@@ -94,10 +94,10 @@ export default function VenueCard() {
               </div>
 
               <a
-                href="https://maps.google.com/?q=University+of+Ibadan"
+                href="https://www.google.com/maps/dir/?api=1&destination=7.4478715,3.8947055"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-[#040032] hover:bg-[#0a3825] text-[#faf8f2] font-bold text-xs sm:text-sm px-6 py-3 rounded-full transition-all group w-full sm:w-auto"
+                className="inline-flex items-center justify-center gap-2 bg-[#040032] hover:bg-[#0a3825] text-[#faf8f2] font-bold text-xs sm:text-sm px-6 py-3 rounded-full transition-all group w-full sm:w-auto cursor-pointer"
               >
                 <span>OPEN IN GOOGLE MAPS</span>
                 <ArrowTopRightOnSquareIcon className="w-4 h-4 text-[#c6f552] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
