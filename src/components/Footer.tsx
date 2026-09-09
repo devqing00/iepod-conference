@@ -183,7 +183,9 @@ export default function Footer() {
               <a href="#privacy" className="hover:text-[#c6f552] transition-colors">Privacy Policy</a>
               <span>|</span>
               <a href="#terms" className="hover:text-[#c6f552] transition-colors">Terms of Service</a>
-          </div>
+              <span>|</span>
+              <a href="/check-in" className="text-[#3fffe8] hover:text-[#c6f552] transition-colors font-bold">Gate Check-In</a>
+            </div>
 
             <div>
               Copyright 2026 © IESA UI. All Rights Reserved.
