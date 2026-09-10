@@ -13,6 +13,10 @@ import {
   QuestionMarkCircleIcon,
   XMarkIcon,
   ChevronDownIcon,
+  ArrowUturnLeftIcon,
+  ExclamationTriangleIcon,
+  TrashIcon,
+  CheckCircleIcon,
 } from "@heroicons/react/24/solid";
 import VerificationCard, { CheckinResult } from "@/components/checkin/VerificationCard";
 import AttendeeRegisterTab from "@/components/checkin/AttendeeRegisterTab";
@@ -38,6 +42,11 @@ export default function CheckinTerminalPage() {
   const [isMuted, setIsMuted] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [openAccordion, setOpenAccordion] = useState<number | null>(0);
+
+  // Confirmatory Reset Modal State
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+  const [resetNotice, setResetNotice] = useState<string | null>(null);
 
   useEffect(() => {
     setIsMuted(isAudioMuted());
@@ -181,9 +190,36 @@ export default function CheckinTerminalPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [result, handleReset]);
 
-  // Lock background scroll when help modal is open
+  // Reset all checked-in records in database (with confirmation)
+  const handleResetCheckins = async () => {
+    setIsResetting(true);
+    try {
+      const res = await fetch("/api/check-in/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to reset check-ins");
+      }
+      playSuccessFeedback();
+      setShowResetModal(false);
+      setResetNotice(
+        `Attendance roster cleared (${data.deletedCount} records deleted). Count is now 0.`
+      );
+      setTimeout(() => setResetNotice(null), 5000);
+      await fetchStats();
+    } catch (err: any) {
+      playErrorFeedback();
+      alert(err?.message || "Failed to reset check-ins.");
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
+  // Lock background scroll when modal is open
   useEffect(() => {
-    if (showHelpModal) {
+    if (showHelpModal || showResetModal) {
       const originalBodyOverflow = document.body.style.overflow;
       const originalHtmlOverflow = document.documentElement.style.overflow;
       document.body.style.overflow = "hidden";
@@ -193,7 +229,7 @@ export default function CheckinTerminalPage() {
         document.documentElement.style.overflow = originalHtmlOverflow;
       };
     }
-  }, [showHelpModal]);
+  }, [showHelpModal, showResetModal]);
 
   // Help Guide Accordion Sections (Updated Admin Desk Guide)
   const helpSections = [
@@ -353,7 +389,10 @@ export default function CheckinTerminalPage() {
               <strong className="text-rose-400">Error (Low Buzz):</strong> Unpaid ticket, wrong event, or invalid format.
             </li>
             <li>
-              <strong className="text-white">Top Bar:</strong> Real-time counter shows total delegates on site. Use the speaker icon to mute sounds, refresh icon to sync count, and help icon to reopen this modal anytime.
+              <strong className="text-white">Top Bar:</strong> Real-time counter shows total delegates on site. Use the speaker icon to mute sounds, refresh icon to sync count, reset icon (undo arrow) to clear the checked-in list via confirmation modal, and help icon to reopen this modal anytime.
+            </li>
+            <li>
+              <strong className="text-rose-300">Reset Checked-In Count:</strong> The red undo button opens a secure confirmation modal allowing administrators to clear all current check-ins and reset count back to 0 without affecting payment records.
             </li>
           </ul>
         </div>
@@ -368,7 +407,7 @@ export default function CheckinTerminalPage() {
       <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-[#c6f552]/10 rounded-full blur-3xl pointer-events-none -z-10" />
 
       {/* Sleek Minimal Header Bar with Live Incrementing Counter & Help Modal Trigger */}
-      <header className="w-full max-w-2xl mx-auto flex items-center justify-between gap-3 mb-5">
+      <header className="w-full max-w-2xl mx-auto flex items-center justify-between gap-3 mb-3">
         <Link
           href="/"
           className="inline-flex items-center gap-1.5 text-xs font-mono text-white/70 hover:text-white bg-white/10 px-3 py-1.5 rounded-full border border-white/15 transition-all hover:bg-white/15"
@@ -412,10 +451,19 @@ export default function CheckinTerminalPage() {
           <button
             type="button"
             onClick={fetchStats}
-            title="Refresh count"
+            title="Sync/refresh count from database"
             className="p-1.5 rounded-full bg-white/10 text-white/70 hover:text-white border border-white/15 transition-all cursor-pointer"
           >
             <ArrowPathIcon className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowResetModal(true)}
+            title="Reset Checked-In Count (Clear Roster)"
+            className="p-1.5 rounded-full bg-white/10 text-rose-400 hover:text-rose-300 hover:bg-rose-500/20 border border-white/15 hover:border-rose-500/40 transition-all cursor-pointer shadow-sm"
+          >
+            <ArrowUturnLeftIcon className="w-3.5 h-3.5" />
           </button>
 
           <button
@@ -428,6 +476,23 @@ export default function CheckinTerminalPage() {
           </button>
         </div>
       </header>
+
+      {/* Optional Reset Feedback Banner */}
+      {resetNotice && (
+        <div className="w-full max-w-2xl mx-auto p-2.5 px-3.5 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold flex items-center justify-between gap-2 animate-fade-in shadow-lg mb-3">
+          <div className="flex items-center gap-2 truncate">
+            <CheckCircleIcon className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span className="truncate">{resetNotice}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setResetNotice(null)}
+            className="p-1 text-white/60 hover:text-white cursor-pointer shrink-0"
+          >
+            <XMarkIcon className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Main Terminal Container */}
       <div className="w-full max-w-2xl mx-auto space-y-4 flex-1 flex flex-col justify-center">
@@ -588,6 +653,93 @@ export default function CheckinTerminalPage() {
                 className="px-4 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-mono font-semibold transition-colors cursor-pointer"
               >
                 Close Guide
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmatory Reset Modal */}
+      {showResetModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+          <div className="w-[94vw] sm:w-[90vw] md:w-[85vw] lg:w-full lg:max-w-md bg-[#02001e] border-2 border-rose-500/40 rounded-3xl p-5 sm:p-6 text-white shadow-[0_20px_60px_rgba(244,63,94,0.25)] flex flex-col space-y-4 animate-scale-up">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 shrink-0">
+                  <ExclamationTriangleIcon className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-base text-white">Reset Checked-In List?</h4>
+                  <p className="text-[11px] text-white/60 font-mono">Clear Conference Attendance Records</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowResetModal(false)}
+                disabled={isResetting}
+                className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors cursor-pointer disabled:opacity-50"
+              >
+                <XMarkIcon className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Current Count Callout */}
+            <div className="p-3.5 rounded-2xl bg-rose-950/40 border border-rose-500/30 flex items-center justify-between">
+              <span className="text-xs text-rose-200/90 font-mono">Current Checked-In:</span>
+              <span className="text-lg font-mono font-extrabold text-rose-400">
+                {stats?.checkedInCount ?? 0} attendees
+              </span>
+            </div>
+
+            {/* Warnings */}
+            <div className="space-y-2 text-xs text-white/80 leading-relaxed">
+              <p className="text-rose-300 font-semibold">
+                Are you sure you want to clear all checked-in attendees?
+              </p>
+              <ul className="space-y-1.5 text-white/70 text-[11px] bg-white/5 p-3 rounded-2xl border border-white/10">
+                <li className="flex items-start gap-2">
+                  <span className="text-rose-400 font-bold">•</span>
+                  <span>The checked-in counter will immediately reset back to <strong>0</strong>.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-rose-400 font-bold">•</span>
+                  <span>All Paid VIP delegates will return to <em>Pending</em> status on the roster.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-[#3fffe8] font-bold">✓</span>
+                  <span>Student accounts and payment records in the database remain completely safe.</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Actions */}
+            <div className="pt-2 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setShowResetModal(false)}
+                disabled={isResetting}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-mono font-semibold transition-colors cursor-pointer disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleResetCheckins}
+                disabled={isResetting}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-[0_0_15px_rgba(244,63,94,0.4)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {isResetting ? (
+                  <>
+                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Clearing...</span>
+                  </>
+                ) : (
+                  <>
+                    <TrashIcon className="w-4 h-4" />
+                    <span>Confirm &amp; Reset</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
