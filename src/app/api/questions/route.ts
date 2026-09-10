@@ -15,32 +15,7 @@ export interface StageQuestion {
 }
 
 // In-memory fallback for question feed if DB is connecting
-const inMemoryQuestions: StageQuestion[] = [
-  {
-    _id: "q-seed-1",
-    sessionId: "session-02",
-    sessionTitle: "VC Keynote Address",
-    attendeeName: "Boluwatife Adeleke",
-    department: "IPE 400L",
-    question:
-      "How will the proposed UI Innovation Hub collaborate directly with undergraduate final year capstone projects?",
-    answered: false,
-    upvotes: 6,
-    createdAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-  },
-  {
-    _id: "q-seed-2",
-    sessionId: "session-04",
-    sessionTitle: "Dr. Ayoola Keynote",
-    attendeeName: "Chinedu Okafor",
-    department: "Mechanical Eng.",
-    question:
-      "What are the top three industrial software competencies entry-level engineers must master before graduation?",
-    answered: false,
-    upvotes: 11,
-    createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-  },
-];
+const inMemoryQuestions: StageQuestion[] = [];
 
 export async function GET(req: NextRequest) {
   try {
@@ -63,7 +38,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      questions: questions.length > 0 ? questions : inMemoryQuestions,
+      questions: questions,
     });
   } catch (error) {
     // Graceful fallback
@@ -141,13 +116,12 @@ export async function PATCH(req: NextRequest) {
       const db = await getDatabase();
       const collection = db.collection("stage_questions");
 
+      const queryFilter: any = ObjectId.isValid(questionId)
+        ? { _id: new ObjectId(questionId) }
+        : { _id: questionId };
+
       if (action === "toggleAnswered") {
-        const doc = await collection.findOne({
-          $or: [
-            { _id: new ObjectId(questionId.length === 24 ? questionId : undefined) },
-            { _id: questionId },
-          ],
-        });
+        const doc = await collection.findOne(queryFilter);
         if (doc) {
           await collection.updateOne(
             { _id: doc._id },
@@ -155,15 +129,7 @@ export async function PATCH(req: NextRequest) {
           );
         }
       } else if (action === "upvote") {
-        await collection.updateOne(
-          {
-            $or: [
-              { _id: new ObjectId(questionId.length === 24 ? questionId : undefined) },
-              { _id: questionId },
-            ],
-          },
-          { $inc: { upvotes: 1 } }
-        );
+        await collection.updateOne(queryFilter, { $inc: { upvotes: 1 } });
       }
     } catch (e) {
       // In-memory fallback
@@ -178,6 +144,33 @@ export async function PATCH(req: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to update question" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const questionId = searchParams.get("questionId");
+
+    const db = await getDatabase();
+    const collection = db.collection("stage_questions");
+
+    if (questionId) {
+      const queryFilter: any = ObjectId.isValid(questionId)
+        ? { _id: new ObjectId(questionId) }
+        : { _id: questionId };
+      await collection.deleteOne(queryFilter);
+    } else {
+      await collection.deleteMany({});
+    }
+
+    inMemoryQuestions.length = 0;
+    return NextResponse.json({ success: true, message: "Questions cleared" });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to delete questions" },
       { status: 500 }
     );
   }

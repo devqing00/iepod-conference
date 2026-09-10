@@ -20,6 +20,7 @@ import {
   BookOpenIcon,
   CheckBadgeIcon,
 } from "@heroicons/react/24/solid";
+import { OFFICIAL_PROGRAM_SESSIONS } from "@/lib/programSessions";
 
 export interface JournalItem {
   id: string;
@@ -38,243 +39,51 @@ export interface JournalItem {
   badgeColor?: string;
 }
 
+const COVER_PAGE: JournalItem = {
+  id: "page-cover",
+  isCover: true,
+  title: "IESA PROCESS DAY 2026",
+  speaker: "Annual Industrial Engineering Conference",
+  description:
+    "Official Conference Day Program Journal. A tactile chronicle of keynote addresses, simultaneous technical masterclasses, debates, hackathon showcases, and research proceedings.",
+  location: "KAAF Auditorium, University of Ibadan",
+  imageUrl: "/assets/generated/logo.png",
+  photoCaption: "Official Seal of IESA University of Ibadan",
+  stampText: "OFFICIAL DISPATCH // 10TH SEP 2026",
+  badgeColor: "bg-[#c6f552] text-[#040032]",
+};
+
+const BACK_COVER_PAGE: JournalItem = {
+  id: "page-back-cover",
+  isBackCover: true,
+  title: "CONFERENCE DISPATCH ARCHIVE",
+  speaker: "Industrial Engineering Students Association",
+  description:
+    "Thank you for being part of IESA Process Day 2026! Official lecture slides, workshop resources, and digital certificates will be sent directly to everyone joining us today.",
+  location: "Department of Industrial & Production Engineering, UI",
+  imageUrl: "/assets/generated/logo.png",
+  photoCaption: "Forging the Future · UI Industrial Engineering",
+  stampText: "OFFICIAL ARCHIVE // CONCLUDED",
+  badgeColor: "bg-[#c6f552] text-[#040032]",
+};
+
 export const JOURNAL_PAGES: JournalItem[] = [
-  {
-    id: "page-cover",
-    isCover: true,
-    title: "IESA PROCESS DAY 2026",
-    speaker: "6th Annual Industrial Engineering Conference",
-    description:
-      "Official Conference Day Program Journal. A tactile chronicle of keynote addresses, simultaneous technical masterclasses, debates, hackathon showcases, and research proceedings.",
-    location: "KAAF Auditorium, University of Ibadan",
-    imageUrl: "/assets/generated/logo.png",
-    photoCaption: "Official Seal of IESA University of Ibadan",
-    stampText: "OFFICIAL DISPATCH // 10TH SEP 2026",
-    badgeColor: "bg-[#c6f552] text-[#040032]",
-  },
-  {
-    id: "session-01",
-    time: "SESSION 01",
-    duration: "35 MINS",
-    title: "Arrival, Anthems & Presidential Address",
-    speaker: "IESA President & Executive Council",
-    category: "Protocols & Ceremonies",
-    description:
-      "Guest reception, attendee registration check-in, rendition of the National & UI Anthems, interactive welcome, and the President's opening address.",
-    location: "KAAF Main Auditorium",
-    imageUrl: "/assets/generated/kaaf_keynote.png",
-    photoCaption: "KAAF Main Auditorium · Grand Assembly Hall",
-    stampText: "SESSION // 01",
-    badgeColor: "bg-[#ece7d8] text-[#040032]",
-  },
-  {
-    id: "session-02",
-    time: "SESSION 02",
-    duration: "30 MINS",
-    title: "1st Keynote Session: VC Opening Address & Q&A",
-    speaker: "Prof. Kayode Oyebode Adebowale (VC, UI)",
-    category: "Keynotes & Talks",
-    description:
-      "Opening address on 'Academic Excellence & Institutional Innovation in Engineering Education', exploring university research capacity, followed by interactive attendee Q&A.",
-    location: "KAAF Main Auditorium",
-    imageUrl: "/assets/generated/vice_chancellor.png",
-    photoCaption: "Prof. Kayode Oyebode Adebowale, 13th VC of University of Ibadan",
-    stampText: "SESSION // 02 · VC KEYNOTE",
-    badgeColor: "bg-[#c6f552] text-[#040032]",
-  },
-  {
-    id: "session-03",
-    time: "SESSION 03",
-    duration: "10 MINS",
-    title: "Headline Sponsor Address & Strategic Spotlight",
-    speaker: "Headline Sponsor Leadership Team",
-    category: "Keynotes & Talks",
-    description:
-      "Partner address highlighting industrial engineering opportunities, graduate internships, and corporate technology sponsorships for student innovators.",
-    location: "KAAF Main Stage",
-    imageUrl: "/assets/generated/iso_ticket_badge.png",
-    photoCaption: "Corporate Partner & Engineering Sponsorship Spotlight",
-    stampText: "SESSION // 03 · SPONSOR",
-    badgeColor: "bg-[#c6f552] text-[#040032]",
-  },
-  {
-    id: "session-04",
-    time: "SESSION 04",
-    duration: "30 MINS",
-    title: "2nd Speaker Session: AI, Robotics & Process Discipline",
-    speaker: "Dr. Olusola Sayeed Ayoola (Founder & CEO, RAIN)",
-    category: "Keynotes & Talks",
-    description:
-      "Technical keynote: 'Building What AI Can't Replace: How Process Discipline Creates Impact, Not Just Output', followed by direct audience questions.",
-    location: "KAAF Main Auditorium",
-    imageUrl: "/assets/generated/ayoola.png",
-    photoCaption: "Dr. Olusola Sayeed Ayoola · RAIN Nigeria",
-    stampText: "SESSION // 04 · RAIN AI",
-    badgeColor: "bg-[#c6f552] text-[#040032]",
-  },
-  {
-    id: "session-05",
-    time: "SESSION 05",
-    duration: "5 MINS",
-    title: "Delegate Giveaway & Engagement Interlude",
-    speaker: "Conference Welfare & Engagement Leads",
-    category: "Protocols & Ceremonies",
-    description:
-      "Giveaway interlude featuring conference merchandise, sponsored gift packages, digital passes, and delegate quiz prizes.",
-    location: "Auditorium Concourse",
-    imageUrl: "/assets/generated/iso_ticket_badge.png",
-    photoCaption: "Live Delegate Merchandise & Gift Distribution",
-    stampText: "SESSION // 05 · PRIZES",
-    badgeColor: "bg-[#ece7d8] text-[#040032]",
-  },
-  {
-    id: "session-06",
-    time: "SESSION 06",
-    duration: "30 MINS",
-    title: "Annual Debate, Scholarship Feature & Winner Awards",
-    speaker: "Student Debate Teams & Academic Panel",
-    category: "Competitions",
-    description:
-      "Competitive debate on emerging industrial paradigms, study path and scholarship features, culminating in the debate trophy presentation.",
-    location: "KAAF Main Stage",
-    imageUrl: "/assets/generated/iso_gear_ai.png",
-    photoCaption: "Undergraduate Debate Championship & Scholarship Grants",
-    stampText: "SESSION // 06 · DEBATE",
-    badgeColor: "bg-[#ffdb58] text-[#040032]",
-  },
-  {
-    id: "session-07",
-    time: "SESSION 07",
-    duration: "30 MINS",
-    title: "3rd Speaker Session: Professional Capacity & Habits",
-    speaker: "Engr. Adebayo Otokiti (Calor Gas Ltd UK)",
-    category: "Keynotes & Talks",
-    description:
-      "Executive address on 'The Professional You Are Becoming: Why Habits and Commitments Determine Capacity Long Before Opportunity Arrives' + audience Q&A.",
-    location: "KAAF Main Auditorium",
-    imageUrl: "/assets/generated/otokiti.png",
-    photoCaption: "Engr. Adebayo Otokiti · Calor Gas Ltd UK",
-    stampText: "SESSION // 07 · CALOR GAS",
-    badgeColor: "bg-[#c6f552] text-[#040032]",
-  },
-  {
-    id: "session-08",
-    time: "SESSION 08",
-    duration: "10 MINS",
-    title: "Speaker Award Ceremony & Networking Break",
-    speaker: "IESA Executive Council & Honorees",
-    category: "Protocols & Ceremonies",
-    description:
-      "Formal plaque presentation honoring distinguished keynote speakers, followed by a refreshment and networking interlude.",
-    location: "Auditorium Concourse",
-    imageUrl: "/assets/generated/kaaf_keynote.png",
-    photoCaption: "Honorary Plaque Presentations & Delegate Networking",
-    stampText: "SESSION // 08 · HONORS",
-    badgeColor: "bg-[#ece7d8] text-[#040032]",
-  },
-  {
-    id: "session-09",
-    time: "SESSION 09",
-    duration: "30 MINS",
-    title: "Simultaneous Technical Workshops & Masterclasses",
-    speaker: "Oluwatobi (Robotics) · Oyindamola Esq (Tech Law) · Emmanuel (Cyber) · Itel Energy (Energy)",
-    category: "Workshops",
-    description:
-      "Concurrent breakout tracks: Hands-on Robotics & Physical AI (Aurora Robotics), Tech Law & IP (Oyindamola Fasanmi Esq), Industrial Cybersecurity (Cyvant), and Energy Solutions & Innovation (Itel Energy ⚡).",
-    location: "Robotics Lab & Tech Precincts",
-    imageUrl: "/assets/generated/itel.png",
-    photoCaption: "Concurrent Breakout Tracks: Robotics, Tech Law, SCADA & Itel Energy Solutions ⚡",
-    stampText: "SESSION // 09 · WORKSHOPS",
-    badgeColor: "bg-[#3fffe8] text-[#040032]",
-  },
-  {
-    id: "session-10",
-    time: "SESSION 10",
-    duration: "15 MINS",
-    title: "Chairman Keynote Address & Sponsor Talk",
-    speaker: "Conference Chairman & Partner Delegates",
-    category: "Keynotes & Talks",
-    description:
-      "Strategic keynote address by the Conference Chairman, followed by a corporate partner spotlight celebrating engineering talent.",
-    location: "KAAF Main Stage",
-    imageUrl: "/assets/generated/facilitator.png",
-    photoCaption: "Conference Chairman Keynote Address",
-    stampText: "SESSION // 10 · CHAIRMAN",
-    badgeColor: "bg-[#c6f552] text-[#040032]",
-  },
-  {
-    id: "session-11",
-    time: "SESSION 11",
-    duration: "45 MINS",
-    title: "Process Day Hackathon Showcase & Winner Honors",
-    speaker: "Hackathon Finalists, Mentors & Judging Panel",
-    category: "Competitions",
-    description:
-      "Live student prototype presentations, recognition of workshop facilitators, and the coronation of hackathon winners.",
-    location: "Innovation Arena",
-    imageUrl: "/assets/generated/iso_analytics_card.png",
-    photoCaption: "Hackathon Engineering Prototypes & Award Ceremonies",
-    stampText: "SESSION // 11 · HACKATHON",
-    badgeColor: "bg-[#ffdb58] text-[#040032]",
-  },
-  {
-    id: "session-12",
-    time: "SESSION 12",
-    duration: "15 MINS",
-    title: "Engineering Community Games & Audience Trivia",
-    speaker: "Conference Social & Engagement Committee",
-    category: "Protocols & Ceremonies",
-    description:
-      "Audience trivia, icebreakers, engineering puzzles, and community prizes for delegates.",
-    location: "KAAF Main Hall",
-    imageUrl: "/assets/generated/iso_gear_ai.png",
-    photoCaption: "Engineering Trivia & Community Social Interaction",
-    stampText: "SESSION // 12 · TRIVIA",
-    badgeColor: "bg-[#ece7d8] text-[#040032]",
-  },
-  {
-    id: "session-13",
-    time: "SESSION 13",
-    duration: "55 MINS",
-    title: "Research Paper Presentation & Peace Club Awards",
-    speaker: "Undergraduate Researchers, Peace Club & Faculty Judges",
-    category: "Paper Presentations",
-    description:
-      "Competitive student research presentations across industrial engineering tracks, followed by a Peace Club segment and presentation winner awards.",
-    location: "Academic Stage",
-    imageUrl: "/assets/generated/iso_robotic_arm.png",
-    photoCaption: "Undergraduate Research Defense & Faculty Evaluation",
-    stampText: "SESSION // 13 · PAPERS",
-    badgeColor: "bg-[#bbf2f6] text-[#040032]",
-  },
-  {
-    id: "session-14",
-    time: "SESSION 14",
-    duration: "15 MINS",
-    title: "Vote of Thanks, Closing Prayer & Departure",
-    speaker: "Conference Lead & IESA Executive Committee",
-    category: "Protocols & Ceremonies",
-    description:
-      "Official vote of thanks by the Conference Lead, closing prayers, sponsor appreciation, and attendee departure.",
-    location: "KAAF Main Auditorium",
-    imageUrl: "/assets/generated/logo.png",
-    photoCaption: "IESA Process Day 2026 Concluding Assembly",
-    stampText: "SESSION // 14 · CLOSING",
-    badgeColor: "bg-[#ece7d8] text-[#040032]",
-  },
-  {
-    id: "page-back-cover",
-    isBackCover: true,
-    title: "CONFERENCE DISPATCH ARCHIVE",
-    speaker: "Industrial Engineering Students Association",
-    description:
-      "Thank you for being part of IESA Process Day 2026! Official lecture slides, workshop resources, and digital certificates will be sent directly to everyone joining us today.",
-    location: "Department of Industrial & Production Engineering, UI",
-    imageUrl: "/assets/generated/logo.png",
-    photoCaption: "Forging the Future · UI Industrial Engineering",
-    stampText: "OFFICIAL ARCHIVE // CONCLUDED",
-    badgeColor: "bg-[#c6f552] text-[#040032]",
-  },
+  COVER_PAGE,
+  ...OFFICIAL_PROGRAM_SESSIONS.map((s) => ({
+    id: s.id,
+    time: s.time,
+    duration: s.duration,
+    title: s.title,
+    speaker: s.speaker,
+    category: s.category,
+    description: s.description,
+    location: s.location,
+    imageUrl: s.imageUrl,
+    photoCaption: s.photoCaption,
+    stampText: s.stampText,
+    badgeColor: s.badgeColor,
+  })),
+  BACK_COVER_PAGE,
 ];
 
 interface TurnState {
@@ -1533,7 +1342,7 @@ function BackCoverArtwork() {
 /** Standard Left Leaf: Textual Program Details */
 function StandardLeftPageContent({ page }: { page: JournalItem }) {
   return (
-    <div className="relative w-full h-full bg-[#faf8f2] text-[#040032] p-2.5 sm:p-5 md:p-8 flex flex-col justify-between overflow-hidden">
+    <div className="relative w-full h-full bg-[#faf8f2] text-[#040032] p-2.5 sm:p-5 md:p-8 flex flex-col justify-start overflow-hidden">
       <div className="absolute inset-0 bg-[#f5ede1]/50 pointer-events-none select-none" />
 
       {/* Subtle Spine Fold Shadow along right edge */}
@@ -1541,7 +1350,7 @@ function StandardLeftPageContent({ page }: { page: JournalItem }) {
       <div className="absolute right-0 inset-y-0 w-px bg-[#040032]/10 pointer-events-none select-none z-20" />
 
       {/* Top Header Tags Row */}
-      <div className="relative z-10 flex flex-wrap items-center justify-between gap-1 sm:gap-2 pointer-events-none select-none">
+      <div className="relative z-10 flex flex-wrap items-center justify-between gap-1 sm:gap-2 pointer-events-none select-none mb-2 sm:mb-3">
         <span
           className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-mono-meta font-extrabold uppercase border border-[#040032] ${
             page.badgeColor || "bg-[#c6f552] text-[#040032]"
@@ -1551,17 +1360,13 @@ function StandardLeftPageContent({ page }: { page: JournalItem }) {
         </span>
 
         <div className="flex items-center gap-1 text-[8px] sm:text-[11px] font-mono-meta font-extrabold text-[#0a3825]">
-          <span>{page.time}</span>
-          {page.duration && (
-            <span className="text-[7px] sm:text-[9px] px-1.5 py-0.5 rounded bg-[#040032]/10 font-bold">
-              {page.duration}
-            </span>
-          )}
+          <ClockIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0a3825]" />
+          <span>{page.duration}</span>
         </div>
       </div>
 
-      {/* Center Textual Content Block - Placed vertically in the middle */}
-      <div className="relative z-10 my-auto space-y-1.5 sm:space-y-2 pointer-events-none select-none">
+      {/* Top-Aligned Textual Content Block */}
+      <div className="relative z-10 space-y-1.5 sm:space-y-2 pointer-events-none select-none mb-auto">
         <h3 className="font-serif-display text-xs sm:text-base md:text-xl font-bold text-[#040032] leading-snug line-clamp-2">
           {page.title}
         </h3>
@@ -1569,7 +1374,11 @@ function StandardLeftPageContent({ page }: { page: JournalItem }) {
         {page.speaker && (
           <div className="p-1 sm:p-2 rounded-lg bg-[#ece7d8] border border-[#040032]/15">
             <span className="text-[7px] sm:text-[8px] font-mono-meta uppercase font-extrabold text-[#0a3825] tracking-wider block">
-              FACILITATOR / LEAD
+              {page.category === "Workshops"
+                ? "WORKSHOP FACILITATOR"
+                : page.category === "Keynotes & Talks"
+                ? "KEYNOTE SPEAKER"
+                : "SESSION LEAD"}
             </span>
             <p className="text-[9px] sm:text-xs md:text-sm font-serif-display font-bold text-[#040032] line-clamp-1">
               {page.speaker}
@@ -1577,13 +1386,13 @@ function StandardLeftPageContent({ page }: { page: JournalItem }) {
           </div>
         )}
 
-        <p className="text-[9px] sm:text-xs md:text-sm text-[#040032]/85 font-sans leading-snug line-clamp-2 sm:line-clamp-4 md:line-clamp-none">
+        <p className="text-[9px] sm:text-xs md:text-sm text-[#040032]/85 font-sans leading-snug line-clamp-3 sm:line-clamp-4 md:line-clamp-none">
           {page.description}
         </p>
       </div>
 
-      {/* Footer Stamp */}
-      <div className="relative z-10 pt-1 sm:pt-2 border-t border-[#040032]/10 flex items-center justify-between pointer-events-none select-none">
+      {/* Footer Stamp - Pinned to bottom with mt-auto */}
+      <div className="relative z-10 mt-auto pt-1 sm:pt-2 border-t border-[#040032]/10 flex items-center justify-between pointer-events-none select-none">
         <div className="flex items-center gap-1 text-[8px] sm:text-xs font-mono-meta text-[#0a3825] font-bold">
           <MapPinIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#0a3825]" />
           <span className="truncate max-w-[95px] sm:max-w-none">{page.location}</span>

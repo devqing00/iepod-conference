@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   MagnifyingGlassIcon,
   CheckCircleIcon,
@@ -37,6 +37,20 @@ export default function PaidDelegateTab({
   const [loadingRoster, setLoadingRoster] = useState(false);
   const [rosterFilter, setRosterFilter] = useState("");
 
+  // Lock background scroll when roster modal is open
+  useEffect(() => {
+    if (showRoster) {
+      const originalBodyOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalBodyOverflow;
+        document.documentElement.style.overflow = originalHtmlOverflow;
+      };
+    }
+  }, [showRoster]);
+
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const clean = searchMatric.trim();
@@ -62,7 +76,7 @@ export default function PaidDelegateTab({
   };
 
   const paidCheckedIn = (stats as any)?.paidCheckedInCount ?? stats?.checkedInCount ?? 0;
-  const totalPaid = stats?.totalPaid ?? 28;
+  const totalPaid = stats?.totalPaid ?? 53;
   const percent = totalPaid > 0 ? Math.round((paidCheckedIn / totalPaid) * 100) : 0;
 
   const filteredRoster = roster.filter((r) => {
@@ -162,8 +176,8 @@ export default function PaidDelegateTab({
 
       {/* Paid Participants Modal / Drawer */}
       {showRoster && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-          <div className="w-full max-w-lg bg-[#02001e] border-2 border-white/15 rounded-3xl p-5 text-white shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 lg:p-6 bg-black/80 backdrop-blur-md animate-fade-in">
+          <div className="w-[94vw] sm:w-[90vw] md:w-[85vw] lg:w-full lg:max-w-lg bg-[#02001e] border-2 border-white/15 rounded-2xl sm:rounded-3xl p-4 sm:p-5 text-white shadow-2xl space-y-3.5 max-h-[76vh] sm:max-h-[78vh] md:max-h-[80vh] lg:max-h-[85vh] flex flex-col">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div>
                 <h4 className="font-bold text-base text-white">

@@ -12,29 +12,52 @@ import {
   BookOpenIcon,
   ListBulletIcon,
 } from "@heroicons/react/24/outline";
-
-export type ScheduleCategory =
-  | "Keynotes & Talks"
-  | "Workshops"
-  | "Competitions"
-  | "Paper Presentations"
-  | "Protocols & Ceremonies";
-
-interface ScheduleItem {
-  id: string;
-  order: string;
-  duration: string;
-  title: string;
-  speaker?: string;
-  category: ScheduleCategory;
-  description: string;
-  location: string;
-}
+import {
+  OFFICIAL_PROGRAM_SESSIONS,
+  ScheduleCategory,
+  ProgramSessionItem,
+} from "@/lib/programSessions";
 
 export default function ScheduleTimeline() {
   const [viewMode, setViewMode] = useState<"journal" | "list">("journal");
   const [filter, setFilter] = useState<string>("All");
   const [activeSessionId, setActiveSessionId] = useState<string>("session-01");
+  const [highlightedSessionId, setHighlightedSessionId] = useState<string | null>(null);
+
+  // Default to list view on mobile devices (< 768px)
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setViewMode("list");
+    }
+  }, []);
+
+  // Listen for jump-to-session event from navbar live pill or external triggers
+  useEffect(() => {
+    const handleJumpToSession = (e: Event) => {
+      const customEvent = e as CustomEvent<{ sessionId: string; forceListView?: boolean }>;
+      const targetId = customEvent.detail?.sessionId;
+      if (!targetId) return;
+
+      if (customEvent.detail?.forceListView) {
+        setViewMode("list");
+      }
+      setFilter("All");
+
+      setTimeout(() => {
+        const el = document.getElementById(targetId);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          setHighlightedSessionId(targetId);
+          setTimeout(() => {
+            setHighlightedSessionId(null);
+          }, 3500);
+        }
+      }, 250);
+    };
+
+    window.addEventListener("jump-to-session", handleJumpToSession);
+    return () => window.removeEventListener("jump-to-session", handleJumpToSession);
+  }, []);
 
   // Poll for active stage session from MongoDB real-time state
   useEffect(() => {
@@ -88,148 +111,7 @@ export default function ScheduleTimeline() {
     { text: "AWARDS & CLOSING PROTOCOLS" },
   ];
 
-  const schedule: ScheduleItem[] = [
-    {
-      id: "session-01",
-      order: "Session 01",
-      duration: "35 mins",
-      title: "Arrival, Anthems, Interactive Welcome & Presidential Speech",
-      speaker: "IESA President & Executive Council",
-      category: "Protocols & Ceremonies",
-      description: "Guest reception, attendee check-in, rendition of the National and UI Anthems, interactive welcome, and the President's opening speech.",
-      location: "KAAF Main Auditorium",
-    },
-    {
-      id: "session-02",
-      order: "Session 02",
-      duration: "30 mins",
-      title: "1st Speaker Session: VC Opening Keynote & Q&A",
-      speaker: "Prof. Kayode Oyebode Adebowale (VC, University of Ibadan)",
-      category: "Keynotes & Talks",
-      description: "Flagship keynote address on 'Academic Excellence & Institutional Innovation in Engineering Education', followed by interactive attendee Q&A.",
-      location: "KAAF Main Auditorium",
-    },
-    {
-      id: "session-03",
-      order: "Session 03",
-      duration: "10 mins",
-      title: "Headline Sponsor Address & Strategic Spotlight",
-      speaker: "Headline Sponsor Leadership",
-      category: "Keynotes & Talks",
-      description: "Special address highlighting industrial engineering partnerships, graduate career pathways, and technology sponsorships.",
-      location: "KAAF Main Stage",
-    },
-    {
-      id: "session-04",
-      order: "Session 04",
-      duration: "30 mins",
-      title: "2nd Speaker Session: Robotics, AI & Process Discipline",
-      speaker: "Dr. Olusola Sayeed Ayoola (Founder & CEO, RAIN)",
-      category: "Keynotes & Talks",
-      description: "Technical address on 'Building What AI Can't Replace: How Process Discipline Creates Impact, Not Just Output', with interactive audience questions.",
-      location: "KAAF Main Auditorium",
-    },
-    {
-      id: "session-05",
-      order: "Session 05",
-      duration: "5 mins",
-      title: "Delegate Giveaway & Audience Engagement Interlude",
-      speaker: "Conference Welfare & Engagement Leads",
-      category: "Protocols & Ceremonies",
-      description: "Interactive giveaway interlude featuring conference merchandise, sponsored gift packages, and audience trivia prizes.",
-      location: "Auditorium Concourse",
-    },
-    {
-      id: "session-06",
-      order: "Session 06",
-      duration: "30 mins",
-      title: "IESA Annual Debate, Scholarship Spotlight & Winner Presentation",
-      speaker: "Student Debate Finalists & Academic Panel",
-      category: "Competitions",
-      description: "Annual student debate on emerging industrial paradigms, scholarship feature, and presentation of the debate winner awards.",
-      location: "KAAF Main Stage",
-    },
-    {
-      id: "session-07",
-      order: "Session 07",
-      duration: "30 mins",
-      title: "3rd Speaker Session: Professional Capacity & Habit Building",
-      speaker: "Engr. Adebayo Otokiti (Engineering Programme Manager, Calor Gas UK)",
-      category: "Keynotes & Talks",
-      description: "Executive keynote on 'The Professional You Are Becoming: Why Habits and Commitments Determine Capacity Long Before Opportunity Arrives' + audience Q&A.",
-      location: "KAAF Main Auditorium",
-    },
-    {
-      id: "session-08",
-      order: "Session 08",
-      duration: "10 mins",
-      title: "Award Presentation to Keynote Speakers & Networking Break",
-      speaker: "IESA Executive Council & Guests",
-      category: "Protocols & Ceremonies",
-      description: "Honorary plaque presentations recognizing our distinguished morning keynote speakers, followed by a networking intermission.",
-      location: "Auditorium Concourse",
-    },
-    {
-      id: "session-09",
-      order: "Session 09",
-      duration: "30 mins",
-      title: "Simultaneous Hands-On Workshop Sessions",
-      speaker: "Oluwatobi (Robotics) · Oyindamola Esq (Tech Law) · Emmanuel (Cybersecurity) · Itel Energy (Energy)",
-      category: "Workshops",
-      description: "Concurrent breakout tracks: Hands-on Robotics & Physical AI (Aurora Robotics), Tech Law & IP (Oyindamola Fasanmi Esq), Industrial Cybersecurity (Cyvant), and Energy Solutions & Innovation (Itel Energy ⚡).",
-      location: "Robotics Lab & Main Precincts",
-    },
-    {
-      id: "session-10",
-      order: "Session 10",
-      duration: "15 mins",
-      title: "Chairman Keynote Address & Sponsor Talk",
-      speaker: "Conference Chairman & Partner Delegates",
-      category: "Keynotes & Talks",
-      description: "Strategic keynote by the Conference Chairman, followed by a partner spotlight celebrating student engineering excellence.",
-      location: "KAAF Main Stage",
-    },
-    {
-      id: "session-11",
-      order: "Session 11",
-      duration: "45 mins",
-      title: "Process Day Hackathon Showcase, Facilitator Honors & Winner Awards",
-      speaker: "Hackathon Teams, Mentors & Judging Panel",
-      category: "Competitions",
-      description: "Presentation of engineering prototypes built during the hackathon, recognition of workshop facilitators, and coronation of winning teams.",
-      location: "Innovation Arena",
-    },
-    {
-      id: "session-12",
-      order: "Session 12",
-      duration: "15 mins",
-      title: "Engineering Community Games & Audience Trivia",
-      speaker: "Conference Social Committee",
-      category: "Protocols & Ceremonies",
-      description: "Audience trivia, interactive games, and peer networking activities for all delegates.",
-      location: "KAAF Main Auditorium",
-    },
-    {
-      id: "session-13",
-      order: "Session 13",
-      duration: "55 mins",
-      title: "Research Paper Presentation, Peace Club Session & Winner Awards",
-      speaker: "Student Researchers, Peace Club Leads & Faculty Panel",
-      category: "Paper Presentations",
-      description: "Competitive undergraduate research presentations across industrial engineering disciplines, Peace Club feature, and paper presentation awards.",
-      location: "Academic Stage",
-    },
-    {
-      id: "session-14",
-      order: "Session 14",
-      duration: "15 mins",
-      title: "Conference Lead Vote of Thanks, Closing Prayer & Departure",
-      speaker: "Conference Lead & IESA Executive Committee",
-      category: "Protocols & Ceremonies",
-      description: "Official vote of thanks by the Conference Lead, closing prayers, sponsor appreciation, and formal attendee departure.",
-      location: "KAAF Main Auditorium",
-    },
-  ];
+  const schedule: ProgramSessionItem[] = OFFICIAL_PROGRAM_SESSIONS;
 
   const categories = [
     "All",
@@ -356,14 +238,21 @@ export default function ScheduleTimeline() {
                 const isLiveOnStage = activeSessionId === item.id;
                 return (
                   <div
+                    id={item.id}
                     key={item.id}
-                    className={`liquid-metal-card group ${
+                    className={`liquid-metal-card group scroll-mt-24 transition-all duration-500 ${
                       isLiveOnStage ? "ring-2 ring-[#0a3825]" : ""
+                    } ${
+                      highlightedSessionId === item.id
+                        ? "ring-4 ring-[#c6f552] scale-[1.01] shadow-2xl"
+                        : ""
                     }`}
                   >
                     <div
                       className={`rounded-3xl p-6 sm:p-8 border flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all duration-300 ${
-                        isLiveOnStage
+                        highlightedSessionId === item.id
+                          ? "bg-[#ebf8d4] border-[#0a3825] shadow-xl"
+                          : isLiveOnStage
                           ? "bg-[#f5ede1] border-[#0a3825] shadow-lg"
                           : "bg-[#faf8f2] border-[#040032]/15 group-hover:border-[#0a3825]"
                       }`}
@@ -385,10 +274,10 @@ export default function ScheduleTimeline() {
                           </span>
                           <div className="flex items-center gap-1.5 text-xs font-mono-meta text-[#0a3825] font-extrabold">
                             <ClockIcon className="w-4 h-4 text-[#0a3825]" />
-                            <span>{item.order}</span>
+                            <span>{item.duration}</span>
                           </div>
-                          <span className="text-[10px] font-mono-meta font-bold text-[#040032]/60 px-2 py-0.5 rounded-md bg-[#040032]/5">
-                            {item.duration}
+                          <span className="text-[10px] font-mono-meta font-bold text-[#0a3825] px-2.5 py-0.5 rounded-full bg-[#0a3825]/10 border border-[#0a3825]/20">
+                            {item.order}
                           </span>
                         </div>
 
@@ -398,7 +287,12 @@ export default function ScheduleTimeline() {
 
                         {item.speaker && (
                           <p className="text-xs font-mono-meta font-extrabold text-[#0a3825]">
-                            SPEAKER / LEAD: {item.speaker}
+                            {item.category === "Workshops"
+                              ? "WORKSHOP FACILITATORS: "
+                              : item.category === "Keynotes & Talks"
+                              ? "KEYNOTE SPEAKER: "
+                              : "SESSION LEAD: "}
+                            {item.speaker}
                           </p>
                         )}
 

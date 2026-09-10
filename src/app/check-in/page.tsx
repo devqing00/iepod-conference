@@ -181,27 +181,38 @@ export default function CheckinTerminalPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [result, handleReset]);
 
-  // Help Guide Accordion Sections
+  // Lock background scroll when help modal is open
+  useEffect(() => {
+    if (showHelpModal) {
+      const originalBodyOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalBodyOverflow;
+        document.documentElement.style.overflow = originalHtmlOverflow;
+      };
+    }
+  }, [showHelpModal]);
+
+  // Help Guide Accordion Sections (Updated Admin Desk Guide)
   const helpSections = [
     {
       id: "desks",
-      title: "1. Three-Desk Operational Workflow",
+      title: "1. Three-Desk Operational Architecture",
       icon: "🏢",
       content: (
         <div className="space-y-2 text-white/80 leading-relaxed">
-          <p>The reception is divided into specialized terminals:</p>
+          <p>The reception and stage management are divided into three synchronized desks:</p>
           <ul className="list-disc list-inside space-y-1 pl-1 text-white/70">
             <li>
-              <strong className="text-[#3fffe8]">Register Desk:</strong> General attendees & students arriving without pre-paid ticket packages. Issues the <em>Regular Delegate Tag</em>.
+              <strong className="text-[#3fffe8]">Register Desk:</strong> General attendees, departmental students, and university guests arriving without pre-paid tickets. Issues the <em>Regular Delegate Tag</em>.
             </li>
             <li>
-              <strong className="text-[#c6f552]">Paid VIP Desk:</strong> Delegates who purchased conference ticket packages. Issues the <em>Special Paid Delegate Tag (VIP)</em> with package perks.
+              <strong className="text-[#c6f552]">Paid VIP Desk:</strong> Delegates with verified conference ticket packages. Features camera QR scanning, manual matric lookup, and the official 53-delegate VIP Roster. Issues the <em>Special Paid VIP Tag</em> with meal &amp; perks entitlement.
             </li>
             <li>
-              <strong className="text-emerald-400">Live Stage Desk:</strong> MC & coordinator stage sync and attendee Q&A moderation.
-            </li>
-            <li>
-              <strong className="text-white">Live Certificates:</strong> Checking in at either desk activates the attendee&apos;s credentials on the certificate generation portal.
+              <strong className="text-emerald-400">Live Stage &amp; Certificate Desk:</strong> Stage manager controller for the 32 ungrouped program sessions, live Q&amp;A moderation, and the master <em>Certificate Release Switch</em>.
             </li>
           </ul>
         </div>
@@ -209,23 +220,23 @@ export default function CheckinTerminalPage() {
     },
     {
       id: "register-desk",
-      title: "2. Attendee Registration (Smart Dropdown)",
+      title: "2. Attendee Registration (Smart Dropdown & Categories)",
       icon: "👤",
       content: (
         <div className="space-y-2 text-white/80 leading-relaxed">
-          <p>Quick lookup and registration for non-ticketed attendees:</p>
+          <p>Fast check-in for delegates without advance ticket packages:</p>
           <ul className="list-disc list-inside space-y-1 pl-1 text-white/70">
             <li>
-              <strong className="text-white">Smart Dropdown:</strong> Start typing a matric number (e.g. <code className="text-[#3fffe8]">2315</code>) or student name in the search box. A list of matching students appears automatically.
+              <strong className="text-white">Smart Dropdown:</strong> Type 3+ digits of a matriculation number (e.g. <code className="text-[#3fffe8]">2315</code>) or student surname to auto-suggest students from the university database.
             </li>
             <li>
-              <strong className="text-white">1-Click Auto-Fill:</strong> Tap any student in the dropdown to instantly fill their name, matriculation number, department, and level.
+              <strong className="text-white">1-Click Auto-Fill:</strong> Tap any suggested student to populate Name, Matric, Department, and Level instantly.
             </li>
             <li>
-              <strong className="text-white">External Attendees:</strong> For guests from other faculties, universities, or industry partners, manually type their details in the fields.
+              <strong className="text-white">General &amp; External Delegates:</strong> For guests from other faculties, visiting institutions, or corporate partners, enter their name and specify their affiliation (e.g., General Delegate, Mechanical, or Industry Partner).
             </li>
             <li>
-              Click <strong className="text-[#3fffe8]">Register & Issue Regular Tag</strong>. Duplicate submissions are automatically caught and flagged.
+              Tap <strong className="text-[#3fffe8]">Register &amp; Issue Regular Tag</strong>. Duplicate entries are caught and flagged to prevent double counting.
             </li>
           </ul>
         </div>
@@ -233,23 +244,23 @@ export default function CheckinTerminalPage() {
     },
     {
       id: "paid-desk",
-      title: "3. Paid VIP Delegates (QR Scan & 48 Roster)",
+      title: "3. Paid VIP Delegates (QR Scanner & 53-Seat VIP Roster)",
       icon: "🎟️",
       content: (
         <div className="space-y-2 text-white/80 leading-relaxed">
-          <p>Fast verification of paid attendees:</p>
+          <p>High-speed admission for delegates with confirmed payment packages:</p>
           <ul className="list-disc list-inside space-y-1 pl-1 text-white/70">
             <li>
-              <strong className="text-white">Camera QR Scanner (Fastest):</strong> Delegate presents their ticket QR code on mobile. Point ticket at camera for sub-second verification.
+              <strong className="text-white">Camera QR Scanner (Fastest):</strong> Delegate presents digital ticket QR code. Point camera at code for sub-second verification.
             </li>
             <li>
-              <strong className="text-white">Official Paid Directory (48 Delegates):</strong> Click the <span className="text-[#3fffe8]">Paid List</span> button to view all 48 paid delegates. Filter by name/matric and tap <span className="text-[#c6f552] font-bold">Check In</span> for 1-tap gate admission.
+              <strong className="text-white">Official Paid VIP Roster:</strong> Click the <span className="text-[#3fffe8] font-bold">Paid List</span> button to view the full directory of 53 paid VIP delegates. Search by name or matriculation number and tap <span className="text-[#c6f552] font-bold">Check In</span> for 1-tap admission.
             </li>
             <li>
-              <strong className="text-white">Search Fallback:</strong> Toggle the search drawer to look up paid attendees by matric number or name if camera is unavailable.
+              <strong className="text-white">Manual Lookup Fallback:</strong> Use the search drawer to look up paid attendees by matric number or email if ticket QR cannot be scanned.
             </li>
             <li>
-              Issues the <strong className="text-[#c6f552]">Special Paid Delegate Tag (VIP)</strong>.
+              Issues the <strong className="text-[#c6f552]">Special Paid Delegate Tag (VIP)</strong> granting access to reserved seating, meals, and package benefits.
             </li>
           </ul>
         </div>
@@ -257,17 +268,68 @@ export default function CheckinTerminalPage() {
     },
     {
       id: "stage-desk",
-      title: "4. Live Stage Control & Audience Q&A",
+      title: "4. Live Stage Control (32 Ungrouped Sessions)",
       icon: "📺",
       content: (
         <div className="space-y-2 text-white/80 leading-relaxed">
-          <p>Stage synchronization and audience interaction:</p>
+          <p>Complete control of the conference proceedings and audience experience:</p>
           <ul className="list-disc list-inside space-y-1 pl-1 text-white/70">
             <li>
-              <strong className="text-white">Program Agenda:</strong> Switch between talks, keynotes, and defenses. Click <em>Set Active</em> to broadcast current stage activity to all attendees.
+              <strong className="text-white">32 Distinct Sessions:</strong> All 32 program items (from Opening Formalities, Keynote Address, 3 Concurrent Workshop Tracks, Annual Debate, 8 Hackathon Pitches, to Paper Presentations and Closing Protocols) remain individually listed so coordinators know exactly what is on stage.
             </li>
             <li>
-              <strong className="text-white">Audience Q&A:</strong> Live feed of delegate questions. Approve or feature top questions for panel speakers to answer.
+              <strong className="text-white">Duration-Only Display:</strong> In accordance with stage protocol, items display designated duration (e.g. 5 mins, 25 mins, 55 mins) rather than rigid clock times to adapt naturally to stage flow.
+            </li>
+            <li>
+              <strong className="text-white">1-Tap Stage Advancement:</strong> Tap the big green <strong className="text-[#c6f552]">Next Session</strong> button to transition the live program. All attendee screens, the navbar live ticker, and the schedule highlight update simultaneously.
+            </li>
+            <li>
+              <strong className="text-white">Manual Override:</strong> Tap any session in the list to immediately set it as the live program.
+            </li>
+          </ul>
+        </div>
+      ),
+    },
+    {
+      id: "cert-release",
+      title: "5. Certificate Portal Release & Access Control",
+      icon: "🎓",
+      content: (
+        <div className="space-y-2 text-white/80 leading-relaxed">
+          <p>Strict credential withholding policy until program conclusion:</p>
+          <ul className="list-disc list-inside space-y-1 pl-1 text-white/70">
+            <li>
+              <strong className="text-amber-300">Locked During Proceedings:</strong> By default, the Certificate Portal (<code className="text-[#3fffe8]">/certificate</code>) is locked. Delegates attempting to access it are informed that credentials will unlock after closing protocols.
+            </li>
+            <li>
+              <strong className="text-white">Stage Coordinator Release:</strong> Under the <em>Live Stage tab</em>, use the <strong>Certificate Portal Release</strong> card. Tap <strong className="text-[#c6f552]">Release Certificates</strong> when the closing remarks conclude.
+            </li>
+            <li>
+              <strong className="text-white">Delegate Issuance:</strong> Once unlocked, delegates input their matric number or ticket reference on <code className="text-[#3fffe8]">/certificate</code> to generate, inspect, and download their high-resolution verified PDF/PNG.
+            </li>
+            <li>
+              <strong className="text-white">Admin Preview:</strong> Coordinators can preview the certificate generator anytime without unlocking it for delegates using the <code className="text-[#c6f552]">?admin=true</code> URL override.
+            </li>
+          </ul>
+        </div>
+      ),
+    },
+    {
+      id: "qa-stream",
+      title: "6. Audience Live Q&A Stream & Moderation",
+      icon: "💬",
+      content: (
+        <div className="space-y-2 text-white/80 leading-relaxed">
+          <p>Real-time questions submitted by delegates in KAAF Auditorium:</p>
+          <ul className="list-disc list-inside space-y-1 pl-1 text-white/70">
+            <li>
+              <strong className="text-white">Question Feed:</strong> Real-time incoming questions submitted via the audience <em>Ask Stage</em> button, indicating attendee name, affiliation, and target session.
+            </li>
+            <li>
+              <strong className="text-white">Moderation Filters:</strong> Switch between <em>Unanswered</em>, <em>Answered</em>, and <em>All</em> questions.
+            </li>
+            <li>
+              <strong className="text-white">Mark As Handled:</strong> Tap <em>Mark Done</em> when a question is read to the speaker or addressed on stage.
             </li>
           </ul>
         </div>
@@ -275,7 +337,7 @@ export default function CheckinTerminalPage() {
     },
     {
       id: "audio-stats",
-      title: "5. Audio Feedback & Top Controls",
+      title: "7. Audio Feedback & Top Controls",
       icon: "🔔",
       content: (
         <div className="space-y-2 text-white/80 leading-relaxed">
@@ -291,7 +353,7 @@ export default function CheckinTerminalPage() {
               <strong className="text-rose-400">Error (Low Buzz):</strong> Unpaid ticket, wrong event, or invalid format.
             </li>
             <li>
-              <strong className="text-white">Top Bar:</strong> Shimmering counter shows total attendees on site. Use the speaker icon to mute sounds, refresh icon to sync count, and help icon to reopen this modal.
+              <strong className="text-white">Top Bar:</strong> Real-time counter shows total delegates on site. Use the speaker icon to mute sounds, refresh icon to sync count, and help icon to reopen this modal anytime.
             </li>
           </ul>
         </div>
@@ -455,8 +517,8 @@ export default function CheckinTerminalPage() {
 
       {/* Help & Operations Guide Modal (Accordion Style) */}
       {showHelpModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-          <div className="w-full max-w-lg bg-[#02001e] border-2 border-white/15 rounded-3xl p-5 sm:p-6 text-white shadow-2xl flex flex-col max-h-[85vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 lg:p-6 bg-black/80 backdrop-blur-md animate-fade-in">
+          <div className="w-[94vw] sm:w-[90vw] md:w-[85vw] lg:w-full lg:max-w-lg bg-[#02001e] border-2 border-white/15 rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-white shadow-2xl flex flex-col max-h-[76vh] sm:max-h-[78vh] md:max-h-[80vh] lg:max-h-[85vh]">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div className="flex items-center gap-2.5">

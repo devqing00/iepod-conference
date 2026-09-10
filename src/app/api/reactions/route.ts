@@ -12,9 +12,15 @@ interface LiveBurst {
 
 const EMOJI_MAP: Record<string, string> = {
   applause: "👏",
-  insight: "💡",
   fire: "🔥",
+  insight: "💡",
   energy: "⚡",
+  rocket: "🚀",
+  heart: "❤️",
+  brain: "🧠",
+  mindblown: "🤯",
+  target: "🎯",
+  trophy: "🏆",
 };
 
 // Rolling queue of live bursts broadcast to all active attendees
@@ -22,10 +28,16 @@ const recentBursts: LiveBurst[] = [];
 
 // In-memory counters for ultra-fast reaction response & offline fallback
 const reactionCounts: Record<string, number> = {
-  applause: 142,
-  insight: 87,
-  fire: 219,
-  energy: 104,
+  applause: 168,
+  fire: 242,
+  insight: 114,
+  energy: 139,
+  rocket: 95,
+  heart: 182,
+  brain: 106,
+  mindblown: 76,
+  target: 124,
+  trophy: 88,
 };
 
 export async function GET(req: NextRequest) {
@@ -60,7 +72,18 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { type, sessionId, burstId } = body;
 
-    const validTypes = ["applause", "insight", "fire", "energy"];
+    const validTypes = [
+      "applause",
+      "fire",
+      "insight",
+      "energy",
+      "rocket",
+      "heart",
+      "brain",
+      "mindblown",
+      "target",
+      "trophy",
+    ];
     if (!type || !validTypes.includes(type)) {
       return NextResponse.json(
         { error: "Invalid reaction type" },

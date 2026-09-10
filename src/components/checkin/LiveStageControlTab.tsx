@@ -12,6 +12,10 @@ import {
   ChatBubbleBottomCenterTextIcon,
   PlayCircleIcon,
   CheckIcon,
+  LockClosedIcon,
+  LockOpenIcon,
+  AcademicCapIcon,
+  ClockIcon,
 } from "@heroicons/react/24/solid";
 import { playSuccessFeedback } from "@/lib/feedback";
 
@@ -26,6 +30,10 @@ export default function LiveStageControlTab() {
   const [questionFilter, setQuestionFilter] = useState<"all" | "unanswered" | "answered">("unanswered");
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  // Certificate Portal Release Control State (Admin toggle)
+  const [isCertUnlocked, setIsCertUnlocked] = useState<boolean>(false);
+  const [isTogglingCert, setIsTogglingCert] = useState<boolean>(false);
+
   // Fetch current live session from API
   const fetchActiveSession = async () => {
     try {
@@ -38,6 +46,46 @@ export default function LiveStageControlTab() {
       }
     } catch (e) {
       console.error("Failed to load active stage program:", e);
+    }
+  };
+
+  // Fetch certificate access status from API
+  const fetchCertificateAccess = async () => {
+    try {
+      const res = await fetch("/api/certificate/access", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        setIsCertUnlocked(Boolean(data.isUnlocked));
+      }
+    } catch (e) {
+      console.error("Failed to load certificate access state:", e);
+    }
+  };
+
+  // Toggle certificate release status (unlock after program)
+  const handleToggleCertificateAccess = async () => {
+    setIsTogglingCert(true);
+    try {
+      const nextState = !isCertUnlocked;
+      const res = await fetch("/api/certificate/access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isUnlocked: nextState }),
+      });
+      if (res.ok) {
+        setIsCertUnlocked(nextState);
+        playSuccessFeedback();
+        setSavedNote(
+          nextState
+            ? "Certificate Portal is now UNLOCKED for delegates!"
+            : "Certificate Portal is now LOCKED until program concludes."
+        );
+        setTimeout(() => setSavedNote(null), 3500);
+      }
+    } catch (e) {
+      console.error("Failed to update certificate access:", e);
+    } finally {
+      setIsTogglingCert(false);
     }
   };
 
@@ -62,10 +110,12 @@ export default function LiveStageControlTab() {
   useEffect(() => {
     fetchActiveSession();
     fetchQuestions();
+    fetchCertificateAccess();
     const interval = setInterval(() => {
       fetchActiveSession();
       fetchQuestions();
-    }, 10000);
+      fetchCertificateAccess();
+    }, 8000);
     return () => clearInterval(interval);
   }, []);
 
@@ -190,6 +240,83 @@ export default function LiveStageControlTab() {
       {/* SUB-TAB 1: LIVE STAGE PROGRAM CONTROLLER */}
       {subTab === "controller" && (
         <div className="space-y-4 animate-fade-in">
+          {/* Admin Certificate Access & Release Control Card */}
+          <div
+            className={`p-3.5 sm:p-4 rounded-2xl border transition-all ${
+              isCertUnlocked
+                ? "bg-gradient-to-r from-[#040032] via-[#0b3820] to-[#040032] border-[#c6f552]/60 shadow-[0_0_20px_rgba(198,245,82,0.2)]"
+                : "bg-[#040032] border-white/15"
+            }`}
+          >
+            <div className="flex items-center justify-between gap-3 mb-1.5">
+              <div className="flex items-center gap-2">
+                <div
+                  className={`w-7 h-7 rounded-lg flex items-center justify-center ${
+                    isCertUnlocked
+                      ? "bg-[#c6f552]/20 text-[#c6f552]"
+                      : "bg-amber-500/20 text-amber-400"
+                  }`}
+                >
+                  <AcademicCapIcon className="w-4 h-4" />
+                </div>
+                <div>
+                  <h5 className="text-xs font-bold font-mono uppercase tracking-wider text-white flex items-center gap-1.5">
+                    <span>Certificate Portal Access</span>
+                    <span
+                      className={`px-1.5 py-0.2 rounded text-[9px] font-bold ${
+                        isCertUnlocked
+                          ? "bg-[#c6f552] text-[#040032]"
+                          : "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                      }`}
+                    >
+                      {isCertUnlocked ? "UNLOCKED" : "LOCKED"}
+                    </span>
+                  </h5>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                disabled={isTogglingCert}
+                onClick={handleToggleCertificateAccess}
+                className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50 ${
+                  isCertUnlocked
+                    ? "bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 border border-rose-500/40"
+                    : "bg-[#c6f552] text-[#040032] hover:bg-[#b5e640] shadow-[0_0_12px_rgba(198,245,82,0.3)]"
+                }`}
+              >
+                {isTogglingCert ? (
+                  <>
+                    <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    <span>Updating...</span>
+                  </>
+                ) : isCertUnlocked ? (
+                  <>
+                    <LockClosedIcon className="w-3.5 h-3.5" />
+                    <span>Lock Portal</span>
+                  </>
+                ) : (
+                  <>
+                    <LockOpenIcon className="w-3.5 h-3.5" />
+                    <span>Release Certificates</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            <p className="text-[11px] text-white/60 leading-relaxed">
+              {isCertUnlocked ? (
+                <span className="text-[#c6f552]">
+                  ✦ Portal is UNLOCKED. All delegates can now look up matric numbers / ticket codes and download official certificates.
+                </span>
+              ) : (
+                <span>
+                  Certificates remain withheld from delegates until after the program. Unlock here when closing protocols conclude.
+                </span>
+              )}
+            </p>
+          </div>
+
           {/* 1-Tap "Advance to Next Session" Stage Manager Banner */}
           <div className="p-4 rounded-2xl bg-gradient-to-r from-[#040032] via-[#0a3825] to-[#040032] border-2 border-[#c6f552]/40 shadow-[0_0_20px_rgba(198,245,82,0.15)]">
             <div className="flex items-center justify-between mb-2">
@@ -206,9 +333,20 @@ export default function LiveStageControlTab() {
             <h4 className="text-base sm:text-lg font-bold text-white truncate">
               {currentSession.shortTitle}
             </h4>
-            <p className="text-xs text-white/70 mb-3 truncate">
-              {currentSession.speaker ? `${currentSession.speaker} · ` : ""}
-              {currentSession.duration}
+            <p className="text-xs text-white/70 mb-3 truncate flex items-center gap-1.5">
+              <ClockIcon className="w-3.5 h-3.5 text-[#3fffe8]" />
+              <span className="text-[#3fffe8] font-mono mr-1">{currentSession.duration}</span>
+              {currentSession.speaker ? (
+                <>
+                  <span>·</span>
+                  <span className="truncate">{currentSession.speaker}</span>
+                </>
+              ) : (
+                <>
+                  <span>·</span>
+                  <span className="text-white/60">{currentSession.category}</span>
+                </>
+              )}
             </p>
 
             {/* 1-Tap Action Buttons */}
@@ -284,9 +422,20 @@ export default function LiveStageControlTab() {
                       </h4>
                     </div>
 
-                    <div className="text-[11px] text-white/50 truncate mt-0.5">
-                      {session.speaker ? `${session.speaker} · ` : ""}
-                      {session.duration}
+                    <div className="text-[11px] text-white/50 truncate mt-0.5 flex items-center gap-1.5">
+                      <ClockIcon className="w-3 h-3 text-[#3fffe8]" />
+                      <span className="text-[#3fffe8] font-mono">{session.duration}</span>
+                      {session.speaker ? (
+                        <>
+                          <span>·</span>
+                          <span className="truncate">{session.speaker}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>·</span>
+                          <span className="text-white/40">{session.category}</span>
+                        </>
+                      )}
                     </div>
                   </div>
 

@@ -21,9 +21,9 @@ export default function StatsGrid() {
       badgeBg: "bg-[#040032] text-[#3fffe8]",
     },
     {
-      value: "6th",
+      value: "2026",
       label: "Annual IESA Edition",
-      badge: "Legacy Event",
+      badge: "Flagship Event",
       icon: TrophyIcon,
       accentColor: "border-[#00e5ff]",
       badgeBg: "bg-[#040032] text-[#c6f552]",

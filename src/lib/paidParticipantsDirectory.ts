@@ -1,5 +1,5 @@
 // =========================================================================
-// 🎟️ OFFICIAL PAID TICKET DIRECTORY (48 PARTICIPANTS)
+// 🎟️ OFFICIAL PAID TICKET DIRECTORY (51 PARTICIPANTS)
 // IESA Process Day 2026 — Verified Paid Delegates Roster
 // =========================================================================
 
@@ -12,6 +12,7 @@ export interface PaidParticipantItem {
   department: string;
   email: string;
   phone?: string;
+  dbId?: string;
 }
 
 export const OFFICIAL_PAID_DIRECTORY: PaidParticipantItem[] = [
@@ -495,6 +496,61 @@ export const OFFICIAL_PAID_DIRECTORY: PaidParticipantItem[] = [
     email: "zamiola566@stu.ui.edu.ng",
     phone: "",
   },
+  {
+    id: "paid-49",
+    orderNumber: 49,
+    ticketName: "Tajudeen Olorunnisola",
+    fullName: "Tajudeen Abdulrahman Olorunnisola",
+    matricNumber: "251295",
+    department: "Petroleum Engineering",
+    email: "solapeace086@gmail.com",
+    phone: "",
+    dbId: "FORM_180",
+  },
+  {
+    id: "6a0b6ed04439b436e3b53f43",
+    orderNumber: 50,
+    ticketName: "Fadeelat Abdul-Azeez",
+    fullName: "Fadeelat Abdul-Azeez",
+    matricNumber: "251106",
+    department: "Industrial & Production Engineering",
+    email: "delahazeez23@gmail.com",
+    phone: "+2349055346648",
+    dbId: "6a0b6ed04439b436e3b53f43",
+  },
+  {
+    id: "69b93e9efcc560f66403c265",
+    orderNumber: 51,
+    ticketName: "Olaniyi Afolabi",
+    fullName: "Afolabi Olaniyi Daniel",
+    matricNumber: "244024",
+    department: "Industrial & Production Engineering",
+    email: "oafolabi244024@stu.ui.edu.ng",
+    phone: "09114204299",
+    dbId: "69b93e9efcc560f66403c265",
+  },
+  {
+    id: "69b8860c376298834e19f3f0",
+    orderNumber: 52,
+    ticketName: "Oluwaseunara Sonubi",
+    fullName: "Oluwaseunara Sonubi",
+    matricNumber: "244078",
+    department: "Industrial & Production Engineering",
+    email: "osonubi244078@stu.ui.edu.ng",
+    phone: "08165192394",
+    dbId: "69b8860c376298834e19f3f0",
+  },
+  {
+    id: "69b92fa0cfd4c3f3a4e205b0",
+    orderNumber: 53,
+    ticketName: "Ibukunoluwa Ikugbonmire",
+    fullName: "Ibukunoluwa Ikugbonmire",
+    matricNumber: "251139",
+    department: "Industrial & Production Engineering",
+    email: "pikugbonmire@gmail.com",
+    phone: "08084709854",
+    dbId: "69b92fa0cfd4c3f3a4e205b0",
+  },
 ];
 
 // Helper to look up an attendee in the official paid directory
@@ -509,6 +565,7 @@ export function findPaidParticipant(query: string): PaidParticipantItem | null {
       if (p.fullName.toLowerCase() === clean) return true;
       if (p.ticketName.toLowerCase() === clean) return true;
       if (p.id.toLowerCase() === clean) return true;
+      if (p.dbId && p.dbId.toLowerCase() === clean) return true;
       // Partial name match if query is longer than 3 chars
       if (clean.length >= 4 && (p.fullName.toLowerCase().includes(clean) || p.ticketName.toLowerCase().includes(clean))) {
         return true;

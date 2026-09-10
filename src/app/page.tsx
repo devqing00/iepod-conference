@@ -8,7 +8,6 @@ import SpeakersSection from "@/components/SpeakersSection";
 import HackathonFinalists from "@/components/HackathonFinalists";
 import CallForPapers from "@/components/CallForPapers";
 import ScheduleTimeline from "@/components/ScheduleTimeline";
-import VenueCard from "@/components/VenueCard";
 import SpeakerModal from "@/components/SpeakerModal";
 import type { Speaker } from "@/components/SpeakersSection";
 import Footer from "@/components/Footer";
@@ -56,15 +55,10 @@ export default function Home() {
           <div data-stack-section className="relative z-50 bg-[#faf8f2] shadow-2xl clip-top-slant-left -mt-[1.8vw]">
             <ScheduleTimeline />
           </div>
-
-          {/* Section 6: Confirmed Venue Pass (Angled Top Curtain - Slant Right) */}
-          <div data-stack-section className="relative z-60 bg-[#ece7d8] shadow-2xl clip-top-slant-right -mt-[1.8vw]">
-            <VenueCard />
-          </div>
         </main>
 
-        {/* Section 7: Technical Footer (Angled Top Curtain - Slant Left) */}
-        <div id="footer-section" data-stack-section className="relative z-70 bg-[#040032] shadow-2xl clip-top-slant-left -mt-[1.8vw]">
+        {/* Section 6: Technical Footer (Angled Top Curtain - Slant Right) */}
+        <div id="footer-section" data-stack-section className="relative z-60 bg-[#040032] shadow-2xl clip-top-slant-right -mt-[1.8vw]">
           <Footer />
         </div>
       </ParallaxWrapper>

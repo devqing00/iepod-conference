@@ -9,15 +9,14 @@ import {
   ArrowLeftIcon,
   SparklesIcon,
   ShieldCheckIcon,
-  AdjustmentsHorizontalIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
+  LockClosedIcon,
+  ClockIcon,
+  ArrowPathIcon,
 } from "@heroicons/react/24/solid";
 import {
   getActiveCertificateConfig,
   CertificateConfigType,
 } from "@/lib/certificateConfig";
-import VisualCoordinateMapper from "@/components/certificate/VisualCoordinateMapper";
 
 interface AttendeeVerification {
   name: string;
@@ -36,12 +35,47 @@ export default function CertificateLookupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [attendee, setAttendee] = useState<AttendeeVerification | null>(null);
-  const [isMapperOpen, setIsMapperOpen] = useState(false);
   const [certConfig, setCertConfig] = useState<CertificateConfigType>(() =>
     getActiveCertificateConfig()
   );
 
+  // Certificate Access Policy (Locked until after program, unless admin mode)
+  const [isAccessChecked, setIsAccessChecked] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isAdminMode, setIsAdminMode] = useState(false);
+  const [isRefreshingAccess, setIsRefreshingAccess] = useState(false);
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Check access state from backend API
+  const checkAccess = useCallback(async () => {
+    try {
+      setIsRefreshingAccess(true);
+      const res = await fetch("/api/certificate/access", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        setIsUnlocked(Boolean(data.isUnlocked));
+      }
+    } catch (e) {
+      console.warn("Failed to check certificate access:", e);
+    } finally {
+      setIsAccessChecked(true);
+      setIsRefreshingAccess(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (
+        searchParams.get("admin") === "true" ||
+        searchParams.get("preview") === "true"
+      ) {
+        setIsAdminMode(true);
+      }
+    }
+    checkAccess();
+  }, [checkAccess]);
 
   // Fetch global config from Database on mount, plus sync active changes
   useEffect(() => {
@@ -247,8 +281,125 @@ export default function CertificateLookupPage() {
     link.click();
   };
 
+  // 1. Loading State
+  if (!isAccessChecked) {
+    return (
+      <div className="min-h-screen bg-[#040032] text-white flex flex-col items-center justify-center p-4">
+        <div className="w-8 h-8 rounded-full border-2 border-[#c6f552] border-t-transparent animate-spin mb-3" />
+        <p className="text-xs font-mono text-white/60">Verifying credential portal access...</p>
+      </div>
+    );
+  }
+
+  // 2. Locked State (When withheld until program concludes, unless admin override)
+  if (!isUnlocked && !isAdminMode) {
+    return (
+      <div className="min-h-screen bg-[#040032] text-white flex flex-col justify-between p-4 sm:p-6 relative overflow-hidden select-none">
+        {/* Background Ambient Glows */}
+        <div className="fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-gradient-to-tr from-[#3fffe8]/10 via-[#c6f552]/10 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
+
+        {/* Minimal Top Header */}
+        <header className="w-full max-w-4xl mx-auto flex items-center justify-between py-2">
+          <Link
+            href="/"
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-mono font-bold uppercase transition-colors text-white"
+          >
+            <ArrowLeftIcon className="w-3.5 h-3.5" />
+            <span>Conference Home</span>
+          </Link>
+
+          <span className="text-xs font-mono text-[#c6f552] font-bold">
+            IESA PROCESS DAY 2026
+          </span>
+        </header>
+
+        {/* Center Locked Notice Card */}
+        <main className="w-full max-w-xl mx-auto my-auto py-8">
+          <div className="p-6 sm:p-10 rounded-3xl bg-[#02001e]/95 border-2 border-white/15 backdrop-blur-xl shadow-2xl text-center space-y-6">
+            {/* Glowing Padlock Icon */}
+            <div className="w-20 h-20 mx-auto rounded-3xl bg-[#0a3825] border-2 border-[#c6f552]/50 flex items-center justify-center text-[#c6f552] shadow-[0_0_30px_rgba(198,245,82,0.25)]">
+              <LockClosedIcon className="w-10 h-10" />
+            </div>
+
+            <div className="space-y-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[10px] font-mono font-bold uppercase tracking-wider">
+                <ClockIcon className="w-3 h-3" />
+                <span>Withheld During Program</span>
+              </span>
+
+              <h2 className="text-2xl sm:text-3xl font-serif-display font-extrabold text-white">
+                Certificates Unlock After Today&apos;s Program
+              </h2>
+
+              <p className="text-xs sm:text-sm text-white/70 max-w-md mx-auto leading-relaxed">
+                Official certificates of participation and completion will become accessible immediately following the conclusion of today&apos;s IESA Process Day closing protocols.
+              </p>
+            </div>
+
+            {/* Checklist Box */}
+            <div className="p-4 rounded-2xl bg-[#040032] border border-white/10 text-left space-y-2.5 text-xs text-white/80">
+              <div className="flex items-start gap-2.5">
+                <span className="text-[#c6f552] font-bold">✓</span>
+                <span>All physical and online attendee check-ins are logged into the conference roster.</span>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <span className="text-[#c6f552] font-bold">✓</span>
+                <span>The portal will be unlocked by the stage coordinators once the final sessions wrap up.</span>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <span className="text-[#c6f552] font-bold">✓</span>
+                <span>Upon release, enter your matric number or name to download your verified certificate.</span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+              <Link
+                href="/#schedule"
+                className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-[#c6f552] text-[#040032] hover:bg-[#b5e640] text-xs font-mono font-bold uppercase tracking-wider transition-all shadow-[0_0_16px_rgba(198,245,82,0.3)] text-center cursor-pointer"
+              >
+                Return to Live Stage Program
+              </Link>
+
+              <button
+                type="button"
+                onClick={checkAccess}
+                disabled={isRefreshingAccess}
+                className="w-full sm:w-auto px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/15 text-white/80 hover:text-white text-xs font-mono font-bold transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                <ArrowPathIcon className={`w-4 h-4 ${isRefreshingAccess ? "animate-spin" : ""}`} />
+                <span>Check If Unlocked</span>
+              </button>
+            </div>
+          </div>
+        </main>
+
+        <footer className="w-full max-w-4xl mx-auto py-2 text-center text-xs font-mono text-white/40">
+          IESA Process Day 2026 · Department of Industrial &amp; Production Engineering, UI
+        </footer>
+      </div>
+    );
+  }
+
+  // 3. Unlocked Portal (or Admin Preview)
   return (
     <div className="min-h-screen bg-[#faf8f2] text-[#040032] flex flex-col selection:bg-[#c6f552] selection:text-[#040032]">
+      {/* Admin Preview Mode Alert Banner */}
+      {isAdminMode && !isUnlocked && (
+        <div className="bg-amber-500/20 border-b border-amber-500/40 text-amber-200 px-4 py-2 text-xs font-mono font-bold flex items-center justify-between z-50">
+          <div className="flex items-center gap-2">
+            <LockClosedIcon className="w-4 h-4 text-amber-400" />
+            <span>ADMIN PREVIEW: The certificate portal is currently LOCKED for public delegates. You are viewing in coordinator test mode.</span>
+          </div>
+          <a
+            href="/check-in"
+            className="px-2.5 py-1 rounded-lg bg-amber-400 text-[#040032] text-[10px] uppercase font-bold hover:bg-amber-300"
+          >
+            Manage Lock in Admin
+          </a>
+        </div>
+      )}
+
       {/* Top Header Bar */}
       <header className="sticky top-0 z-40 bg-[#040032]/95 backdrop-blur-md border-b border-white/10 px-4 sm:px-8 py-3.5 flex items-center justify-between text-white">
         <div className="flex items-center gap-3">
@@ -265,54 +416,11 @@ export default function CertificateLookupPage() {
           </h1>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          {/* Visual Mapper Studio Trigger */}
-          <button
-            type="button"
-            onClick={() => setIsMapperOpen(!isMapperOpen)}
-            className={`px-3 py-1.5 rounded-full text-xs font-mono font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-              isMapperOpen
-                ? "bg-[#c6f552] text-[#040032] shadow-[0_0_15px_rgba(198,245,82,0.4)]"
-                : "bg-white/10 hover:bg-white/20 text-white"
-            }`}
-          >
-            <AdjustmentsHorizontalIcon className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Visual Mapper Studio</span>
-            <span className="sm:hidden">Mapper</span>
-            {isMapperOpen ? (
-              <ChevronUpIcon className="w-3.5 h-3.5" />
-            ) : (
-              <ChevronDownIcon className="w-3.5 h-3.5" />
-            )}
-          </button>
-
-          <div className="hidden md:flex items-center gap-2 text-[11px] font-mono text-white/70">
-            <ShieldCheckIcon className="w-4 h-4 text-[#c6f552]" />
-            <span>Cryptographically Verified</span>
-          </div>
+        <div className="flex items-center gap-2 text-[11px] font-mono text-white/70">
+          <ShieldCheckIcon className="w-4 h-4 text-[#c6f552]" />
+          <span>Cryptographically Verified</span>
         </div>
       </header>
-
-      {/* Visual Coordinate Mapper Studio Collapsible Drawer */}
-      {isMapperOpen && (
-        <section className="bg-[#02001e] border-b-2 border-[#c6f552]/30 px-4 sm:px-8 py-6 shadow-2xl animate-fade-in">
-          <div className="max-w-6xl mx-auto space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-xs font-mono text-[#c6f552]">
-                <SparklesIcon className="w-4 h-4" />
-                <span>Coordinate Studio · Real-time text calibration</span>
-              </div>
-              <Link
-                href="/certificate/mapper"
-                className="text-xs font-mono text-white/60 hover:text-white underline"
-              >
-                Open Fullscreen Studio ↗
-              </Link>
-            </div>
-            <VisualCoordinateMapper onClose={() => setIsMapperOpen(false)} />
-          </div>
-        </section>
-      )}
 
       {/* Main Container */}
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
@@ -407,19 +515,11 @@ export default function CertificateLookupPage() {
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   type="button"
-                  onClick={() => setIsMapperOpen(true)}
-                  className="px-4 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-mono font-bold text-xs uppercase transition-colors flex items-center gap-1.5 cursor-pointer"
-                >
-                  <AdjustmentsHorizontalIcon className="w-3.5 h-3.5 text-[#c6f552]" />
-                  <span>Adjust Coordinates</span>
-                </button>
-                <button
-                  type="button"
                   onClick={handleDownload}
-                  className="flex-1 sm:flex-initial px-6 py-2.5 rounded-full bg-[#c6f552] text-[#040032] font-mono font-bold text-xs uppercase tracking-wider hover:bg-[#b5e640] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(198,245,82,0.4)] cursor-pointer"
+                  className="w-full sm:w-auto px-8 py-3 rounded-full bg-[#c6f552] text-[#040032] font-mono font-bold text-xs uppercase tracking-wider hover:bg-[#b5e640] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(198,245,82,0.4)] cursor-pointer active:scale-95"
                 >
                   <ArrowDownTrayIcon className="w-4 h-4" />
-                  <span>Download Certificate</span>
+                  <span>Download High-Res Certificate</span>
                 </button>
               </div>
             </div>
@@ -433,26 +533,17 @@ export default function CertificateLookupPage() {
               />
             </div>
 
-            {/* Coordinate Mapper Callout */}
-            <div className="p-4 rounded-2xl bg-[#ece7d8] border border-[#040032]/15 text-xs text-[#040032]/80 font-mono flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div>
-                <p className="font-bold text-[#040032] mb-0.5">
-                  ⚙️ Coordinate Studio:
-                </p>
+            {/* High-Resolution Issuance Verification Badge */}
+            <div className="p-4 rounded-2xl bg-[#040032]/5 border border-[#040032]/10 text-xs text-[#040032]/80 font-sans flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <ShieldCheckIcon className="w-5 h-5 text-[#0a3825] shrink-0" />
                 <p>
-                  Need to nudge text positions or adjust font sizes? Use the Visual Coordinate Mapper.
+                  Official credential rendered at 2048×1154 print resolution. Verified under IESA Chapter Protocols.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsMapperOpen(true);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-                className="px-4 py-2 rounded-xl bg-[#040032] text-[#c6f552] font-mono font-bold text-xs uppercase hover:bg-[#02001e] transition-colors cursor-pointer shrink-0"
-              >
-                Open Studio
-              </button>
+              <span className="text-[10px] font-mono text-[#0a3825] font-bold px-2.5 py-1 rounded-full bg-[#c6f552]/40 border border-[#0a3825]/20 shrink-0">
+                VERIFIED
+              </span>
             </div>
           </div>
         )}

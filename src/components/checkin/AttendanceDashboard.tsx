@@ -70,6 +70,20 @@ export default function AttendanceDashboard({
     setIsMuted(isAudioMuted());
   }, []);
 
+  // Lock background scroll when roster modal is open
+  useEffect(() => {
+    if (showRosterModal) {
+      const originalBodyOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalBodyOverflow;
+        document.documentElement.style.overflow = originalHtmlOverflow;
+      };
+    }
+  }, [showRosterModal]);
+
   const toggleSound = () => {
     const next = !isMuted;
     setIsMuted(next);
@@ -264,8 +278,8 @@ export default function AttendanceDashboard({
 
       {/* Full 28-Attendee Roster Modal */}
       {showRosterModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-lg max-h-[85vh] rounded-3xl bg-[#040032] border border-white/20 shadow-2xl flex flex-col overflow-hidden text-white">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 lg:p-6">
+          <div className="w-[94vw] sm:w-[90vw] md:w-[85vw] lg:w-full lg:max-w-lg max-h-[76vh] sm:max-h-[78vh] md:max-h-[80vh] lg:max-h-[85vh] rounded-2xl sm:rounded-3xl bg-[#040032] border border-white/20 shadow-2xl flex flex-col overflow-hidden text-white">
             {/* Modal Header */}
             <div className="p-4 border-b border-white/10 flex items-center justify-between bg-[#02001e]">
               <div className="flex items-center gap-2">

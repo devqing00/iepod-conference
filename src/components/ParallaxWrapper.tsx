@@ -15,24 +15,43 @@ export default function ParallaxWrapper({ children }: ParallaxWrapperProps) {
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
-    const sections = wrapperRef.current?.querySelectorAll<HTMLElement>("[data-stack-section]");
+    // Only fallback to native simple scroll on small phone viewports (< 768px).
+    // NEVER check navigator.maxTouchPoints as touchscreen laptops (Surface, Lenovo, Dell)
+    // are full desktop computers that must have parallax active.
+    const isMobilePhone =
+      typeof window !== "undefined" && window.innerWidth < 768;
 
+    const sections =
+      wrapperRef.current?.querySelectorAll<HTMLElement>("[data-stack-section]");
+
+    // Always assign proper z-index stacking order for physical curtain layering
     if (sections && sections.length > 0) {
       sections.forEach((section, i) => {
-        const nextSection = sections[i + 1];
+        gsap.set(section, {
+          zIndex: (i + 1) * 10,
+          position: "relative",
+          willChange: isMobilePhone ? "auto" : "transform",
+        });
+      });
+    }
 
-        // Assign explicit z-index stacking order for physical curtain layering
-        gsap.set(section, { zIndex: (i + 1) * 10 });
+    // On desktop and tablet screens (>= 768px), enable full stacking curtain parallax
+    if (!isMobilePhone && sections && sections.length > 0) {
+      sections.forEach((section, i) => {
+        const nextSection = sections[i + 1];
 
         if (nextSection) {
           const isHero = i === 0;
 
+          // If section is taller than viewport, scroll through its content first before pinning
           const getStartTrigger = () => {
             if (isHero) return "top top";
             const overflow = section.offsetHeight - window.innerHeight;
             return overflow > 0 ? "bottom bottom" : "top top";
           };
 
+          // Use pinType: "transform" so GSAP pins via translate3d without toggling position:fixed.
+          // This keeps the stacking curtain parallax active across all angled sections with 60fps GPU acceleration.
           const tl = gsap.timeline({
             scrollTrigger: {
               trigger: section,
@@ -41,6 +60,7 @@ export default function ParallaxWrapper({ children }: ParallaxWrapperProps) {
               end: "top top",
               scrub: true,
               pin: true,
+              pinType: "transform",
               pinSpacing: false,
               anticipatePin: 1,
               fastScrollEnd: true,
@@ -48,40 +68,66 @@ export default function ParallaxWrapper({ children }: ParallaxWrapperProps) {
             },
           });
 
-          // Move up slightly based on viewport height, not section height, to prevent tall sections from outrunning the scroll
+          // Pinned section moves up slightly creating layered parallax depth as the next curtain slides over
           tl.to(section, {
-            y: () => -window.innerHeight * 0.25,
+            y: () => -window.innerHeight * 0.22,
             ease: "none",
           });
         }
       });
+
+      // Subtle differential depth parallax on Hero floating 3D artifacts
+      const heroSection = sections[0];
+      if (heroSection) {
+        const artifacts = heroSection.querySelectorAll(
+          ".animate-float-slow-1, .animate-float-slow-2, .animate-float-slow-3, .animate-float-slow-4"
+        );
+        artifacts.forEach((art, idx) => {
+          gsap.to(art, {
+            y: idx % 2 === 0 ? -70 : 70,
+            ease: "none",
+            scrollTrigger: {
+              trigger: heroSection,
+              start: "top top",
+              end: "bottom top",
+              scrub: 0.6,
+            },
+          });
+        });
+      }
     }
 
-    const lenis = new Lenis({
-      duration: 1.0,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      touchMultiplier: 1.2,
-    });
-    lenis.on("scroll", ScrollTrigger.update);
+    // Lenis smooth scroll for desktop and tablets
+    let lenis: Lenis | null = null;
+    let updateRaf: ((time: number) => void) | null = null;
 
-    const updateRaf = (time: number) => {
-      lenis.raf(time * 1000);
-    };
+    if (!isMobilePhone) {
+      lenis = new Lenis({
+        duration: 1.0,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        touchMultiplier: 1.0,
+        smoothWheel: true,
+      });
+      lenis.on("scroll", ScrollTrigger.update);
 
-    gsap.ticker.add(updateRaf);
-    gsap.ticker.lagSmoothing(0);
+      updateRaf = (time: number) => {
+        lenis?.raf(time * 1000);
+      };
+
+      gsap.ticker.add(updateRaf);
+      gsap.ticker.lagSmoothing(500, 33);
+    }
 
     // Refresh triggers when layout changes (e.g. window resize or schedule toggle)
     let resizeTimer: ReturnType<typeof setTimeout> | null = null;
     const triggerRefresh = () => {
       if (resizeTimer) clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
-        lenis.resize();
+        lenis?.resize();
         ScrollTrigger.refresh();
-      }, 100);
+      }, 120);
     };
 
-    // Only observe schedule container for dynamic height changes (not all pinned sections)
     const scheduleEl = document.getElementById("schedule");
     let ro: ResizeObserver | null = null;
     if (scheduleEl) {
@@ -103,8 +149,10 @@ export default function ParallaxWrapper({ children }: ParallaxWrapperProps) {
       if (sections) {
         sections.forEach((sec) => gsap.killTweensOf(sec));
       }
-      gsap.ticker.remove(updateRaf);
-      lenis.destroy();
+      if (updateRaf) {
+        gsap.ticker.remove(updateRaf);
+      }
+      lenis?.destroy();
     };
   }, []);
 

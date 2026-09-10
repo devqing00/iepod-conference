@@ -45,7 +45,7 @@ export default function Hero() {
         </div>
 
         {/* 03. Bottom Left: 3D Isometric Precision Robotic Arm Module */}
-        <div className="absolute -bottom-8 -left-10 sm:-bottom-16 sm:-left-16 md:-bottom-44 md:-left-30 lg:-bottom-50 lg:-left-36 w-36 sm:w-56 md:w-[30rem] lg:w-[38rem] pointer-events-none animate-float-slow-3 transform-gpu will-change-transform">
+        <div className="hidden sm:block absolute -bottom-8 -left-10 sm:-bottom-16 sm:-left-16 md:-bottom-44 md:-left-30 lg:-bottom-50 lg:-left-36 w-36 sm:w-56 md:w-[30rem] lg:w-[38rem] pointer-events-none animate-float-slow-3 transform-gpu will-change-transform">
           <Image
             src="/assets/generated/iso_robotic_arm.png"
             alt="Precision Industrial Robotic Arm"
@@ -56,7 +56,7 @@ export default function Hero() {
         </div>
 
         {/* 04. Bottom Right: 3D Isometric Analytics Card */}
-        <div className="absolute -bottom-8 -right-10 sm:-bottom-16 sm:-right-16 md:-bottom-44 md:-right-30 lg:-bottom-50 lg:-right-36 w-36 sm:w-56 md:w-[30rem] lg:w-[38rem] pointer-events-none animate-float-slow-4 transform-gpu will-change-transform">
+        <div className="hidden sm:block absolute -bottom-8 -right-10 sm:-bottom-16 sm:-right-16 md:-bottom-44 md:-right-30 lg:-bottom-50 lg:-right-36 w-36 sm:w-56 md:w-[30rem] lg:w-[38rem] pointer-events-none animate-float-slow-4 transform-gpu will-change-transform">
           <Image
             src="/assets/generated/iso_analytics_card.png"
             alt="Process Data Card"
@@ -79,7 +79,7 @@ export default function Hero() {
           {/* Subtitle - Text Centered */}
           <div className="w-full flex justify-center text-center">
             <ScrollRevealText
-              text="Welcome to the 6th Annual IESA Conference — live today at KAAF Auditorium, University of Ibadan. Bringing together visionary engineering minds, innovators, and students."
+              text="Welcome to the Annual IESA Conference — live today at KAAF Auditorium, University of Ibadan. Bringing together visionary engineering minds, innovators, and students."
               className="text-sm sm:text-base text-[#040032]/80 max-w-2xl text-center items-center justify-center leading-relaxed font-sans mx-auto"
               wordClassName="justify-center"
               highlightWords={[

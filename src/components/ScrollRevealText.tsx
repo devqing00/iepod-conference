@@ -28,26 +28,23 @@ export default function ScrollRevealText({
 
     if (containerRef.current) {
       const words = containerRef.current.querySelectorAll(".reveal-word");
-      const isDesktop = window.innerWidth >= 768;
 
       const tween = gsap.fromTo(
         words,
         {
-          opacity: 0.2,
-          y: 4,
-          ...(isDesktop ? { filter: "blur(3px)" } : {}),
+          opacity: 0.25,
+          y: 6,
         },
         {
           opacity: 1,
           y: 0,
-          ...(isDesktop ? { filter: "blur(0px)" } : {}),
-          stagger: 0.06,
+          stagger: 0.04,
           ease: "power2.out",
           scrollTrigger: {
             trigger: containerRef.current,
-            start: "top 88%",
-            end: "bottom 60%",
-            scrub: 0.5,
+            start: "top 90%",
+            end: "bottom 65%",
+            scrub: 0.4,
           },
         }
       );

@@ -35,7 +35,6 @@ const NAV_SECTIONS = [
   { id: "hackathon", label: "Hackathon", icon: CodeBracketIcon },
   { id: "call-for-papers", label: "Research", icon: DocumentTextIcon },
   { id: "schedule", label: "Program", icon: BookOpenIcon },
-  { id: "venue", label: "Venue", icon: MapPinIcon },
 ];
 
 export default function Navbar() {
@@ -187,6 +186,8 @@ export default function Navbar() {
     if (element) {
       const topOffset = element.getBoundingClientRect().top + window.scrollY - 65;
       window.scrollTo({ top: topOffset, behavior: "smooth" });
+    } else {
+      window.location.href = `/#${id}`;
     }
   };
 
@@ -194,7 +195,7 @@ export default function Navbar() {
     if (typeof window !== "undefined" && liveSession) {
       window.dispatchEvent(
         new CustomEvent("jump-to-session", {
-          detail: { sessionId: liveSession.id },
+          detail: { sessionId: liveSession.id, forceListView: true },
         })
       );
     }
@@ -226,20 +227,24 @@ export default function Navbar() {
         >
           {/* Transparent Core with Frosted Blur Backdrop */}
           <nav className="bg-[#040032]/92 backdrop-blur-md rounded-full px-2 py-1.5 flex items-center gap-1 sm:gap-1.5 border border-white/10">
-            {/* Live Stage Session Pill Button */}
+            {/* Live Stage Session Pill Button with Headline Ticker Scrolling */}
             {liveSession && (
               <>
                 <button
                   type="button"
                   onClick={handleJumpToLiveSession}
-                  title="Click to flip 3D journal to active program session"
-                  className="relative overflow-hidden flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#0a3825] border border-[#c6f552]/40 text-[#c6f552] text-[10px] sm:text-[11px] font-mono-meta font-extrabold uppercase hover:bg-[#0a3825]/80 transition-all cursor-pointer"
+                  title="Click to view live stage session in program schedule"
+                  className="relative overflow-hidden flex-shrink-0 flex items-center px-2.5 sm:px-3 py-1 rounded-full bg-[#0a3825] border border-[#c6f552]/40 text-[#c6f552] text-[10px] sm:text-[11px] font-mono-meta font-extrabold uppercase hover:bg-[#0a3825]/80 transition-all cursor-pointer group"
                 >
                   <div className="shimmer-sweep-lime" />
-                  <span className="w-2 h-2 rounded-full bg-[#c6f552] inline-block flex-shrink-0 shadow-[0_0_6px_#c6f552] relative z-10" />
-                  <span className="truncate max-w-[100px] sm:max-w-[140px] relative z-10">
-                    LIVE: {liveSession.shortTitle}
-                  </span>
+                  <div className="w-[115px] sm:w-[155px] overflow-hidden whitespace-nowrap relative z-10">
+                    <div className="animate-headline-scroll inline-flex items-center gap-6">
+                      <span className="flex-shrink-0 tracking-wider">LIVE: {liveSession.shortTitle}</span>
+                      <span className="flex-shrink-0 tracking-wider">✦</span>
+                      <span className="flex-shrink-0 tracking-wider">LIVE: {liveSession.shortTitle}</span>
+                      <span className="flex-shrink-0 tracking-wider">✦</span>
+                    </div>
+                  </div>
                 </button>
 
                 {/* Ask a Question to Stage Button */}

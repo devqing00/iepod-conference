@@ -57,8 +57,8 @@ export async function POST(request: Request) {
       }
     }
 
-    // Check if query matches the Official Paid Directory (48 Participants)
-    const queryForDirectory = (rawStudentId || matricNumber || email || "").trim();
+    // Check if query matches the Official Paid Directory (51 Participants)
+    const queryForDirectory = (targetStudentId || rawStudentId || matricNumber || email || "").trim();
     const officialPaid = findPaidParticipant(queryForDirectory);
 
     let studentObjectId: ObjectId;

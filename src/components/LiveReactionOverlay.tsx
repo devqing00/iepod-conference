@@ -13,24 +13,59 @@ interface FloatingParticle {
 
 const REACTIONS = [
   { id: "applause", emoji: "👏", label: "Applause", title: "Applaud speaker" },
-  { id: "insight", emoji: "💡", label: "Insight", title: "Key insight!" },
   { id: "fire", emoji: "🔥", label: "Fire", title: "Great point!" },
+  { id: "insight", emoji: "💡", label: "Insight", title: "Key insight!" },
   { id: "energy", emoji: "⚡", label: "Energy", title: "Electric talk!" },
+  { id: "rocket", emoji: "🚀", label: "Ship It", title: "Ship it / High velocity!" },
+  { id: "heart", emoji: "❤️", label: "Love", title: "Love this presentation!" },
+  { id: "brain", emoji: "🧠", label: "Deep Tech", title: "Deep tech & engineering!" },
+  { id: "mindblown", emoji: "🤯", label: "Mind Blown", title: "Mind blown!" },
+  { id: "target", emoji: "🎯", label: "Spot On", title: "Spot on analysis!" },
+  { id: "trophy", emoji: "🏆", label: "Winner", title: "Champion project!" },
 ];
 
 export default function LiveReactionOverlay() {
   const [particles, setParticles] = useState<FloatingParticle[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({
-    applause: 142,
-    insight: 87,
-    fire: 219,
-    energy: 104,
+    applause: 168,
+    fire: 242,
+    insight: 114,
+    energy: 139,
+    rocket: 95,
+    heart: 182,
+    brain: 106,
+    mindblown: 76,
+    target: 124,
+    trophy: 88,
   });
   const [lastTapped, setLastTapped] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const dockRef = useRef<HTMLDivElement | null>(null);
   const particleIdRef = useRef(0);
   const lastSyncTimeRef = useRef<number>(Date.now());
   const localBurstIdsRef = useRef<Set<string>>(new Set());
   const broadcastChannelRef = useRef<BroadcastChannel | null>(null);
+
+  // Close reaction drawer on click outside or escape key
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dockRef.current && !dockRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
 
   const spawnParticle = useCallback((emoji: string) => {
     const newId = `p-${Date.now()}-${particleIdRef.current++}`;
@@ -195,49 +230,79 @@ export default function LiveReactionOverlay() {
         </AnimatePresence>
       </div>
 
-      {/* Floating Glass Reaction Dock */}
-      <div className="fixed bottom-4 right-3 sm:right-6 z-[9990] flex items-center">
-        <div
-          className="relative flex items-center p-1 rounded-full bg-[#040032]/85 backdrop-blur-xl border border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.45)] transition-all duration-300"
-          style={{
-            boxShadow:
-              "0 4px 20px rgba(0, 0, 0, 0.4), 0 0 12px rgba(198, 245, 82, 0.12)",
-          }}
-        >
-          {/* Reaction Buttons */}
-          <div className="flex items-center gap-1 sm:gap-1.5 px-1 py-0.5">
-            {REACTIONS.map((item) => {
-              const isPressed = lastTapped === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleSendReaction(item.id, item.emoji)}
-                  title={item.title}
-                  className={`relative group flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full transition-all transform-gpu select-none cursor-pointer ${
-                    isPressed
-                      ? "scale-125 bg-[#c6f552]/30"
-                      : "hover:scale-110 active:scale-95 hover:bg-white/10"
-                  }`}
-                  aria-label={item.label}
-                >
-                  <span className="text-base sm:text-lg transform-gpu transition-transform group-hover:scale-115">
-                    {item.emoji}
-                  </span>
+      {/* Floating Single Reaction Button & Collapsible Dock */}
+      <div
+        className="fixed bottom-4 right-3 sm:right-6 z-[9990] flex items-center max-w-[calc(100vw-24px)]"
+        ref={dockRef}
+      >
+        {!isOpen ? (
+          <button
+            type="button"
+            onClick={() => setIsOpen(true)}
+            title="React live to the stage"
+            className="relative flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#040032]/90 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:scale-110 active:scale-95 transition-all cursor-pointer group"
+            style={{
+              boxShadow: "0 0 16px rgba(198, 245, 82, 0.3), 0 8px 24px rgba(0,0,0,0.5)",
+            }}
+            aria-label="Open live audience reactions"
+          >
+            <div className="shimmer-sweep" />
+            <span className="text-xl sm:text-2xl transform-gpu group-hover:scale-115 transition-transform select-none">
+              👏
+            </span>
+          </button>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.85, x: 10 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            exit={{ opacity: 0, scale: 0.85, x: 10 }}
+            className="relative flex items-center p-1 rounded-full bg-[#040032]/95 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300 max-w-[calc(100vw-24px)] overflow-hidden"
+            style={{
+              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.4), 0 0 14px rgba(198, 245, 82, 0.2)",
+            }}
+          >
+            {/* Scrollable Reaction Buttons Track with Margin & X-Axis Overflow */}
+            <div className="flex items-center gap-1 sm:gap-1.5 px-1 py-0.5 flex-nowrap overflow-x-auto no-scrollbar max-w-[calc(100vw-72px)] sm:max-w-none">
+              {REACTIONS.map((item) => {
+                const isPressed = lastTapped === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleSendReaction(item.id, item.emoji)}
+                    title={item.title}
+                    className={`relative group flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full transition-all transform-gpu select-none cursor-pointer shrink-0 ${
+                      isPressed
+                        ? "scale-125 bg-[#c6f552]/30"
+                        : "hover:scale-110 active:scale-95 hover:bg-white/10"
+                    }`}
+                    aria-label={item.label}
+                  >
+                    <span className="text-lg sm:text-xl transform-gpu transition-transform group-hover:scale-115">
+                      {item.emoji}
+                    </span>
 
-                  {/* Micro Tooltip / Count on Hover */}
-                  <span className="absolute -top-7 opacity-0 group-hover:opacity-100 transition-opacity bg-[#040032] border border-white/20 text-[#c6f552] text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap pointer-events-none shadow-md">
-                    {counts[item.id] || 0}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+                    {/* Micro Tooltip / Count on Hover */}
+                    <span className="absolute -top-7 opacity-0 group-hover:opacity-100 transition-opacity bg-[#040032] border border-white/20 text-[#c6f552] text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap pointer-events-none shadow-md">
+                      {counts[item.id] || 0}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
 
-          {/* Minimal live hall indicator */}
-          <div className="pr-2 pl-2 hidden sm:flex items-center gap-1.5 border-l border-white/10 text-[10px] font-mono text-white/60">
-            <span>Live</span>
-          </div>
-        </div>
+            {/* Pinned Close Toggle Button */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="ml-0.5 mr-1 p-1.5 rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-colors cursor-pointer shrink-0 border-l border-white/10"
+              title="Close reactions"
+              aria-label="Close reactions"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </motion.div>
+        )}
       </div>
     </>
   );

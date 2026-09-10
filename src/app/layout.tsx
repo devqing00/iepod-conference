@@ -27,7 +27,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "IESA Process Day 2026 — Forge the Future | Industrial Engineering Annual Conference",
   description:
-    "The 6th Annual Conference of the Industrial Engineering Students Association (IESA), University of Ibadan. Featuring Keynote Speaker Prof. Kayode Oyebode Adebowale (VC UI) & Tech/AI Facilitator Emmanuel Tavershima.",
+    "The Annual Conference of the Industrial Engineering Students Association (IESA), University of Ibadan. Featuring Keynote Speaker Prof. Kayode Oyebode Adebowale (VC UI) & Keynote Facilitators.",
   keywords: [
     "IESA Process Day 2026",
     "Forge the Future",

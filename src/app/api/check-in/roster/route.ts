@@ -52,7 +52,7 @@ export async function GET() {
     // Track matched participant matric / emails to avoid duplicate entries
     const seenKeys = new Set<string>();
 
-    // 1. Build roster from the 48 official paid participants
+    // 1. Build roster from the 51 official paid participants
     const roster = OFFICIAL_PAID_DIRECTORY.map((p) => {
       const cleanMatric = p.matricNumber.trim().toLowerCase();
       const cleanEmail = p.email.trim().toLowerCase();
@@ -61,6 +61,8 @@ export async function GET() {
 
       seenKeys.add(cleanMatric);
       if (cleanEmail) seenKeys.add(cleanEmail);
+      if (p.id) seenKeys.add(p.id.toLowerCase());
+      if (p.dbId) seenKeys.add(p.dbId.toLowerCase());
 
       // Match checkin
       const checkin =
@@ -68,14 +70,16 @@ export async function GET() {
         (cleanEmail ? checkinByEmail.get(cleanEmail) : null) ||
         checkinByName.get(cleanName) ||
         checkinByName.get(cleanTicketName) ||
-        checkinById.get(p.id);
+        checkinById.get(p.id) ||
+        (p.dbId ? checkinById.get(p.dbId) : null);
 
       // Match user
       const user =
+        (p.dbId ? userById.get(p.dbId) : null) ||
         userByMatric.get(cleanMatric) ||
         (cleanEmail ? userByEmail.get(cleanEmail) : null);
 
-      const studentId = user?._id?.toString() || (checkin?.studentId ? checkin.studentId.toString() : p.id);
+      const studentId = user?._id?.toString() || (checkin?.studentId ? checkin.studentId.toString() : p.dbId || p.id);
 
       return {
         studentId,
@@ -84,7 +88,7 @@ export async function GET() {
         ticketName: p.ticketName,
         matricNumber: p.matricNumber,
         email: p.email,
-        phone: p.phone || "",
+        phone: p.phone || user?.phoneNumber || user?.phone || "",
         department: p.department,
         level: user?.currentLevel || user?.level || "Delegate",
         isCheckedIn: !!checkin,
@@ -102,7 +106,11 @@ export async function GET() {
       const matricKey = (u?.matricNumber || "").trim().toLowerCase();
       const emailKey = (u?.email || "").trim().toLowerCase();
 
-      if ((matricKey && seenKeys.has(matricKey)) || (emailKey && seenKeys.has(emailKey))) {
+      if (
+        seenKeys.has(id.toLowerCase()) ||
+        (matricKey && seenKeys.has(matricKey)) ||
+        (emailKey && seenKeys.has(emailKey))
+      ) {
         return; // Already in roster
       }
 

@@ -1,8 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SparklesIcon, FireIcon, BoltIcon, StarIcon } from "@heroicons/react/24/solid";
 
 interface MarqueeItem {
@@ -26,35 +23,14 @@ export default function TailoredMarqueeStrip({
   borderClass = "border-[#c6f552]",
   textClass = "text-[#faf8f2]",
 }: TailoredMarqueeStripProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
-    if (trackRef.current && containerRef.current) {
-      gsap.to(trackRef.current, {
-        xPercent: -20,
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 0.6,
-        },
-      });
-    }
-  }, []);
-
   const icons = [SparklesIcon, FireIcon, BoltIcon, StarIcon];
 
   return (
-    <div ref={containerRef} className="w-full relative z-30 overflow-visible pt-[7.4px] md:pt-[13.3px] lg:pt-[17.1px] xl:pt-6 2xl:pt-10.5 pb-2">
+    <div className="w-full relative z-30 overflow-visible pt-[7.4px] md:pt-[13.3px] lg:pt-[17.1px] xl:pt-6 2xl:pt-10.5 pb-2">
       <div className={`w-[112%] -ml-[6%] ${rotateClass} overflow-visible`}>
         <div className={`w-full ${bgClass} ${textClass} py-3.5 border-y-2 ${borderClass} shadow-2xl overflow-hidden`}>
           <div
-            ref={trackRef}
-            className="marquee-track flex items-center gap-8 w-max animate-marquee"
+            className="marquee-track flex items-center gap-8 w-max animate-marquee transform-gpu will-change-transform"
           >
             {[...items, ...items, ...items, ...items, ...items, ...items].map((item, idx) => {
               const IconComponent = item.icon || icons[idx % icons.length];

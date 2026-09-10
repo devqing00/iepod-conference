@@ -1,12 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   XMarkIcon,
   ChatBubbleBottomCenterTextIcon,
   CheckCircleIcon,
   PaperAirplaneIcon,
+  ChevronUpDownIcon,
 } from "@heroicons/react/24/solid";
+import { OFFICIAL_PROGRAM_SESSIONS } from "@/lib/programSessions";
 
 interface AskStageModalProps {
   isOpen: boolean;
@@ -23,12 +26,42 @@ export default function AskStageModal({
   onClose,
   activeSession,
 }: AskStageModalProps) {
+  const [selectedSessionId, setSelectedSessionId] = useState<string>(
+    activeSession?.id || "session-02"
+  );
   const [attendeeName, setAttendeeName] = useState("");
   const [department, setDepartment] = useState("");
   const [question, setQuestion] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock background scrolling when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      const originalBodyOverflow = document.body.style.overflow;
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalBodyOverflow;
+        document.documentElement.style.overflow = originalHtmlOverflow;
+      };
+    }
+  }, [isOpen]);
+
+  // Sync selected session when activeSession changes or modal opens
+  useEffect(() => {
+    if (activeSession?.id) {
+      setSelectedSessionId(activeSession.id);
+    }
+  }, [activeSession?.id, isOpen]);
 
   // Close modal on Escape key
   useEffect(() => {
@@ -41,7 +74,12 @@ export default function AskStageModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
+
+  const targetSession =
+    OFFICIAL_PROGRAM_SESSIONS.find((s) => s.id === selectedSessionId) ||
+    OFFICIAL_PROGRAM_SESSIONS.find((s) => s.id === activeSession?.id) ||
+    OFFICIAL_PROGRAM_SESSIONS[1];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,8 +96,8 @@ export default function AskStageModal({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          sessionId: activeSession?.id || "general",
-          sessionTitle: activeSession?.shortTitle || "Live Session",
+          sessionId: targetSession.id,
+          sessionTitle: targetSession.shortTitle,
           attendeeName: attendeeName.trim() || "Audience Member",
           department: department.trim() || "KAAF Auditorium",
           question: question.trim(),
@@ -84,10 +122,10 @@ export default function AskStageModal({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-fade-in">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4 lg:p-6 bg-black/75 backdrop-blur-md animate-fade-in">
       <div
-        className="relative w-full max-w-lg rounded-3xl bg-[#02001e] border border-white/20 p-6 sm:p-7 shadow-[0_20px_60px_rgba(0,0,0,0.8)] text-white overflow-hidden"
+        className="relative w-[94vw] sm:w-[90vw] md:w-[85vw] lg:w-full lg:max-w-lg max-h-[76vh] sm:max-h-[78vh] md:max-h-[80vh] lg:max-h-[85vh] overflow-y-auto rounded-2xl sm:rounded-3xl bg-[#02001e] border border-white/20 p-4 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.8)] text-white"
         style={{
           boxShadow:
             "0 0 35px rgba(0, 229, 255, 0.15), 0 0 20px rgba(198, 245, 82, 0.1)",
@@ -97,39 +135,72 @@ export default function AskStageModal({
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors cursor-pointer"
+          className="absolute top-4 right-4 sm:top-5 sm:right-5 p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors cursor-pointer"
           aria-label="Close modal"
         >
-          <XMarkIcon className="w-5 h-5" />
+          <XMarkIcon className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
 
         {/* Modal Header */}
-        <div className="flex items-center gap-2.5 mb-2">
-          <div className="w-9 h-9 rounded-xl bg-[#c6f552]/20 border border-[#c6f552]/40 flex items-center justify-center text-[#c6f552]">
-            <ChatBubbleBottomCenterTextIcon className="w-5 h-5" />
+        <div className="flex items-center gap-2.5 mb-2 pr-8">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#c6f552]/20 border border-[#c6f552]/40 flex items-center justify-center text-[#c6f552] flex-shrink-0">
+            <ChatBubbleBottomCenterTextIcon className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold font-serif-display text-white">
+            <h3 className="text-base sm:text-lg font-bold font-serif-display text-white">
               Ask a Question to the Stage
             </h3>
-            <p className="text-xs text-white/60">
+            <p className="text-[11px] sm:text-xs text-white/60">
               Live Q&A stream for moderators & speakers in KAAF Auditorium
             </p>
           </div>
         </div>
 
-        {/* Active Session Ribbon */}
-        {activeSession && (
-          <div className="my-3.5 p-2.5 rounded-2xl bg-[#0a3825]/90 border border-[#c6f552]/30 flex items-center gap-2 text-xs">
-            <span className="w-2 h-2 rounded-full bg-[#c6f552] shadow-[0_0_6px_#c6f552] flex-shrink-0" />
-            <span className="font-mono font-bold text-[#c6f552] uppercase">
-              LIVE SESSION #{activeSession.orderNumber.toString().padStart(2, "0")}:
-            </span>
-            <span className="truncate text-white font-medium">
-              {activeSession.shortTitle}
-            </span>
+        {/* Target Session Selector (No pulsing dot, attendee selectable) */}
+        <div className="my-3 space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label
+              htmlFor="target-session-picker"
+              className="text-[11px] font-mono font-bold text-[#c6f552] uppercase tracking-wider flex items-center gap-1.5"
+            >
+              <span>Target Program Session</span>
+            </label>
+            {activeSession && selectedSessionId === activeSession.id && (
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#0a3825] border border-[#c6f552]/40 text-[#c6f552] font-bold">
+                Live Now on Stage
+              </span>
+            )}
           </div>
-        )}
+          <div className="relative">
+            <select
+              id="target-session-picker"
+              value={selectedSessionId}
+              onChange={(e) => setSelectedSessionId(e.target.value)}
+              className="w-full appearance-none px-3.5 py-2.5 pr-9 rounded-2xl bg-[#0a3825]/90 border border-[#c6f552]/40 text-white text-xs font-sans focus:outline-none focus:border-[#c6f552] focus:ring-1 focus:ring-[#c6f552] cursor-pointer"
+            >
+              {OFFICIAL_PROGRAM_SESSIONS.map((session) => {
+                const isLive = activeSession && session.id === activeSession.id;
+                return (
+                  <option
+                    key={session.id}
+                    value={session.id}
+                    className="bg-[#02001e] text-white py-1"
+                  >
+                    #{session.orderNumber.toString().padStart(2, "0")} · {session.shortTitle} · {session.duration}
+                    {session.speaker ? ` (${session.speaker.split("(")[0].trim()})` : ""}
+                    {isLive ? " ★ [LIVE NOW]" : ""}
+                  </option>
+                );
+              })}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[#c6f552]">
+              <ChevronUpDownIcon className="w-4 h-4" />
+            </div>
+          </div>
+          <p className="text-[10px] text-white/50 font-sans">
+            Select the session or speaker you want to address your question to.
+          </p>
+        </div>
 
         {isSuccess ? (
           <div className="py-8 text-center flex flex-col items-center justify-center space-y-3">
@@ -226,6 +297,7 @@ export default function AskStageModal({
           </form>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

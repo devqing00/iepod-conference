@@ -410,4 +410,26 @@ body {
   animation: diagonal-shimmer 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
+/* News-Ticker Headline Marquee Scrolling for Navbar Live Indicator */
+@keyframes headline-scroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-headline-scroll {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: headline-scroll 12s linear infinite;
+  will-change: transform;
+}
+
+.animate-headline-scroll:hover {
+  animation-play-state: paused;
+}
+
+
 
