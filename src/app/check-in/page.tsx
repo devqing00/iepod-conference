@@ -268,6 +268,9 @@ export default function CheckinTerminalPage() {
               <strong className="text-white">Universal Search (188 Form Delegates + Students):</strong> Search by surname, first name, email, or phone number to auto-suggest and 1-click fill attendees from either the official Google Form pre-registration list or the university database.
             </li>
             <li>
+              <strong className="text-[#3fffe8]">Regular List Directory Modal:</strong> Tap the <span className="text-[#c6f552] font-bold">Regular List (188)</span> link on the top counter pill to open the full directory of pre-registered attendees. Features instant live search and a <span className="text-[#3fffe8] font-bold">1-Tap Register</span> button to admit delegates on the spot!
+            </li>
+            <li>
               <strong className="text-white">Matric Number is Optional:</strong> External delegates, visitors, and non-matriculated guests do not need a matric number. The terminal automatically generates a unique conference tag ID (<code className="text-[#3fffe8]">REG-2026-XXXX</code>) so no one is ever blocked.
             </li>
             <li>
