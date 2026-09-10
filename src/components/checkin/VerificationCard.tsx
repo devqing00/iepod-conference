@@ -19,6 +19,9 @@ export interface CheckinResult {
     | "UNAUTHORIZED"
     | "ERROR";
   tagType?: "paid_vip" | "regular";
+  serviceType?: "admission" | "food";
+  foodServedAt?: string | Date;
+  foodServedBy?: string;
   code?: string;
   title?: string;
   message?: string;
@@ -91,6 +94,7 @@ export default function VerificationCard({
 
   const student = result.student;
   const isPaidVip = result.tagType === "paid_vip";
+  const isFoodService = result.serviceType === "food";
 
   const formatTimestamp = (dateVal?: string | Date) => {
     if (!dateVal) return "Just now";
@@ -112,15 +116,22 @@ export default function VerificationCard({
       {isSuccess && (
         <div className="flex flex-col items-center text-center space-y-4">
           <div className={`w-16 h-16 rounded-full border-2 flex items-center justify-center ${
-            isPaidVip
+            isFoodService
+              ? "bg-amber-400/20 border-amber-400"
+              : isPaidVip
               ? "bg-[#c6f552]/15 border-[#c6f552]"
               : "bg-[#3fffe8]/15 border-[#3fffe8]"
           }`}>
-            <CheckCircleIcon className={`w-10 h-10 ${isPaidVip ? "text-[#c6f552]" : "text-[#3fffe8]"}`} />
+            <CheckCircleIcon className={`w-10 h-10 ${isFoodService ? "text-amber-400" : isPaidVip ? "text-[#c6f552]" : "text-[#3fffe8]"}`} />
           </div>
 
           <div>
-            {isPaidVip ? (
+            {isFoodService ? (
+              <span className="relative overflow-hidden inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400 text-amber-300 text-[11px] font-mono font-bold mb-2 shadow-sm">
+                <div className="shimmer-sweep" />
+                <span className="relative z-10">🍱 VIP MEAL PACKAGE ISSUED</span>
+              </span>
+            ) : isPaidVip ? (
               <span className="relative overflow-hidden inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#c6f552]/20 border border-[#c6f552] text-[#c6f552] text-[11px] font-mono font-bold mb-2 shadow-sm">
                 <div className="shimmer-sweep" />
                 <span className="relative z-10">⭐ SPECIAL PAID DELEGATE TAG (VIP)</span>
@@ -150,15 +161,15 @@ export default function VerificationCard({
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-white/60 text-xs">Credential</span>
-              <span className="text-xs text-[#c6f552] font-mono font-medium">
-                ✓ Ready for Certificate
+              <span className="text-white/60 text-xs">{isFoodService ? "Meal Package" : "Credential"}</span>
+              <span className={`text-xs font-mono font-medium ${isFoodService ? "text-amber-300" : "text-[#c6f552]"}`}>
+                {isFoodService ? "✓ 1x Full VIP Meal & Drink" : "✓ Ready for Certificate"}
               </span>
             </div>
             <div className="flex items-center justify-between pt-1 border-t border-white/10">
               <span className="text-white/60 text-xs">Time</span>
               <span className="font-mono text-xs text-white/80">
-                {formatTimestamp(result.checkIn?.checkedInAt)}
+                {formatTimestamp(result.foodServedAt || result.checkIn?.checkedInAt)}
               </span>
             </div>
           </div>
@@ -167,7 +178,9 @@ export default function VerificationCard({
             type="button"
             onClick={onReset}
             className={`relative overflow-hidden w-full py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-98 cursor-pointer shadow-sm ${
-              isPaidVip
+              isFoodService
+                ? "bg-amber-400 hover:bg-amber-300 text-[#040032]"
+                : isPaidVip
                 ? "bg-[#c6f552] hover:bg-[#b5e83a] text-[#040032]"
                 : "bg-[#3fffe8] hover:bg-[#32ebd5] text-[#040032]"
             }`}
@@ -178,7 +191,7 @@ export default function VerificationCard({
         </div>
       )}
 
-      {/* 2. DUPLICATE / ALREADY CHECKED IN */}
+      {/* 2. DUPLICATE / ALREADY CHECKED IN OR FOOD ALREADY CLAIMED */}
       {isDuplicate && (
         <div className="flex flex-col items-center text-center space-y-4">
           <div className="w-16 h-16 rounded-full bg-amber-500/15 border-2 border-amber-400 flex items-center justify-center">
@@ -187,10 +200,10 @@ export default function VerificationCard({
 
           <div>
             <span className="text-xs font-mono font-medium text-amber-300 tracking-wide block mb-1">
-              Duplicate Ticket
+              {isFoodService ? "⚠️ Duplicate Meal Claim" : "Duplicate Ticket"}
             </span>
             <h2 className="text-2xl font-bold font-serif-display text-white">
-              Already Checked In
+              {isFoodService ? "Meal Already Collected" : "Already Checked In"}
             </h2>
           </div>
 
@@ -204,9 +217,9 @@ export default function VerificationCard({
               <span className="font-mono text-white">{student?.matricNumber || "—"}</span>
             </div>
             <div className="flex items-center justify-between pt-1 border-t border-white/10">
-              <span className="text-white/60 text-xs">First Signed In</span>
+              <span className="text-white/60 text-xs">{isFoodService ? "Collected At" : "First Signed In"}</span>
               <span className="font-mono text-xs text-amber-300 font-semibold">
-                {formatTimestamp(result.existingRecord?.checkedInAt)}
+                {formatTimestamp(result.foodServedAt || result.existingRecord?.checkedInAt)}
               </span>
             </div>
           </div>
@@ -230,13 +243,13 @@ export default function VerificationCard({
 
           <div>
             <span className="text-xs font-mono font-medium text-amber-300 tracking-wide block mb-1">
-              VIP Roster Check
+              {isFoodService ? "VIP Meal Entitlement" : "VIP Roster Check"}
             </span>
             <h2 className="text-2xl font-bold font-serif-display text-white">
-              Not on VIP Paid List
+              {isFoodService ? "No Meal Entitlement" : "Not on VIP Paid List"}
             </h2>
             <p className="text-xs text-white/70 mt-1 max-w-xs">
-              {result.message || "This attendee is not registered for the VIP package."}
+              {result.message || (isFoodService ? "Meal packages are reserved exclusively for Paid VIP Delegates." : "This attendee is not registered for the VIP package.")}
             </p>
           </div>
 

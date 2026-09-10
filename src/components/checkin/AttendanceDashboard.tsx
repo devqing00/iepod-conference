@@ -18,6 +18,9 @@ import { isAudioMuted, setAudioMuted } from "@/lib/feedback";
 export interface AttendanceStats {
   totalPaid: number;
   checkedInCount: number;
+  paidCheckedInCount?: number;
+  foodServedCount?: number;
+  foodPendingCount?: number;
   pendingCount: number;
   percent: number;
   recentCheckins: Array<{
@@ -45,6 +48,9 @@ export interface RosterAttendee {
   checkedInAt?: string | null;
   checkedInBy?: string | null;
   method?: string | null;
+  foodServed?: boolean;
+  foodServedAt?: string | null;
+  foodServedBy?: string | null;
 }
 
 interface AttendanceDashboardProps {

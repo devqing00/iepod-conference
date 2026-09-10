@@ -100,18 +100,21 @@ export default function CheckinTerminalPage() {
     }
   };
 
-  // Process QR code scan for Paid Delegates
-  const handleScanSuccess = async (qrPayload: string) => {
+  // Process QR code scan for Paid Delegates (Admission or Food)
+  const handleScanSuccess = async (qrPayload: string, serviceType: "admission" | "food" = "admission") => {
     if (isVerifying || result) return;
     setIsVerifying(true);
 
+    const endpoint = serviceType === "food" ? "/api/check-in/food" : "/api/check-in";
+    const defaultOperator = serviceType === "food" ? "Catering Coordinator" : "Gate Coordinator";
+
     try {
-      const res = await fetch("/api/check-in", {
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           qrData: qrPayload,
-          operator: "Gate Coordinator",
+          operator: defaultOperator,
         }),
       });
 
@@ -125,6 +128,7 @@ export default function CheckinTerminalPage() {
     } catch (err: any) {
       const errorResult: CheckinResult = {
         status: "ERROR",
+        serviceType,
         title: "Connection Error",
         message: err?.message || "Check network connection and try again.",
       };
@@ -135,20 +139,26 @@ export default function CheckinTerminalPage() {
     }
   };
 
-  // Process Manual Check-in for Paid Delegates
-  const handleManualCheckin = async (lookupData: {
-    matricNumber?: string;
-    email?: string;
-    studentId?: string;
-  }) => {
+  // Process Manual Check-in for Paid Delegates (Admission or Food)
+  const handleManualCheckin = async (
+    lookupData: {
+      matricNumber?: string;
+      email?: string;
+      studentId?: string;
+    },
+    serviceType: "admission" | "food" = "admission"
+  ) => {
     setIsVerifying(true);
+    const endpoint = serviceType === "food" ? "/api/check-in/food" : "/api/check-in";
+    const defaultOperator = serviceType === "food" ? "Catering Coordinator" : "Gate Coordinator";
+
     try {
-      const res = await fetch("/api/check-in", {
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...lookupData,
-          operator: "Gate Coordinator",
+          operator: defaultOperator,
         }),
       });
 
@@ -162,6 +172,7 @@ export default function CheckinTerminalPage() {
     } catch (err: any) {
       const errorResult: CheckinResult = {
         status: "ERROR",
+        serviceType,
         title: "Connection Error",
         message: err?.message || "Check network connection and try again.",
       };
@@ -285,23 +296,29 @@ export default function CheckinTerminalPage() {
     },
     {
       id: "paid-desk",
-      title: "3. Paid VIP Delegates (QR Scanner & 53-Seat VIP Roster)",
+      title: "3. Paid VIP Delegates & Meal Check-In (Admission & Catering)",
       icon: "🎟️",
       content: (
         <div className="space-y-2 text-white/80 leading-relaxed">
-          <p>High-speed admission for delegates with confirmed payment packages:</p>
+          <p>Dual-function terminal for Paid VIP delegates (Gate Admission &amp; Catering):</p>
           <ul className="list-disc list-inside space-y-1 pl-1 text-white/70">
             <li>
-              <strong className="text-white">Camera QR Scanner (Fastest):</strong> Delegate presents digital ticket QR code. Point camera at code for sub-second verification.
+              <strong className="text-white">Sub-Mode Switcher:</strong> Easily toggle between <span className="text-[#c6f552] font-bold">🎟️ Gate Pass</span> (hall admission &amp; VIP tags) and <span className="text-amber-300 font-bold">🍱 Food Check-In</span> (catering distribution) directly under the Paid VIP tab.
             </li>
             <li>
-              <strong className="text-white">Official Paid VIP Roster:</strong> Click the <span className="text-[#3fffe8] font-bold">Paid List</span> button to view the full directory of 53 paid VIP delegates. Search by name or matriculation number and tap <span className="text-[#c6f552] font-bold">Check In</span> for 1-tap admission.
+              <strong className="text-amber-300">VIP Meal Package Distribution:</strong> When switched to <em>Food Check-In</em>, scan the delegate QR code or enter their matric number to issue 1x conference meal &amp; beverage package.
             </li>
             <li>
-              <strong className="text-white">Manual Lookup Fallback:</strong> Use the search drawer to look up paid attendees by matric number or email if ticket QR cannot be scanned.
+              <strong className="text-white">Strict Single-Claim Enforcement:</strong> Double-claiming is strictly prevented. If a delegate attempts to claim lunch twice, the scanner instantly flashes an amber duplicate warning showing the exact time and operator who issued their previous meal.
             </li>
             <li>
-              Issues the <strong className="text-[#c6f552]">Special Paid Delegate Tag (VIP)</strong> granting access to reserved seating, meals, and package benefits.
+              <strong className="text-white">Live Meal Counters:</strong> Live tracking displays <em>Meals Served</em> vs <em>Remaining Pending</em> out of the 53 Paid VIP slots in real time.
+            </li>
+            <li>
+              <strong className="text-white">Paid &amp; Meal Roster Drawer:</strong> Click <span className="text-amber-300 font-bold">Meal Roster</span> to view all 53 delegates. Filter by <em>Need Meal</em> or <em>Served</em>, or tap <span className="text-amber-400 font-bold">🍱 Serve Meal</span> for instant 1-tap serving directly from the list.
+            </li>
+            <li>
+              <strong className="text-white">Gate Admission:</strong> In <em>Gate Pass</em> mode, verifies payment packages and issues the official Special Paid Delegate Tag (VIP) with access to reserved auditorium seating.
             </li>
           </ul>
         </div>

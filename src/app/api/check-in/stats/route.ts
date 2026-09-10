@@ -72,6 +72,10 @@ export async function GET() {
     const pendingCount = Math.max(0, totalPaid - paidCheckedInCount);
     const percent = totalPaid > 0 ? Math.round((paidCheckedInCount / totalPaid) * 100) : 0;
 
+    // Count checkins that have food served
+    const foodServedCount = allEventCheckins.filter((c) => !!(c as any).foodServed).length;
+    const foodPendingCount = Math.max(0, totalPaid - foodServedCount);
+
     return NextResponse.json(
       {
         totalPaid,
@@ -79,6 +83,8 @@ export async function GET() {
         paidCheckedInCount,
         pendingCount,
         percent,
+        foodServedCount,
+        foodPendingCount,
         recentCheckins: recentCheckins.map((item) => ({
           id: item._id?.toString(),
           studentId: item.studentId?.toString(),

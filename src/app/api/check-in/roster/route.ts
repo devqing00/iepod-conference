@@ -96,6 +96,9 @@ export async function GET() {
         checkedInBy: checkin?.checkedInBy || null,
         method: checkin?.method || null,
         tagType: checkin?.tagType || "paid_vip",
+        foodServed: !!(checkin as any)?.foodServed,
+        foodServedAt: (checkin as any)?.foodServedAt || null,
+        foodServedBy: (checkin as any)?.foodServedBy || null,
       };
     });
 
@@ -134,6 +137,9 @@ export async function GET() {
         checkedInBy: checkin?.checkedInBy || null,
         method: checkin?.method || null,
         tagType: checkin?.tagType || "paid_vip",
+        foodServed: !!(checkin as any)?.foodServed,
+        foodServedAt: (checkin as any)?.foodServedAt || null,
+        foodServedBy: (checkin as any)?.foodServedBy || null,
       });
     });
 
@@ -145,9 +151,14 @@ export async function GET() {
       return a.isCheckedIn ? 1 : -1;
     });
 
+    const foodServedCount = roster.filter((r) => r.foodServed).length;
+    const foodPendingCount = roster.length - foodServedCount;
+
     return NextResponse.json(
       {
         totalPaid: roster.length,
+        foodServedCount,
+        foodPendingCount,
         roster,
       },
       { status: 200 }

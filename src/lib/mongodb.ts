@@ -67,6 +67,9 @@ export interface ConferenceCheckinDoc {
   checkedInAt: Date;
   checkedInBy: string;
   method: "qr_scan" | "manual_lookup" | "registration";
+  foodServed?: boolean;
+  foodServedAt?: Date;
+  foodServedBy?: string;
 }
 
 let client: MongoClient;
