@@ -10,74 +10,117 @@ export async function POST(request: Request) {
     const {
       name,
       matricNumber,
-      department = "Industrial & Production Engineering",
-      institution = "University of Ibadan",
-      level = "Delegate",
+      department,
+      institution,
+      level,
       email = "",
+      phone = "",
       operator = "Registration Desk",
       studentId: existingStudentId,
     } = body;
 
     const cleanName = (name || "").trim();
-    const cleanMatric = (matricNumber || "").trim().toUpperCase();
+    const rawMatric = (matricNumber || "").trim();
+    const cleanEmail = (email || "").trim().toLowerCase();
+    const cleanPhone = (phone || "").trim();
 
-    if (!cleanName || !cleanMatric) {
+    // Only Name is mandatory — Regular registration welcomes everyone without barrier
+    if (!cleanName) {
       return NextResponse.json(
         {
           status: "INVALID_FORMAT",
-          code: "MISSING_FIELDS",
-          title: "Missing Information",
-          message: "Full Name and Matric Number are required.",
+          code: "MISSING_NAME",
+          title: "Missing Name",
+          message: "Attendee Full Name is required.",
         },
         { status: 400 }
       );
     }
 
+    // Check if matricNumber is a genuine matric number or omitted/placeholder
+    const isGenericMatric =
+      !rawMatric ||
+      /^(N\/?A|NONE|NIL|GUEST|DELEGATE|VISITOR|-|0+)$/i.test(rawMatric);
+
+    // If omitted or generic, auto-generate a unique Conference Delegate ID
+    const effectiveMatric = isGenericMatric
+      ? `REG-2026-${Math.random().toString(36).substring(2, 7).toUpperCase()}`
+      : rawMatric.toUpperCase();
+
+    const finalDept = (department && department.trim()) || "General Delegate / Interdisciplinary";
+    const finalInst = (institution && institution.trim()) || "University of Ibadan";
+    const finalLevel = (level && level.trim()) || "General Delegate";
+
     const checkinsCollection = await getCheckinsCollection();
 
-    // Check if attendee is already checked in / registered
-    const existing = await checkinsCollection.findOne({
-      eventId: CONFERENCE_EVENT_ID,
-      matricNumber: { $regex: new RegExp(`^${cleanMatric.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") },
-    });
+    // Check duplicate ONLY if a genuine student matric number or email was supplied
+    const duplicateConditions: any[] = [];
+    if (!isGenericMatric) {
+      duplicateConditions.push({
+        matricNumber: { $regex: new RegExp(`^${effectiveMatric.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") },
+      });
+    }
+    if (cleanEmail && cleanEmail.includes("@")) {
+      duplicateConditions.push({
+        email: { $regex: new RegExp(`^${cleanEmail.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") },
+      });
+    }
 
-    if (existing) {
-      return NextResponse.json(
-        {
-          status: "ALREADY_CHECKED_IN",
-          code: "DUPLICATE_REGISTRATION",
-          title: "Already Registered",
-          message: "Attendee already registered and checked in.",
-          tagType: existing.tagType || "regular",
-          existingRecord: {
-            checkedInAt: existing.checkedInAt,
-            checkedInBy: existing.checkedInBy,
-            method: existing.method,
+    if (duplicateConditions.length > 0) {
+      const existing = await checkinsCollection.findOne({
+        eventId: CONFERENCE_EVENT_ID,
+        $or: duplicateConditions,
+      });
+
+      if (existing) {
+        return NextResponse.json(
+          {
+            status: "ALREADY_CHECKED_IN",
+            code: "DUPLICATE_REGISTRATION",
+            title: "Already Registered",
+            message: `${existing.studentName || cleanName} has already been registered and checked in (Tag: ${existing.matricNumber || effectiveMatric}).`,
+            tagType: existing.tagType || "regular",
+            existingRecord: {
+              checkedInAt: existing.checkedInAt,
+              checkedInBy: existing.checkedInBy,
+              method: existing.method,
+            },
+            student: {
+              name: existing.studentName || cleanName,
+              matricNumber: existing.matricNumber || effectiveMatric,
+              department: existing.department || finalDept,
+              institution: existing.institution || finalInst,
+              level: existing.level || finalLevel,
+              email: existing.email || cleanEmail,
+            },
           },
-          student: {
-            name: existing.studentName || cleanName,
-            matricNumber: existing.matricNumber || cleanMatric,
-            department: existing.department || department,
-            institution: existing.institution || institution,
-            level: existing.level || level,
-            email: existing.email || email,
-          },
-        },
-        { status: 409 }
-      );
+          { status: 200 }
+        );
+      }
     }
 
     // Determine student ObjectId (use existing or generate a new unique ObjectId)
-    let finalStudentId: ObjectId;
+    let finalStudentId: ObjectId = new ObjectId();
     if (existingStudentId && /^[a-f0-9]{24}$/i.test(existingStudentId)) {
-      finalStudentId = new ObjectId(existingStudentId);
-    } else {
+      // Check if this studentId is already checked in for this event to avoid index collision
+      const usedId = await checkinsCollection.findOne({
+        eventId: CONFERENCE_EVENT_ID,
+        studentId: new ObjectId(existingStudentId),
+      });
+      finalStudentId = usedId ? new ObjectId() : new ObjectId(existingStudentId);
+    } else if (!isGenericMatric) {
       // Check if user exists in users table by matric number
       const usersCollection = await getUsersCollection();
       const matchedUser = await usersCollection.findOne({
-        matricNumber: { $regex: new RegExp(`^${cleanMatric.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") },
+        matricNumber: { $regex: new RegExp(`^${effectiveMatric.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") },
       });
-      finalStudentId = matchedUser ? matchedUser._id : new ObjectId();
+      if (matchedUser) {
+        const usedId = await checkinsCollection.findOne({
+          eventId: CONFERENCE_EVENT_ID,
+          studentId: matchedUser._id,
+        });
+        finalStudentId = usedId ? new ObjectId() : matchedUser._id;
+      }
     }
 
     const now = new Date();
@@ -85,11 +128,11 @@ export async function POST(request: Request) {
       eventId: CONFERENCE_EVENT_ID,
       studentId: finalStudentId,
       studentName: cleanName,
-      matricNumber: cleanMatric,
-      department: department.trim(),
-      institution: institution.trim(),
-      level: level.trim(),
-      email: email.trim(),
+      matricNumber: effectiveMatric,
+      department: finalDept,
+      institution: finalInst,
+      level: finalLevel,
+      email: cleanEmail,
       tagType: "regular",
       checkedInAt: now,
       checkedInBy: operator.trim(),
@@ -100,26 +143,12 @@ export async function POST(request: Request) {
       await checkinsCollection.insertOne(newDoc);
     } catch (insertErr: any) {
       if (insertErr.code === 11000) {
-        return NextResponse.json(
-          {
-            status: "ALREADY_CHECKED_IN",
-            code: "DUPLICATE_REGISTRATION",
-            title: "Already Registered",
-            message: "Attendee has already been registered.",
-            tagType: "regular",
-            student: {
-              name: cleanName,
-              matricNumber: cleanMatric,
-              department,
-              institution,
-              level,
-              email,
-            },
-          },
-          { status: 409 }
-        );
+        // Fallback with fresh ObjectId if index collided
+        newDoc.studentId = new ObjectId();
+        await checkinsCollection.insertOne(newDoc);
+      } else {
+        throw insertErr;
       }
-      throw insertErr;
     }
 
     return NextResponse.json(
@@ -127,7 +156,7 @@ export async function POST(request: Request) {
         status: "SUCCESS",
         tagType: "regular",
         title: "Registration Complete",
-        message: "Regular Delegate Tag issued! Certificate credential activated.",
+        message: "Regular Delegate Tag issued! Welcome to IESA Process Day 2026.",
         checkIn: {
           checkedInAt: now,
           checkedInBy: operator,
@@ -135,11 +164,11 @@ export async function POST(request: Request) {
         },
         student: {
           name: cleanName,
-          matricNumber: cleanMatric,
-          department: department.trim(),
-          institution: institution.trim(),
-          level: level.trim(),
-          email: email.trim(),
+          matricNumber: effectiveMatric,
+          department: finalDept,
+          institution: finalInst,
+          level: finalLevel,
+          email: cleanEmail,
         },
       },
       { status: 200 }
@@ -157,3 +186,4 @@ export async function POST(request: Request) {
     );
   }
 }
+

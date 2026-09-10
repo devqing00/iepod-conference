@@ -221,22 +221,22 @@ export default function VerificationCard({
         </div>
       )}
 
-      {/* 3. UNPAID / NOT FOUND */}
+      {/* 3. UNPAID / NOT FOUND ON VIP LIST */}
       {isUnpaid && (
         <div className="flex flex-col items-center text-center space-y-4">
-          <div className="w-16 h-16 rounded-full bg-red-500/15 border-2 border-red-500 flex items-center justify-center">
-            <XCircleIcon className="w-10 h-10 text-red-400" />
+          <div className="w-16 h-16 rounded-full bg-amber-500/15 border-2 border-amber-400 flex items-center justify-center">
+            <ExclamationTriangleIcon className="w-10 h-10 text-amber-400" />
           </div>
 
           <div>
-            <span className="text-xs font-mono font-medium text-red-400 tracking-wide block mb-1">
-              Payment Not Verified
+            <span className="text-xs font-mono font-medium text-amber-300 tracking-wide block mb-1">
+              VIP Roster Check
             </span>
             <h2 className="text-2xl font-bold font-serif-display text-white">
-              Ticket Not Cleared
+              Not on VIP Paid List
             </h2>
             <p className="text-xs text-white/70 mt-1 max-w-xs">
-              {result.message || "This attendee is not on the verified list."}
+              {result.message || "This attendee is not registered for the VIP package."}
             </p>
           </div>
 
@@ -246,24 +246,36 @@ export default function VerificationCard({
                 <span className="text-white/60">Name:</span>
                 <span className="text-white font-medium">{student.name}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-white/60">Matric:</span>
-                <span className="font-mono text-white">{student.matricNumber}</span>
-              </div>
+              {student.matricNumber && (
+                <div className="flex justify-between">
+                  <span className="text-white/60">Matric / ID:</span>
+                  <span className="font-mono text-white">{student.matricNumber}</span>
+                </div>
+              )}
             </div>
           )}
+
+          {/* Friendly Guidance to Register Desk */}
+          <div className="w-full p-3 bg-[#3fffe8]/10 border border-[#3fffe8]/30 rounded-2xl text-left text-xs text-white/80 space-y-1">
+            <p className="text-[#3fffe8] font-bold flex items-center gap-1.5">
+              <span>✨ Regular Admission is Open &amp; Free!</span>
+            </p>
+            <p className="text-[11px] text-white/70 leading-relaxed">
+              Switch to the <strong>Register</strong> tab to issue a <em>Regular Delegate Tag</em> for this attendee with zero payment required.
+            </p>
+          </div>
 
           <button
             type="button"
             onClick={onReset}
-            className="w-full py-3 px-4 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-sm transition-all active:scale-98 cursor-pointer"
+            className="w-full py-3 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm transition-all active:scale-98 cursor-pointer"
           >
-            <span>Try Again</span>
+            <span>Back to Terminal</span>
           </button>
         </div>
       )}
 
-      {/* 4. INVALID FORMAT */}
+      {/* 4. INVALID FORMAT / VERIFICATION NOTICE */}
       {isInvalidFormat && (
         <div className="flex flex-col items-center text-center space-y-4">
           <div className="w-16 h-16 rounded-full bg-slate-800 border-2 border-slate-600 flex items-center justify-center">
@@ -272,13 +284,13 @@ export default function VerificationCard({
 
           <div>
             <span className="text-xs font-mono font-medium text-slate-400 tracking-wide block mb-1">
-              Invalid Code
+              Notice
             </span>
             <h2 className="text-2xl font-bold font-serif-display text-white">
-              Unrecognized Ticket
+              {result.title || "Verification Notice"}
             </h2>
             <p className="text-xs text-white/70 mt-1 max-w-xs">
-              This QR code does not match an IESA Process Day ticket.
+              {result.message || "Please check attendee details or register directly under the Register tab."}
             </p>
           </div>
 
@@ -287,7 +299,7 @@ export default function VerificationCard({
             onClick={onReset}
             className="w-full py-3 px-4 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold text-sm transition-all active:scale-98 cursor-pointer"
           >
-            <span>Scan Again</span>
+            <span>Continue</span>
           </button>
         </div>
       )}

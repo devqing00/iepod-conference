@@ -256,23 +256,25 @@ export default function CheckinTerminalPage() {
     },
     {
       id: "register-desk",
-      title: "2. Attendee Registration (Smart Dropdown & Categories)",
+      title: "2. Attendee Registration (Zero-Discrimination Policy)",
       icon: "👤",
       content: (
         <div className="space-y-2 text-white/80 leading-relaxed">
-          <p>Fast check-in for delegates without advance ticket packages:</p>
+          <p>
+            <strong className="text-[#3fffe8]">Open to All:</strong> Regular admission has zero barrier to entry. Every student from any department (Petroleum, Mechanical, Arts, Pharmacy, etc.), external university, alumnus, or corporate guest can be registered immediately.
+          </p>
           <ul className="list-disc list-inside space-y-1 pl-1 text-white/70">
             <li>
-              <strong className="text-white">Smart Dropdown:</strong> Type 3+ digits of a matriculation number (e.g. <code className="text-[#3fffe8]">2315</code>) or student surname to auto-suggest students from the university database.
+              <strong className="text-white">Universal Search (188 Form Delegates + Students):</strong> Search by surname, first name, email, or phone number to auto-suggest and 1-click fill attendees from either the official Google Form pre-registration list or the university database.
             </li>
             <li>
-              <strong className="text-white">1-Click Auto-Fill:</strong> Tap any suggested student to populate Name, Matric, Department, and Level instantly.
+              <strong className="text-white">Matric Number is Optional:</strong> External delegates, visitors, and non-matriculated guests do not need a matric number. The terminal automatically generates a unique conference tag ID (<code className="text-[#3fffe8]">REG-2026-XXXX</code>) so no one is ever blocked.
             </li>
             <li>
-              <strong className="text-white">General &amp; External Delegates:</strong> For guests from other faculties, visiting institutions, or corporate partners, enter their name and specify their affiliation (e.g., General Delegate, Mechanical, or Industry Partner).
+              <strong className="text-white">All Departments &amp; Institutions:</strong> Department, Institution, and Category inputs accommodate any school, faculty, or affiliation.
             </li>
             <li>
-              Tap <strong className="text-[#3fffe8]">Register &amp; Issue Regular Tag</strong>. Duplicate entries are caught and flagged to prevent double counting.
+              Tap <strong className="text-[#3fffe8]">Register &amp; Issue Regular Tag</strong>. Issues the official regular tag and activates conference credentials on the spot.
             </li>
           </ul>
         </div>
