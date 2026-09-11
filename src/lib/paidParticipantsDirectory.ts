@@ -574,3 +574,21 @@ export function findPaidParticipant(query: string): PaidParticipantItem | null {
     }) || null
   );
 }
+
+// Helper to find a paid attendee by certificate ID or 8-character hash
+export function findPaidParticipantByCertId(certIdOrHash: string): PaidParticipantItem | null {
+  if (!certIdOrHash) return null;
+  const targetHash = certIdOrHash.replace(/^IESA-2026-CERT-/i, "").trim().toUpperCase();
+  if (targetHash.length < 4) return null;
+
+  return (
+    OFFICIAL_PAID_DIRECTORY.find((p) => {
+      const pHash = Buffer.from(`${p.matricNumber}-${p.fullName}`)
+        .toString("base64")
+        .replace(/[^A-Z0-9]/gi, "")
+        .slice(0, 8)
+        .toUpperCase();
+      return pHash === targetHash || pHash.startsWith(targetHash);
+    }) || null
+  );
+}

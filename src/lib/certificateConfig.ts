@@ -16,17 +16,27 @@ export interface FieldCoordConfig {
   letterSpacing?: number;
 }
 
+export interface QRCodeCoordConfig {
+  x: number;
+  y: number;
+  size: number;
+  color: string; // e.g. "#ffffff"
+  bgColor: string; // e.g. "#00000000" or transparent
+  enabled: boolean;
+}
+
 export interface CertificateConfigType {
   templateImageUrl: string;
   nativeWidth: number;
   nativeHeight: number;
   coords: {
     name: FieldCoordConfig;
-    matric: FieldCoordConfig;
+    matric?: FieldCoordConfig;
     department: FieldCoordConfig;
     certId: FieldCoordConfig;
     institution: FieldCoordConfig;
   };
+  qrCode?: QRCodeCoordConfig;
 }
 
 export const DEFAULT_CERT_CONFIG: CertificateConfigType = {
@@ -90,6 +100,14 @@ export const DEFAULT_CERT_CONFIG: CertificateConfigType = {
       letterSpacing: 0.2,
     },
   },
+  qrCode: {
+    x: 52,
+    y: 442,
+    size: 104,
+    color: "#ffffff",
+    bgColor: "#00000000",
+    enabled: true,
+  },
 };
 
 // Local storage key for persistent custom user mappings from Visual Mapper
@@ -102,7 +120,12 @@ export function getActiveCertificateConfig(): CertificateConfigType {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed?.coords?.name) {
-          return { ...DEFAULT_CERT_CONFIG, ...parsed, coords: { ...DEFAULT_CERT_CONFIG.coords, ...parsed.coords } };
+          return {
+            ...DEFAULT_CERT_CONFIG,
+            ...parsed,
+            coords: { ...DEFAULT_CERT_CONFIG.coords, ...parsed.coords },
+            qrCode: { ...DEFAULT_CERT_CONFIG.qrCode!, ...(parsed.qrCode || {}) },
+          };
         }
       }
     } catch {

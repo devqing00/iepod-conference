@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
+import QRCode from "qrcode";
 import {
   CheckBadgeIcon,
   ArrowDownTrayIcon,
@@ -15,12 +16,13 @@ import {
 } from "@heroicons/react/24/solid";
 import {
   getActiveCertificateConfig,
+  DEFAULT_CERT_CONFIG,
   CertificateConfigType,
 } from "@/lib/certificateConfig";
 
 interface AttendeeVerification {
   name: string;
-  matricNumber: string;
+  matricNumber?: string;
   department: string;
   level?: string;
   institution?: string;
@@ -28,6 +30,8 @@ interface AttendeeVerification {
   date?: string;
   certificateId: string;
   verificationUrl?: string;
+  securityHash?: string;
+  linkedInUrl?: string;
 }
 
 export default function CertificateLookupPage() {
@@ -73,6 +77,28 @@ export default function CertificateLookupPage() {
       ) {
         setIsAdminMode(true);
       }
+      const initialQuery =
+        searchParams.get("id") ||
+        searchParams.get("code") ||
+        searchParams.get("matric") ||
+        searchParams.get("query");
+      if (initialQuery) {
+        setQuery(initialQuery);
+        setIsLoading(true);
+        fetch("/api/certificate/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: initialQuery }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success && data.attendee) {
+              setAttendee(data.attendee);
+            }
+          })
+          .catch((err) => console.warn("Auto verification error:", err))
+          .finally(() => setIsLoading(false));
+      }
     }
     checkAccess();
   }, [checkAccess]);
@@ -108,9 +134,12 @@ export default function CertificateLookupPage() {
 
   // Format helper for dynamic text transforms
   const formatText = (text: string, transform?: "uppercase" | "capitalize" | "none") => {
+    if (!text) return "";
     if (transform === "uppercase") return text.toUpperCase();
     if (transform === "capitalize") {
-      return text.replace(/\b\w/g, (c) => c.toUpperCase());
+      return text
+        .toLowerCase()
+        .replace(/(?:^|\s|-|\/|\()\S/g, (c) => c.toUpperCase());
     }
     return text;
   };
@@ -130,101 +159,147 @@ export default function CertificateLookupPage() {
       canvas.width = width;
       canvas.height = height;
 
-      const templateImg = new Image();
-      templateImg.src = config.templateImageUrl;
-
       const stampFields = () => {
         const { coords } = config;
 
-        // 1. Participant Name: Centered over the long underline
+        // 1. Participant Name: ALWAYS ALL CAPLOCKS
         const nameCfg = coords.name;
         ctx.save();
         ctx.textAlign = nameCfg.align;
         ctx.fillStyle = nameCfg.color;
         ctx.font = `${nameCfg.fontWeight} ${nameCfg.fontSize * scale}px ${nameCfg.fontFamily}`;
+        const nameText = formatText(data.name, "uppercase");
+        const maxNameWidth =
+          nameCfg.align === "left"
+            ? (config.nativeWidth - nameCfg.x - 45) * scale
+            : (config.nativeWidth - 120) * scale;
         ctx.fillText(
-          formatText(data.name, nameCfg.textTransform),
+          nameText,
           nameCfg.x * scale,
-          nameCfg.y * scale
+          nameCfg.y * scale,
+          maxNameWidth
         );
         ctx.restore();
 
-        // 2. Matric Number
-        const matricCfg = coords.matric;
-        ctx.save();
-        ctx.textAlign = matricCfg.align;
-        ctx.fillStyle = matricCfg.color;
-        ctx.font = `${matricCfg.fontWeight} ${matricCfg.fontSize * scale}px ${matricCfg.fontFamily}`;
-        ctx.fillText(
-          formatText(data.matricNumber, matricCfg.textTransform),
-          matricCfg.x * scale,
-          matricCfg.y * scale
-        );
-        ctx.restore();
-
-        // 3. Department
+        // 2. Department: ALWAYS Capitalized (Title Case)
         const deptCfg = coords.department;
         ctx.save();
         ctx.textAlign = deptCfg.align;
         ctx.fillStyle = deptCfg.color;
         ctx.font = `${deptCfg.fontWeight} ${deptCfg.fontSize * scale}px ${deptCfg.fontFamily}`;
+        const deptText = formatText(data.department, "capitalize");
+        const maxDeptWidth = (config.nativeWidth - deptCfg.x - 45) * scale;
         ctx.fillText(
-          formatText(data.department, deptCfg.textTransform),
+          deptText,
           deptCfg.x * scale,
-          deptCfg.y * scale
+          deptCfg.y * scale,
+          maxDeptWidth
         );
         ctx.restore();
 
-        // 4. Certificate ID
+        // 3. Certificate ID: Always Uppercase
         const idCfg = coords.certId;
         ctx.save();
         ctx.textAlign = idCfg.align;
         ctx.fillStyle = idCfg.color;
         ctx.font = `${idCfg.fontWeight} ${idCfg.fontSize * scale}px ${idCfg.fontFamily}`;
         ctx.fillText(
-          formatText(data.certificateId, idCfg.textTransform),
+          formatText(data.certificateId, "uppercase"),
           idCfg.x * scale,
           idCfg.y * scale
         );
         ctx.restore();
 
-        // 5. Institution
+        // 4. Institution: ALWAYS Capitalized (Title Case)
         const instCfg = coords.institution;
         ctx.save();
         ctx.textAlign = instCfg.align;
         ctx.fillStyle = instCfg.color;
         ctx.font = `${instCfg.fontWeight} ${instCfg.fontSize * scale}px ${instCfg.fontFamily}`;
         ctx.fillText(
-          formatText(data.institution || "University of Ibadan", instCfg.textTransform),
+          formatText(data.institution || "University of Ibadan", "capitalize"),
           instCfg.x * scale,
           instCfg.y * scale
         );
         ctx.restore();
       };
 
-      templateImg.onload = () => {
-        // Draw official background template graphic
-        ctx.drawImage(templateImg, 0, 0, width, height);
-        stampFields();
-      };
+      const qrCfg = config.qrCode || DEFAULT_CERT_CONFIG.qrCode!;
+      const baseUrl =
+        typeof window !== "undefined"
+          ? window.location.origin
+          : "https://iepod.vercel.app";
+      const targetVerifyUrl =
+        data.verificationUrl || `${baseUrl}/verify/${data.certificateId}`;
 
-      templateImg.onerror = () => {
-        // Fallback drawing if template fails to load
-        ctx.fillStyle = "#faf7f0";
-        ctx.fillRect(0, 0, width, height);
+      const loadTemplateImg = new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image();
+        img.src = config.templateImageUrl;
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error("Failed to load template image"));
+      });
 
-        // Header & border
-        ctx.lineWidth = 10 * scale;
-        ctx.strokeStyle = "#040032";
-        ctx.strokeRect(30 * scale, 30 * scale, width - 60 * scale, height - 60 * scale);
+      // Fast-Scanning High-Contrast White QR Code generation
+      const loadQrImg =
+        qrCfg.enabled !== false
+          ? QRCode.toDataURL(targetVerifyUrl, {
+              errorCorrectionLevel: "M",
+              margin: 1,
+              color: {
+                dark: qrCfg.color || "#ffffff",
+                light: qrCfg.bgColor || "#00000000",
+              },
+              width: qrCfg.size * scale,
+            })
+              .then(
+                (dataUrl) =>
+                  new Promise<HTMLImageElement>((resolve) => {
+                    const qi = new Image();
+                    qi.onload = () => resolve(qi);
+                    qi.src = dataUrl;
+                  })
+              )
+              .catch((err) => {
+                console.warn("QR code generation failed:", err);
+                return null;
+              })
+          : Promise.resolve(null);
 
-        ctx.textAlign = "center";
-        ctx.fillStyle = "#040032";
-        ctx.font = `bold ${32 * scale}px Georgia, serif`;
-        ctx.fillText("CERTIFICATE OF PARTICIPATION", width / 2, 100 * scale);
+      Promise.all([loadTemplateImg, loadQrImg])
+        .then(([templateImg, qrImg]) => {
+          // Draw official background template graphic
+          ctx.drawImage(templateImg, 0, 0, width, height);
 
-        stampFields();
-      };
+          // Stamp dynamic text fields
+          stampFields();
+
+          // Stamp high-contrast white QR code on the dark sidebar
+          if (qrImg && qrCfg.enabled !== false) {
+            ctx.drawImage(
+              qrImg,
+              qrCfg.x * scale,
+              qrCfg.y * scale,
+              qrCfg.size * scale,
+              qrCfg.size * scale
+            );
+          }
+        })
+        .catch(() => {
+          // Fallback drawing if template fails to load
+          ctx.fillStyle = "#faf7f0";
+          ctx.fillRect(0, 0, width, height);
+
+          ctx.lineWidth = 10 * scale;
+          ctx.strokeStyle = "#040032";
+          ctx.strokeRect(30 * scale, 30 * scale, width - 60 * scale, height - 60 * scale);
+
+          ctx.textAlign = "center";
+          ctx.fillStyle = "#040032";
+          ctx.font = `bold ${32 * scale}px Georgia, serif`;
+          ctx.fillText("CERTIFICATE OF PARTICIPATION", width / 2, 100 * scale);
+
+          stampFields();
+        });
     },
     []
   );
@@ -452,7 +527,7 @@ export default function CertificateLookupPage() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="e.g. 218492 or Oluwaseun Adeleke"
+                placeholder="e.g. 244079 or your full name"
                 className="w-full pl-4 pr-32 py-3 rounded-2xl bg-white/5 border border-white/20 text-white placeholder-white/30 text-sm focus:outline-none focus:border-[#c6f552]"
                 autoFocus
               />
@@ -475,21 +550,6 @@ export default function CertificateLookupPage() {
             {error && (
               <p className="text-xs text-rose-400 font-mono mt-1">{error}</p>
             )}
-
-            {/* Quick Demo Test Pill */}
-            <div className="pt-1 flex items-center gap-2 flex-wrap text-[11px] font-mono text-white/50">
-              <span>Quick Test:</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setQuery("218492");
-                  setTimeout(() => handleVerify(), 50);
-                }}
-                className="px-2 py-0.5 rounded-md bg-white/10 hover:bg-white/20 text-[#c6f552] transition-colors cursor-pointer"
-              >
-                Matric: 218492
-              </button>
-            </div>
           </form>
         </div>
 
@@ -504,23 +564,47 @@ export default function CertificateLookupPage() {
                 </div>
                 <div>
                   <h3 className="font-serif-display font-bold text-base sm:text-lg text-white">
-                    {attendee.name}
+                    {attendee.name.toUpperCase()}
                   </h3>
                   <p className="text-xs text-[#c6f552] font-mono">
-                    Matric No: {attendee.matricNumber} · ID: {attendee.certificateId}
+                    Verified Delegate Credential · ID: {attendee.certificateId}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 w-full sm:w-auto">
+              <div className="flex items-center flex-wrap gap-2.5 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={handleDownload}
-                  className="w-full sm:w-auto px-8 py-3 rounded-full bg-[#c6f552] text-[#040032] font-mono font-bold text-xs uppercase tracking-wider hover:bg-[#b5e640] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(198,245,82,0.4)] cursor-pointer active:scale-95"
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#c6f552] text-[#040032] font-mono font-bold text-xs uppercase tracking-wider hover:bg-[#b5e640] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(198,245,82,0.4)] cursor-pointer active:scale-95"
                 >
                   <ArrowDownTrayIcon className="w-4 h-4" />
-                  <span>Download High-Res Certificate</span>
+                  <span>Download High-Res</span>
                 </button>
+
+                {attendee.linkedInUrl && (
+                  <a
+                    href={attendee.linkedInUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-full bg-[#0077b5] hover:bg-[#006097] text-white font-mono font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
+                    title="1-Click Add Official Credential to your LinkedIn Profile"
+                  >
+                    <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.45a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2Z" />
+                    </svg>
+                    <span>Add to LinkedIn</span>
+                  </a>
+                )}
+
+                <Link
+                  href={`/verify/${attendee.certificateId}`}
+                  target="_blank"
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-[#3fffe8] font-mono font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 border border-white/20"
+                >
+                  <ShieldCheckIcon className="w-4 h-4 text-[#3fffe8]" />
+                  <span>Verify Page</span>
+                </Link>
               </div>
             </div>
 

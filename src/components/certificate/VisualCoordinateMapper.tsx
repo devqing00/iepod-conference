@@ -18,7 +18,7 @@ import {
   CursorArrowRaysIcon,
 } from "@heroicons/react/24/solid";
 
-type FieldKey = "name" | "matric" | "department" | "certId" | "institution";
+type FieldKey = "name" | "department" | "certId" | "institution" | "qrCode";
 
 interface FieldMeta {
   key: FieldKey;
@@ -35,13 +35,6 @@ const FIELDS: FieldMeta[] = [
     icon: "👤",
     defaultSample: "OLUWASEUN BOLUWATIFE ADELEKE",
     badge: "bg-[#c6f552] text-[#040032]",
-  },
-  {
-    key: "matric",
-    label: "Matric No",
-    icon: "🔢",
-    defaultSample: "218492",
-    badge: "bg-[#3fffe8] text-[#040032]",
   },
   {
     key: "department",
@@ -63,6 +56,13 @@ const FIELDS: FieldMeta[] = [
     icon: "🏫",
     defaultSample: "University of Ibadan",
     badge: "bg-[#ece7d8] text-[#040032]",
+  },
+  {
+    key: "qrCode",
+    label: "QR Code (Verify)",
+    icon: "📱",
+    defaultSample: "https://iepod.vercel.app/verify/IESA-2026-CERT-B829FA1",
+    badge: "bg-[#3fffe8] text-[#040032]",
   },
 ];
 
@@ -93,10 +93,10 @@ export default function VisualCoordinateMapper({
   const [activeField, setActiveField] = useState<FieldKey>("name");
   const [sampleValues, setSampleValues] = useState<Record<FieldKey, string>>({
     name: "OLUWASEUN BOLUWATIFE ADELEKE",
-    matric: "218492",
     department: "Industrial & Production Engineering",
     certId: "IESA-2026-CERT-B829FA1",
     institution: "University of Ibadan",
+    qrCode: "https://iepod.vercel.app/verify/IESA-2026-CERT-B829FA1",
   });
 
   const [isDragging, setIsDragging] = useState(false);
@@ -163,17 +163,20 @@ export default function VisualCoordinateMapper({
       ctx.fillRect(0, 0, width, height);
     }
 
-    // 2. Draw Dynamic Fields
-    FIELDS.forEach((f) => {
-      const fieldConf = config.coords[f.key];
+    // 2. Draw Dynamic Text Fields
+    FIELDS.filter((f) => f.key !== "qrCode").forEach((f) => {
+      const fieldConf = config.coords[f.key as keyof typeof config.coords];
+      if (!fieldConf) return;
       const isSelected = f.key === activeField;
       const rawText = sampleValues[f.key] || f.defaultSample;
 
       let displayText = rawText;
-      if (fieldConf.textTransform === "uppercase") {
+      if (fieldConf.textTransform === "uppercase" || f.key === "name") {
         displayText = rawText.toUpperCase();
-      } else if (fieldConf.textTransform === "capitalize") {
-        displayText = rawText.replace(/\b\w/g, (l) => l.toUpperCase());
+      } else if (fieldConf.textTransform === "capitalize" || f.key === "department" || f.key === "institution") {
+        displayText = rawText
+          .toLowerCase()
+          .replace(/(?:^|\s|-|\/|\()\S/g, (l) => l.toUpperCase());
       }
 
       ctx.save();
@@ -185,13 +188,19 @@ export default function VisualCoordinateMapper({
       const metrics = ctx.measureText(displayText);
       const textWidth = metrics.width;
       const textHeight = fieldConf.fontSize;
+      const maxFieldWidth = f.key === "name"
+        ? (fieldConf.align === "left" ? config.nativeWidth - fieldConf.x - 45 : config.nativeWidth - 120)
+        : undefined;
 
       // Draw the actual text
-      ctx.fillText(displayText, fieldConf.x, fieldConf.y);
+      if (maxFieldWidth) {
+        ctx.fillText(displayText, fieldConf.x, fieldConf.y, maxFieldWidth);
+      } else {
+        ctx.fillText(displayText, fieldConf.x, fieldConf.y);
+      }
 
       // Draw interactive bounding box & pin indicator if selected or hovered
       if (isSelected) {
-        // Highlight active field with neon outline and drag handles
         let boxX = fieldConf.x;
         if (fieldConf.align === "center") boxX = fieldConf.x - textWidth / 2;
         if (fieldConf.align === "right") boxX = fieldConf.x - textWidth;
@@ -199,19 +208,16 @@ export default function VisualCoordinateMapper({
         const boxY = fieldConf.y - textHeight + 2;
         const pad = 4;
 
-        // Dashed glowing outline
         ctx.strokeStyle = "#c6f552";
         ctx.lineWidth = 2;
         ctx.setLineDash([4, 3]);
         ctx.strokeRect(boxX - pad, boxY - pad, textWidth + pad * 2, textHeight + pad * 2);
         ctx.setLineDash([]);
 
-        // Small corner pins
         ctx.fillStyle = "#040032";
         ctx.fillRect(boxX - pad - 2, boxY - pad - 2, 6, 6);
         ctx.fillRect(boxX + textWidth + pad - 4, boxY - pad - 2, 6, 6);
 
-        // Coordinate crosshair badge
         if (showCrosshair) {
           ctx.fillStyle = "#040032";
           ctx.fillRect(fieldConf.x - 35, fieldConf.y + 8, 70, 18);
@@ -224,13 +230,91 @@ export default function VisualCoordinateMapper({
 
       ctx.restore();
     });
+
+    // 3. Draw QR Code Element
+    const qr = config.qrCode || DEFAULT_CERT_CONFIG.qrCode!;
+    if (qr.enabled !== false) {
+      const isQrSelected = activeField === "qrCode";
+      const qx = qr.x;
+      const qy = qr.y;
+      const qSize = qr.size;
+
+      ctx.save();
+
+      // Background if set
+      if (qr.bgColor && qr.bgColor !== "transparent") {
+        ctx.fillStyle = qr.bgColor;
+        ctx.fillRect(qx, qy, qSize, qSize);
+      }
+
+      // Draw high-contrast white matrix & finder patterns
+      ctx.fillStyle = qr.color || "#ffffff";
+      const mod = qSize / 21;
+
+      const drawFinder = (fx: number, fy: number) => {
+        ctx.fillRect(fx, fy, mod * 7, mod * 7);
+        ctx.clearRect(fx + mod, fy + mod, mod * 5, mod * 5);
+        ctx.fillRect(fx + mod * 2, fy + mod * 2, mod * 3, mod * 3);
+      };
+
+      drawFinder(qx, qy);
+      drawFinder(qx + mod * 14, qy);
+      drawFinder(qx, qy + mod * 14);
+
+      // Deterministic decorative modules
+      for (let r = 0; r < 21; r++) {
+        for (let c = 0; c < 21; c++) {
+          if ((r < 8 && c < 8) || (r < 8 && c > 12) || (r > 12 && c < 8)) continue;
+          if (r === 6 || c === 6) {
+            if ((r + c) % 2 === 0) ctx.fillRect(qx + c * mod, qy + r * mod, mod, mod);
+            continue;
+          }
+          if ((r * 11 + c * 17 + (r ^ c)) % 3 === 0) {
+            ctx.fillRect(qx + c * mod, qy + r * mod, mod, mod);
+          }
+        }
+      }
+
+      // Small label below QR code
+      ctx.fillStyle = "#c6f552";
+      ctx.font = "bold 9px monospace";
+      ctx.textAlign = "center";
+      ctx.fillText("SCAN TO VERIFY", qx + qSize / 2, qy + qSize + 11);
+
+      // Draw selection outline & coordinates
+      if (isQrSelected) {
+        const pad = 4;
+        ctx.strokeStyle = "#c6f552";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 3]);
+        ctx.strokeRect(qx - pad, qy - pad, qSize + pad * 2, qSize + pad * 2 + 16);
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = "#040032";
+        ctx.fillRect(qx - pad - 2, qy - pad - 2, 6, 6);
+        ctx.fillRect(qx + qSize + pad - 4, qy - pad - 2, 6, 6);
+        ctx.fillRect(qx - pad - 2, qy + qSize + pad + 12, 6, 6);
+        ctx.fillRect(qx + qSize + pad - 4, qy + qSize + pad + 12, 6, 6);
+
+        if (showCrosshair) {
+          ctx.fillStyle = "#040032";
+          ctx.fillRect(qx + qSize / 2 - 45, qy - 24, 90, 18);
+          ctx.fillStyle = "#c6f552";
+          ctx.font = "bold 10px monospace";
+          ctx.textAlign = "center";
+          ctx.fillText(`X:${Math.round(qx)} Y:${Math.round(qy)} S:${Math.round(qSize)}`, qx + qSize / 2, qy - 11);
+        }
+      }
+
+      ctx.restore();
+    }
   }, [config, activeField, sampleValues, showCrosshair]);
 
   useEffect(() => {
     redraw();
   }, [redraw]);
 
-  // Handle Dragging Text directly on the canvas
+  // Handle Dragging Text or QR Code directly on the canvas
   const getCanvasCoords = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
@@ -247,9 +331,25 @@ export default function VisualCoordinateMapper({
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const { x, y } = getCanvasCoords(e);
 
-    // Check if user clicked close to any field to select it
+    // 1. Check if clicked near QR code
+    const qrConf = config.qrCode || DEFAULT_CERT_CONFIG.qrCode!;
+    if (
+      qrConf.enabled !== false &&
+      x >= qrConf.x - 15 &&
+      x <= qrConf.x + qrConf.size + 15 &&
+      y >= qrConf.y - 15 &&
+      y <= qrConf.y + qrConf.size + 25
+    ) {
+      setActiveField("qrCode");
+      setIsDragging(true);
+      return;
+    }
+
+    // 2. Check if clicked close to any text field to select it
     for (const f of FIELDS) {
-      const conf = config.coords[f.key];
+      if (f.key === "qrCode") continue;
+      const conf = config.coords[f.key as keyof typeof config.coords];
+      if (!conf) continue;
       const dist = Math.hypot(conf.x - x, conf.y - y);
       if (dist < 60) {
         setActiveField(f.key);
@@ -272,12 +372,27 @@ export default function VisualCoordinateMapper({
   };
 
   const updateActiveFieldCoord = (x: number, y: number) => {
+    if (activeField === "qrCode") {
+      setConfig((prev) => {
+        const cur = prev.qrCode || DEFAULT_CERT_CONFIG.qrCode!;
+        return {
+          ...prev,
+          qrCode: {
+            ...cur,
+            x: Math.max(0, Math.min(x, config.nativeWidth - cur.size)),
+            y: Math.max(0, Math.min(y, config.nativeHeight - cur.size)),
+          },
+        };
+      });
+      return;
+    }
+
     setConfig((prev) => ({
       ...prev,
       coords: {
         ...prev.coords,
         [activeField]: {
-          ...prev.coords[activeField],
+          ...prev.coords[activeField as keyof typeof prev.coords],
           x: Math.max(0, Math.min(x, config.nativeWidth)),
           y: Math.max(0, Math.min(y, config.nativeHeight)),
         },
@@ -289,14 +404,25 @@ export default function VisualCoordinateMapper({
     prop: K,
     val: FieldCoordConfig[K]
   ) => {
+    if (activeField === "qrCode") return;
     setConfig((prev) => ({
       ...prev,
       coords: {
         ...prev.coords,
         [activeField]: {
-          ...prev.coords[activeField],
+          ...prev.coords[activeField as keyof typeof prev.coords],
           [prop]: val,
         },
+      },
+    }));
+  };
+
+  const updateQrCodeProperty = (prop: keyof import("@/lib/certificateConfig").QRCodeCoordConfig, val: any) => {
+    setConfig((prev) => ({
+      ...prev,
+      qrCode: {
+        ...(prev.qrCode || DEFAULT_CERT_CONFIG.qrCode!),
+        [prop]: val,
       },
     }));
   };
@@ -390,7 +516,10 @@ export default function VisualCoordinateMapper({
     link.click();
   };
 
-  const activeConf = config.coords[activeField];
+  const isQrActive = activeField === "qrCode";
+  const qrConf = config.qrCode || DEFAULT_CERT_CONFIG.qrCode!;
+  const textConf = !isQrActive ? config.coords[activeField as keyof typeof config.coords] : null;
+  const activeCoord = isQrActive ? { x: qrConf.x, y: qrConf.y } : { x: textConf?.x || 0, y: textConf?.y || 0 };
 
   return (
     <div className="w-full bg-[#02001e] border-2 border-white/15 rounded-3xl p-5 sm:p-7 text-white shadow-2xl space-y-6">
@@ -417,7 +546,7 @@ export default function VisualCoordinateMapper({
             )}
           </div>
           <p className="text-xs text-white/60 mt-1">
-            Click & drag any field directly on the certificate, or use the sliders to fine-tune exact text baselines.
+            Click & drag any field or the QR code directly on the certificate, or use the sliders to fine-tune exact positioning.
           </p>
         </div>
 
@@ -485,7 +614,10 @@ export default function VisualCoordinateMapper({
       <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
         {FIELDS.map((f) => {
           const isSelected = f.key === activeField;
-          const conf = config.coords[f.key];
+          const conf = f.key === "qrCode"
+            ? (config.qrCode || DEFAULT_CERT_CONFIG.qrCode!)
+            : config.coords[f.key as keyof typeof config.coords];
+          if (!conf) return null;
           return (
             <button
               key={f.key}
@@ -520,13 +652,13 @@ export default function VisualCoordinateMapper({
           <div className="flex items-center justify-between text-[11px] font-mono text-white/60 mb-2 px-1">
             <div className="flex items-center gap-1.5">
               <CursorArrowRaysIcon className="w-3.5 h-3.5 text-[#c6f552]" />
-              <span>Interactive Dragging Active: Click & move text directly</span>
+              <span>Interactive Dragging Active: Click & move elements directly</span>
             </div>
 
             <button
               type="button"
               onClick={() => setShowCrosshair(!showCrosshair)}
-              className="hover:text-white transition-colors"
+              className="hover:text-white transition-colors cursor-pointer"
             >
               {showCrosshair ? "Hide Coordinates Overlay" : "Show Coordinates Overlay"}
             </button>
@@ -569,13 +701,13 @@ export default function VisualCoordinateMapper({
                   {FIELDS.find((f) => f.key === activeField)?.label}
                 </h4>
                 <span className="text-[10px] font-mono text-[#c6f552]">
-                  Active Field Inspector
+                  {isQrActive ? "Fast-Scan QR Matrix" : "Active Field Inspector"}
                 </span>
               </div>
             </div>
 
             <span className="text-xs font-mono font-bold bg-[#040032] px-2 py-1 rounded-xl border border-white/15 text-[#c6f552]">
-              X: {Math.round(activeConf.x)} · Y: {Math.round(activeConf.y)}
+              X: {Math.round(activeCoord.x)} · Y: {Math.round(activeCoord.y)}
             </span>
           </div>
 
@@ -588,21 +720,21 @@ export default function VisualCoordinateMapper({
                   <button
                     type="button"
                     onClick={() =>
-                      updateActiveFieldCoord(activeConf.x - 1, activeConf.y)
+                      updateActiveFieldCoord(activeCoord.x - 1, activeCoord.y)
                     }
-                    className="w-5 h-5 rounded bg-white/10 hover:bg-white/20 text-center"
+                    className="w-5 h-5 rounded bg-white/10 hover:bg-white/20 text-center cursor-pointer"
                   >
                     -
                   </button>
                   <span className="w-10 text-center text-[#c6f552] font-bold">
-                    {Math.round(activeConf.x)}
+                    {Math.round(activeCoord.x)}
                   </span>
                   <button
                     type="button"
                     onClick={() =>
-                      updateActiveFieldCoord(activeConf.x + 1, activeConf.y)
+                      updateActiveFieldCoord(activeCoord.x + 1, activeCoord.y)
                     }
-                    className="w-5 h-5 rounded bg-white/10 hover:bg-white/20 text-center"
+                    className="w-5 h-5 rounded bg-white/10 hover:bg-white/20 text-center cursor-pointer"
                   >
                     +
                   </button>
@@ -612,9 +744,9 @@ export default function VisualCoordinateMapper({
                 type="range"
                 min={0}
                 max={1024}
-                value={activeConf.x}
+                value={activeCoord.x}
                 onChange={(e) =>
-                  updateActiveFieldCoord(Number(e.target.value), activeConf.y)
+                  updateActiveFieldCoord(Number(e.target.value), activeCoord.y)
                 }
                 className="w-full accent-[#c6f552] cursor-pointer"
               />
@@ -622,26 +754,26 @@ export default function VisualCoordinateMapper({
 
             <div>
               <div className="flex items-center justify-between text-xs font-mono text-white/70 mb-1">
-                <span>Y Coordinate (Baseline)</span>
+                <span>Y Coordinate (Vertical)</span>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() =>
-                      updateActiveFieldCoord(activeConf.x, activeConf.y - 1)
+                      updateActiveFieldCoord(activeCoord.x, activeCoord.y - 1)
                     }
-                    className="w-5 h-5 rounded bg-white/10 hover:bg-white/20 text-center"
+                    className="w-5 h-5 rounded bg-white/10 hover:bg-white/20 text-center cursor-pointer"
                   >
                     -
                   </button>
                   <span className="w-10 text-center text-[#c6f552] font-bold">
-                    {Math.round(activeConf.y)}
+                    {Math.round(activeCoord.y)}
                   </span>
                   <button
                     type="button"
                     onClick={() =>
-                      updateActiveFieldCoord(activeConf.x, activeConf.y + 1)
+                      updateActiveFieldCoord(activeCoord.x, activeCoord.y + 1)
                     }
-                    className="w-5 h-5 rounded bg-white/10 hover:bg-white/20 text-center"
+                    className="w-5 h-5 rounded bg-white/10 hover:bg-white/20 text-center cursor-pointer"
                   >
                     +
                   </button>
@@ -651,144 +783,211 @@ export default function VisualCoordinateMapper({
                 type="range"
                 min={0}
                 max={577}
-                value={activeConf.y}
+                value={activeCoord.y}
                 onChange={(e) =>
-                  updateActiveFieldCoord(activeConf.x, Number(e.target.value))
+                  updateActiveFieldCoord(activeCoord.x, Number(e.target.value))
                 }
                 className="w-full accent-[#c6f552] cursor-pointer"
               />
             </div>
           </div>
 
-          {/* Typography Controls */}
-          <div className="space-y-3 pt-2 border-t border-white/10">
-            <div>
-              <div className="flex items-center justify-between text-xs font-mono text-white/70 mb-1">
-                <span>Font Size ({activeConf.fontSize}px)</span>
-              </div>
-              <input
-                type="range"
-                min={8}
-                max={42}
-                value={activeConf.fontSize}
-                onChange={(e) =>
-                  updateActiveFieldProperty("fontSize", Number(e.target.value))
-                }
-                className="w-full accent-[#c6f552] cursor-pointer"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
+          {/* Conditional Controls: QR Code vs Typography */}
+          {isQrActive ? (
+            <div className="space-y-4 pt-2 border-t border-white/10">
+              {/* QR Size Slider */}
               <div>
-                <label className="block text-[10px] font-mono text-white/60 mb-1">
-                  Font Weight
-                </label>
-                <select
-                  value={activeConf.fontWeight}
-                  onChange={(e) =>
-                    updateActiveFieldProperty(
-                      "fontWeight",
-                      e.target.value as any
-                    )
-                  }
-                  className="w-full px-2 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white focus:outline-none"
-                >
-                  <option value="normal" className="bg-[#040032]">Normal</option>
-                  <option value="600" className="bg-[#040032]">Semi-Bold (600)</option>
-                  <option value="bold" className="bg-[#040032]">Bold</option>
-                  <option value="800" className="bg-[#040032]">Extra Bold</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-mono text-white/60 mb-1">
-                  Alignment
-                </label>
-                <select
-                  value={activeConf.align}
-                  onChange={(e) =>
-                    updateActiveFieldProperty(
-                      "align",
-                      e.target.value as CanvasTextAlign
-                    )
-                  }
-                  className="w-full px-2 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white focus:outline-none"
-                >
-                  <option value="left" className="bg-[#040032]">Left</option>
-                  <option value="center" className="bg-[#040032]">Center</option>
-                  <option value="right" className="bg-[#040032]">Right</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-[10px] font-mono text-white/60 mb-1">
-                Font Family
-              </label>
-              <select
-                value={activeConf.fontFamily}
-                onChange={(e) =>
-                  updateActiveFieldProperty("fontFamily", e.target.value)
-                }
-                className="w-full px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white focus:outline-none"
-              >
-                <option value="'Space Mono', monospace" className="bg-[#040032]">
-                  Space Mono (Techno Monospace)
-                </option>
-                <option value="'Courier New', monospace" className="bg-[#040032]">
-                  Courier New (Monospace)
-                </option>
-                <option value="'Playfair Display', Georgia, serif" className="bg-[#040032]">
-                  Playfair Display (Serif)
-                </option>
-                <option value="system-ui, -apple-system, sans-serif" className="bg-[#040032]">
-                  Modern Sans-Serif
-                </option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-[10px] font-mono text-white/60 mb-1">
-                Color
-              </label>
-              <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between text-xs font-mono text-white/70 mb-1">
+                  <span>QR Code Size ({Math.round(qrConf.size)}px)</span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => updateQrCodeProperty("size", Math.max(40, qrConf.size - 2))}
+                      className="w-5 h-5 rounded bg-white/10 hover:bg-white/20 text-center cursor-pointer"
+                    >
+                      -
+                    </button>
+                    <span className="w-10 text-center text-[#c6f552] font-bold">
+                      {Math.round(qrConf.size)}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => updateQrCodeProperty("size", Math.min(220, qrConf.size + 2))}
+                      className="w-5 h-5 rounded bg-white/10 hover:bg-white/20 text-center cursor-pointer"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
                 <input
-                  type="color"
-                  value={activeConf.color}
-                  onChange={(e) =>
-                    updateActiveFieldProperty("color", e.target.value)
-                  }
-                  className="w-8 h-8 rounded-lg border border-white/20 bg-transparent cursor-pointer"
+                  type="range"
+                  min={40}
+                  max={220}
+                  value={qrConf.size}
+                  onChange={(e) => updateQrCodeProperty("size", Number(e.target.value))}
+                  className="w-full accent-[#c6f552] cursor-pointer"
                 />
+              </div>
+
+              {/* Fast Scanning Information Card */}
+              <div className="p-3.5 rounded-2xl bg-[#040032] border border-[#c6f552]/40 space-y-2 text-xs font-mono">
+                <div className="flex items-center gap-2 text-[#c6f552] font-bold">
+                  <SparklesIcon className="w-4 h-4" />
+                  <span>Option A · Fast Scan Matrix</span>
+                </div>
+                <p className="text-[11px] text-white/75 leading-relaxed font-sans">
+                  Rendered in crisp white over the dark sidebar with Error Correction Level M. Provides sub-second camera scanning from mobile devices and printed sheets.
+                </p>
+                <div className="flex items-center gap-2 pt-1">
+                  <span className="text-[10px] px-2 py-0.5 rounded-md bg-[#3fffe8]/20 text-[#3fffe8] font-bold">
+                    Target: /verify/[certId]
+                  </span>
+                </div>
+              </div>
+
+              {/* Sample Target URL */}
+              <div>
+                <label className="block text-[10px] font-mono text-white/60 mb-1">
+                  Target Verification URL (Dynamic per delegate)
+                </label>
                 <input
                   type="text"
-                  value={activeConf.color}
-                  onChange={(e) =>
-                    updateActiveFieldProperty("color", e.target.value)
-                  }
-                  className="flex-1 px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white font-mono focus:outline-none"
+                  readOnly
+                  value="https://iepod.vercel.app/verify/IESA-2026-CERT-B829FA1"
+                  className="w-full px-2.5 py-1.5 rounded-xl bg-white/5 border border-white/15 text-xs text-white/60 font-mono select-all"
                 />
               </div>
             </div>
+          ) : textConf ? (
+            <div className="space-y-3 pt-2 border-t border-white/10">
+              <div>
+                <div className="flex items-center justify-between text-xs font-mono text-white/70 mb-1">
+                  <span>Font Size ({textConf.fontSize}px)</span>
+                </div>
+                <input
+                  type="range"
+                  min={8}
+                  max={42}
+                  value={textConf.fontSize}
+                  onChange={(e) =>
+                    updateActiveFieldProperty("fontSize", Number(e.target.value))
+                  }
+                  className="w-full accent-[#c6f552] cursor-pointer"
+                />
+              </div>
 
-            {/* Test Sample Value Input */}
-            <div>
-              <label className="block text-[10px] font-mono text-white/60 mb-1">
-                Preview Sample Text
-              </label>
-              <input
-                type="text"
-                value={sampleValues[activeField]}
-                onChange={(e) =>
-                  setSampleValues((prev) => ({
-                    ...prev,
-                    [activeField]: e.target.value,
-                  }))
-                }
-                className="w-full px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#c6f552]"
-              />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[10px] font-mono text-white/60 mb-1">
+                    Font Weight
+                  </label>
+                  <select
+                    value={textConf.fontWeight}
+                    onChange={(e) =>
+                      updateActiveFieldProperty(
+                        "fontWeight",
+                        e.target.value as any
+                      )
+                    }
+                    className="w-full px-2 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white focus:outline-none"
+                  >
+                    <option value="normal" className="bg-[#040032]">Normal</option>
+                    <option value="600" className="bg-[#040032]">Semi-Bold (600)</option>
+                    <option value="bold" className="bg-[#040032]">Bold</option>
+                    <option value="800" className="bg-[#040032]">Extra Bold</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-mono text-white/60 mb-1">
+                    Alignment
+                  </label>
+                  <select
+                    value={textConf.align}
+                    onChange={(e) =>
+                      updateActiveFieldProperty(
+                        "align",
+                        e.target.value as CanvasTextAlign
+                      )
+                    }
+                    className="w-full px-2 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white focus:outline-none"
+                  >
+                    <option value="left" className="bg-[#040032]">Left</option>
+                    <option value="center" className="bg-[#040032]">Center</option>
+                    <option value="right" className="bg-[#040032]">Right</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-mono text-white/60 mb-1">
+                  Font Family
+                </label>
+                <select
+                  value={textConf.fontFamily}
+                  onChange={(e) =>
+                    updateActiveFieldProperty("fontFamily", e.target.value)
+                  }
+                  className="w-full px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white focus:outline-none"
+                >
+                  <option value="'Space Mono', monospace" className="bg-[#040032]">
+                    Space Mono (Techno Monospace)
+                  </option>
+                  <option value="'Courier New', monospace" className="bg-[#040032]">
+                    Courier New (Monospace)
+                  </option>
+                  <option value="'Playfair Display', Georgia, serif" className="bg-[#040032]">
+                    Playfair Display (Serif)
+                  </option>
+                  <option value="system-ui, -apple-system, sans-serif" className="bg-[#040032]">
+                    Modern Sans-Serif
+                  </option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-mono text-white/60 mb-1">
+                  Color
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={textConf.color}
+                    onChange={(e) =>
+                      updateActiveFieldProperty("color", e.target.value)
+                    }
+                    className="w-8 h-8 rounded-lg border border-white/20 bg-transparent cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={textConf.color}
+                    onChange={(e) =>
+                      updateActiveFieldProperty("color", e.target.value)
+                    }
+                    className="flex-1 px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white font-mono focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Test Sample Value Input */}
+              <div>
+                <label className="block text-[10px] font-mono text-white/60 mb-1">
+                  Preview Sample Text
+                </label>
+                <input
+                  type="text"
+                  value={sampleValues[activeField]}
+                  onChange={(e) =>
+                    setSampleValues((prev) => ({
+                      ...prev,
+                      [activeField]: e.target.value,
+                    }))
+                  }
+                  className="w-full px-2.5 py-1.5 rounded-xl bg-white/10 border border-white/15 text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#c6f552]"
+                />
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
       </div>
     </div>
