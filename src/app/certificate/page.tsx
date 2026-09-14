@@ -348,12 +348,39 @@ export default function CertificateLookupPage() {
     const canvas = canvasRef.current;
     if (!canvas || !attendee) return;
 
+    // Track download in background
+    fetch("/api/certificate/track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        certificateId: attendee.certificateId,
+        action: "download",
+        studentName: attendee.name,
+        matricNumber: attendee.matricNumber,
+      }),
+    }).catch((err) => console.warn("Track download error:", err));
+
     const dataUrl = canvas.toDataURL("image/png");
     const link = document.createElement("a");
     const safeName = attendee.name.replace(/[^a-zA-Z0-9]/g, "_");
     link.download = `IESA_Process_Day_2026_Certificate_${safeName}.png`;
     link.href = dataUrl;
     link.click();
+  };
+
+  // Track 1-click LinkedIn addition
+  const handleLinkedInClick = () => {
+    if (!attendee) return;
+    fetch("/api/certificate/track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        certificateId: attendee.certificateId,
+        action: "linkedin",
+        studentName: attendee.name,
+        matricNumber: attendee.matricNumber,
+      }),
+    }).catch((err) => console.warn("Track linkedin error:", err));
   };
 
   // 1. Loading State
@@ -587,6 +614,7 @@ export default function CertificateLookupPage() {
                     href={attendee.linkedInUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={handleLinkedInClick}
                     className="w-full sm:w-auto px-4 py-2.5 rounded-full bg-[#0077b5] hover:bg-[#006097] text-white font-mono font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
                     title="1-Click Add Official Credential to your LinkedIn Profile"
                   >

@@ -17,11 +17,13 @@ import {
   ExclamationTriangleIcon,
   TrashIcon,
   CheckCircleIcon,
+  AcademicCapIcon,
 } from "@heroicons/react/24/solid";
 import VerificationCard, { CheckinResult } from "@/components/checkin/VerificationCard";
 import AttendeeRegisterTab from "@/components/checkin/AttendeeRegisterTab";
 import PaidDelegateTab from "@/components/checkin/PaidDelegateTab";
 import LiveStageControlTab from "@/components/checkin/LiveStageControlTab";
+import CertificateTrackerTab from "@/components/checkin/CertificateTrackerTab";
 import { AttendanceStats } from "@/components/checkin/AttendanceDashboard";
 import {
   playSuccessFeedback,
@@ -32,7 +34,7 @@ import {
   setAudioMuted,
 } from "@/lib/feedback";
 
-type Mode = "register" | "paid" | "stage";
+type Mode = "register" | "paid" | "stage" | "certificates";
 
 export default function CheckinTerminalPage() {
   const [mode, setMode] = useState<Mode>("register");
@@ -429,7 +431,7 @@ export default function CheckinTerminalPage() {
       <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-[#c6f552]/10 rounded-full blur-3xl pointer-events-none -z-10" />
 
       {/* Sleek Minimal Header Bar with Live Incrementing Counter & Help Modal Trigger */}
-      <header className="w-full max-w-2xl mx-auto flex items-center justify-between gap-3 mb-3">
+      <header className={`w-full mx-auto flex items-center justify-between gap-3 mb-3 transition-all duration-300 ${mode === "certificates" ? "max-w-6xl" : "max-w-2xl"}`}>
         <Link
           href="/"
           className="inline-flex items-center gap-1.5 text-xs font-mono text-white/70 hover:text-white bg-white/10 px-3 py-1.5 rounded-full border border-white/15 transition-all hover:bg-white/15"
@@ -501,7 +503,7 @@ export default function CheckinTerminalPage() {
 
       {/* Optional Reset Feedback Banner */}
       {resetNotice && (
-        <div className="w-full max-w-2xl mx-auto p-2.5 px-3.5 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold flex items-center justify-between gap-2 animate-fade-in shadow-lg mb-3">
+        <div className={`w-full mx-auto p-2.5 px-3.5 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold flex items-center justify-between gap-2 animate-fade-in shadow-lg mb-3 ${mode === "certificates" ? "max-w-6xl" : "max-w-2xl"}`}>
           <div className="flex items-center gap-2 truncate">
             <CheckCircleIcon className="w-4 h-4 text-emerald-400 shrink-0" />
             <span className="truncate">{resetNotice}</span>
@@ -517,15 +519,15 @@ export default function CheckinTerminalPage() {
       )}
 
       {/* Main Terminal Container */}
-      <div className="w-full max-w-2xl mx-auto space-y-4 flex-1 flex flex-col justify-center">
-        {/* Mode Segmented Tab Switcher (3 Tabs) */}
+      <div className={`w-full mx-auto space-y-4 flex-1 flex flex-col justify-center transition-all duration-300 ${mode === "certificates" ? "max-w-6xl" : "max-w-2xl"}`}>
+        {/* Mode Segmented Tab Switcher (4 Tabs) */}
         {!result && (
-          <div className="w-full max-w-lg mx-auto grid grid-cols-3 p-1 rounded-2xl bg-[#02001e] border border-white/15 shadow-md">
+          <div className="w-full max-w-xl mx-auto grid grid-cols-4 p-1 rounded-2xl bg-[#02001e] border border-white/15 shadow-md">
             {/* Tab 1: Attendee Registration (Regular) */}
             <button
               type="button"
               onClick={() => setMode("register")}
-              className={`relative overflow-hidden py-2 px-1.5 sm:px-3 rounded-xl text-xs sm:text-sm font-bold font-sans flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              className={`relative overflow-hidden py-2 px-1 rounded-xl text-xs sm:text-sm font-bold font-sans flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 mode === "register"
                   ? "bg-[#3fffe8] text-[#040032] shadow-sm"
                   : "text-white/70 hover:text-white"
@@ -540,7 +542,7 @@ export default function CheckinTerminalPage() {
             <button
               type="button"
               onClick={() => setMode("paid")}
-              className={`relative overflow-hidden py-2 px-1.5 sm:px-3 rounded-xl text-xs sm:text-sm font-bold font-sans flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              className={`relative overflow-hidden py-2 px-1 rounded-xl text-xs sm:text-sm font-bold font-sans flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 mode === "paid"
                   ? "bg-[#c6f552] text-[#040032] shadow-sm"
                   : "text-white/70 hover:text-white"
@@ -555,7 +557,7 @@ export default function CheckinTerminalPage() {
             <button
               type="button"
               onClick={() => setMode("stage")}
-              className={`relative overflow-hidden py-2 px-1.5 sm:px-3 rounded-xl text-xs sm:text-sm font-bold font-sans flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              className={`relative overflow-hidden py-2 px-1 rounded-xl text-xs sm:text-sm font-bold font-sans flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 mode === "stage"
                   ? "bg-white text-[#040032] shadow-sm"
                   : "text-white/70 hover:text-white"
@@ -563,7 +565,22 @@ export default function CheckinTerminalPage() {
             >
               {mode === "stage" && <div className="shimmer-sweep" />}
               <RadioIcon className="w-4 h-4 text-emerald-500 relative z-10" />
-              <span className="truncate relative z-10">Live Stage</span>
+              <span className="truncate relative z-10">Stage</span>
+            </button>
+
+            {/* Tab 4: Certificate & LinkedIn Tracker */}
+            <button
+              type="button"
+              onClick={() => setMode("certificates")}
+              className={`relative overflow-hidden py-2 px-1 rounded-xl text-xs sm:text-sm font-bold font-sans flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                mode === "certificates"
+                  ? "bg-[#0077b5] text-white shadow-sm"
+                  : "text-white/70 hover:text-white"
+              }`}
+            >
+              {mode === "certificates" && <div className="shimmer-sweep" />}
+              <AcademicCapIcon className="w-4 h-4 relative z-10" />
+              <span className="truncate relative z-10">Certs</span>
             </button>
           </div>
         )}
@@ -596,8 +613,10 @@ export default function CheckinTerminalPage() {
               stats={stats}
               onRefreshStats={fetchStats}
             />
-          ) : (
+          ) : mode === "stage" ? (
             <LiveStageControlTab />
+          ) : (
+            <CertificateTrackerTab />
           )}
         </div>
       </div>

@@ -86,6 +86,7 @@ async function resolveAttendeeRecord(query: string) {
     // 2. Search strictly within checked-in attendees (regular or paid)
     const safeQuery = cleanQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const exactRegex = new RegExp(`^${safeQuery}$`, "i");
+    const usersCol = db.collection("users");
 
     // Exact search on matric number or email in check-in database
     let checkin = await checkinsCol.findOne({
@@ -95,14 +96,67 @@ async function resolveAttendeeRecord(query: string) {
       ],
     });
 
-    // Exact search on student name
+    let resolvedMatricOverride: string | null = null;
+
+    // 3. Numeric / Matric number search strategies (e.g. "258440", "E053301", "053301")
+    const numericDigits = cleanQuery.replace(/\D/g, "");
+    if (!checkin && numericDigits.length >= 4) {
+      // 3a. Check if any checkin has an email embedding this matric (e.g. "toloruntoyin258440@stu.ui.edu.ng")
+      checkin = await checkinsCol.findOne({
+        email: { $regex: new RegExp(numericDigits, "i") },
+      });
+
+      // 3b. Check if matric matches with/without leading letter (e.g. E053301 vs 053301)
+      if (!checkin) {
+        checkin = await checkinsCol.findOne({
+          matricNumber: { $regex: new RegExp(`^E?0*${numericDigits}$`, "i") },
+        });
+      }
+
+      // 3c. Check if users collection has this matric number, then link to checkin
+      if (!checkin) {
+        const user = await usersCol.findOne({
+          $or: [
+            { matricNumber: { $regex: new RegExp(`^E?0*${numericDigits}$`, "i") } },
+            { email: { $regex: new RegExp(numericDigits, "i") } },
+            { institutionalEmail: { $regex: new RegExp(numericDigits, "i") } },
+          ],
+        });
+
+        if (user) {
+          const userEmails = [user.email, user.institutionalEmail, user.personalEmail].filter(Boolean);
+          const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
+
+          checkin = await checkinsCol.findOne({
+            $or: [
+              { studentId: user._id },
+              ...(userEmails.length > 0 ? [{ email: { $in: userEmails.map((e) => new RegExp(`^${e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i")) } }] : []),
+              ...(fullName.length >= 3 ? [{ studentName: new RegExp(`^${fullName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") }] : []),
+            ],
+          });
+
+          if (checkin && user.matricNumber) {
+            resolvedMatricOverride = user.matricNumber;
+          }
+        }
+      }
+
+      if (checkin && !resolvedMatricOverride) {
+        // If the checkin had an N/A or REG- tag, use the searched matric number
+        if (!checkin.matricNumber || /^(N\/?A|NONE|NIL|REG-)/i.test(checkin.matricNumber)) {
+          resolvedMatricOverride = numericDigits;
+        }
+      }
+    }
+
+    // 4. Exact search on student name
     if (!checkin && cleanQuery.length >= 3) {
       checkin = await checkinsCol.findOne({
         studentName: exactRegex,
       });
     }
 
-    // Word permutation matching for names (e.g. "Taiwo Alade" vs "Alade Taiwo")
+    // 5. Word permutation matching for names (e.g. "Taiwo Alade" vs "Alade Taiwo")
     if (!checkin && cleanQuery.includes(" ")) {
       const words = cleanQuery.split(/\s+/).filter((w) => w.length >= 2);
       if (words.length >= 2) {
@@ -115,7 +169,7 @@ async function resolveAttendeeRecord(query: string) {
       }
     }
 
-    // Partial search on student name if query has 4+ characters
+    // 6. Partial search on student name if query has 4+ characters
     if (!checkin && cleanQuery.length >= 4) {
       const partialRegex = new RegExp(safeQuery, "i");
       checkin = await checkinsCol.findOne({
@@ -123,10 +177,37 @@ async function resolveAttendeeRecord(query: string) {
       });
     }
 
+    // 7. Fallback lookup via users collection if query was email or name
+    if (!checkin && cleanQuery.length >= 3) {
+      const matchedUser = await usersCol.findOne({
+        $or: [
+          { email: exactRegex },
+          { institutionalEmail: exactRegex },
+          { personalEmail: exactRegex },
+        ],
+      });
+
+      if (matchedUser) {
+        const userEmails = [matchedUser.email, matchedUser.institutionalEmail, matchedUser.personalEmail].filter(Boolean);
+        const fullName = `${matchedUser.firstName || ""} ${matchedUser.lastName || ""}`.trim();
+        checkin = await checkinsCol.findOne({
+          $or: [
+            { studentId: matchedUser._id },
+            ...(userEmails.length > 0 ? [{ email: { $in: userEmails.map((e) => new RegExp(`^${e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i")) } }] : []),
+            ...(fullName.length >= 3 ? [{ studentName: new RegExp(`^${fullName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") }] : []),
+          ],
+        });
+        if (checkin && matchedUser.matricNumber) {
+          resolvedMatricOverride = matchedUser.matricNumber;
+        }
+      }
+    }
+
     if (checkin) {
+      const effectiveMatric = resolvedMatricOverride || checkin.matricNumber;
       return {
         name: checkin.studentName,
-        matricNumber: checkin.matricNumber,
+        matricNumber: effectiveMatric,
         department: checkin.department || "Industrial & Production Engineering",
         institution: checkin.institution || "University of Ibadan",
         level: checkin.level || "Delegate",
